@@ -1,5 +1,10 @@
-import { UserProfile } from '@clerk/nextjs'
+import Sidebar from "@/app/components/SideBar";
 
-const UserProfilePage = () => <UserProfile />
-
-export default UserProfilePage
+export default function UserProfilePage() {
+  return (
+    
+    <div>
+        <Sidebar/>
+    </div>
+  );
+}
