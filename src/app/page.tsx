@@ -1,3 +1,4 @@
+import { SignIn, SignUp } from "@clerk/nextjs";
 import Image from "next/image";
 
 export default function Home() {
@@ -9,12 +10,7 @@ export default function Home() {
       </p>
 
       <div className="mt-8 flex gap-4 justify-center">
-        <a href="/sign-in" className="px-4 py-2 bg-blue-500 text-white rounded">
-          Iniciar sesión
-        </a>
-        <a href="/sign-up" className="px-4 py-2 bg-green-500 text-white rounded">
-          Registrarse
-        </a>
+        <SignIn redirectUrl="/dashboard" />
       </div>
     </main>
   );
