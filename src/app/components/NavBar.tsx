@@ -1,4 +1,5 @@
 "use client";
+import { UserButton } from "@clerk/nextjs";
 import React from "react";
 
 export default function Navbar() {
@@ -7,9 +8,6 @@ export default function Navbar() {
       {/* Logo + Mis Cursos */}
       <div className="flex items-center gap-4">
         <span className="text-2xl"><a href="/dashboard">🚀</a></span>
-        <a href="/mis-cursos" className="hover:text-gray-300">
-          Mis Cursos
-        </a>
       </div>
 
       {/* Perfil + Notificaciones */}
@@ -19,6 +17,7 @@ export default function Navbar() {
           {/* Indicador de nuevas notificaciones */}
           <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></span>
         </button>
+        <UserButton/>
         <a href="/user-profile" className="hover:text-gray-300">
           Perfil
         </a>
