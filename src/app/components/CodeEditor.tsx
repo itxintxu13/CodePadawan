@@ -316,25 +316,6 @@ public class Main {
         </button>
         <button
           onClick={() => {
-            setLanguage("html");
-            setOutput("");
-          }}
-          style={{
-            flex: 1,
-            padding: "12px",
-            border: "none",
-            cursor: "pointer",
-            background: language === "html" ? "#333" : "transparent",
-            color: language === "html" ? "#FF9800" : "#fff",
-            fontWeight: "bold",
-            borderBottom: language === "html" ? "4px solid #FF9800" : "none",
-            borderRadius: "10px 10px 0 0",
-          }}
-        >
-          HTML
-        </button>
-        <button
-          onClick={() => {
             setLanguage("java");
             setOutput("");
           }}
@@ -352,6 +333,26 @@ public class Main {
         >
           Java
         </button>
+        <button
+          onClick={() => {
+            setLanguage("html");
+            setOutput("");
+          }}
+          style={{
+            flex: 1,
+            padding: "12px",
+            border: "none",
+            cursor: "pointer",
+            background: language === "html" ? "#333" : "transparent",
+            color: language === "html" ? "#FF9800" : "#fff",
+            fontWeight: "bold",
+            borderBottom: language === "html" ? "4px solid #FF9800" : "none",
+            borderRadius: "10px 10px 0 0",
+          }}
+        >
+          HTML
+        </button>
+        
       </div>
 
       <div
