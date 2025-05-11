@@ -1,0 +1,71 @@
+[
+  {
+    "id": 1,
+    "titulo": "Hola Mundo",
+    "descripcion": "Escribe un programa que muestre 'Hola Mundo' en la consola.",
+    "dificultad": "Fácil",
+    "puntos": 10,
+    "lenguajes": ["javascript", "python", "java"],
+    "plantilla": {
+      "javascript": "// Escribe tu código aquí\n\n",
+      "python": "# Escribe tu código aquí\n\n",
+      "java": "// Escribe tu código aquí\n\n"
+    },
+    "solucion": {
+      "javascript": "console.log('Hola Mundo');",
+      "python": "print('Hola Mundo')",
+      "java": "System.out.println(\"Hola Mundo\");"
+    },
+    "tests": {
+      "javascript": "output.includes('Hola Mundo')",
+      "python": "output.includes('Hola Mundo')",
+      "java": "output.includes('Hola Mundo')"
+    }
+  },
+  {
+    "id": 2,
+    "titulo": "Suma de Números",
+    "descripcion": "Crea una función que sume dos números y devuelva el resultado.",
+    "dificultad": "Fácil",
+    "puntos": 20,
+    "lenguajes": ["javascript", "python", "java"],
+    "plantilla": {
+      "javascript": "// Completa la función suma\nfunction suma(a, b) {\n  // Tu código aquí\n}\n\nconsole.log(suma(5, 3)); // Debería mostrar 8",
+      "python": "# Completa la función suma\ndef suma(a, b):\n    # Tu código aquí\n    pass\n\nprint(suma(5, 3))  # Debería mostrar 8",
+      "java": "// Completa la función suma\npublic static int suma(int a, int b) {\n    // Tu código aquí\n    return 0;\n}\n\nSystem.out.println(suma(5, 3)); // Debería mostrar 8"
+    },
+    "solucion": {
+      "javascript": "function suma(a, b) {\n  return a + b;\n}\n\nconsole.log(suma(5, 3));",
+      "python": "def suma(a, b):\n    return a + b\n\nprint(suma(5, 3))",
+      "java": "public static int suma(int a, int b) {\n    return a + b;\n}\n\nSystem.out.println(suma(5, 3));"
+    },
+    "tests": {
+      "javascript": "output.includes('8')",
+      "python": "output.includes('8')",
+      "java": "output.includes('8')"
+    }
+  },
+  {
+    "id": 3,
+    "titulo": "Factorial",
+    "descripcion": "Implementa una función que calcule el factorial de un número.",
+    "dificultad": "Media",
+    "puntos": 30,
+    "lenguajes": ["javascript", "python", "java"],
+    "plantilla": {
+      "javascript": "// Implementa la función factorial\nfunction factorial(n) {\n  // Tu código aquí\n}\n\nconsole.log(factorial(5)); // Debería mostrar 120",
+      "python": "# Implementa la función factorial\ndef factorial(n):\n    # Tu código aquí\n    pass\n\nprint(factorial(5))  # Debería mostrar 120",
+      "java": "// Implementa la función factorial\npublic static int factorial(int n) {\n    // Tu código aquí\n    return 0;\n}\n\nSystem.out.println(factorial(5)); // Debería mostrar 120"
+    },
+    "solucion": {
+      "javascript": "function factorial(n) {\n  if (n <= 1) return 1;\n  return n * factorial(n - 1);\n}\n\nconsole.log(factorial(5));",
+      "python": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))",
+      "java": "public static int factorial(int n) {\n    if (n <= 1) return 1;\n    return n * factorial(n - 1);\n}\n\nSystem.out.println(factorial(5));"
+    },
+    "tests": {
+      "javascript": "output.includes('120')",
+      "python": "output.includes('120')",
+      "java": "output.includes('120')"
+    }
+  }
+]
