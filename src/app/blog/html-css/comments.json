@@ -1,21 +1,5 @@
 {
   "comments": [
-    {
-      "id": "1746980630337",
-      "user": "Usuario",
-      "content": "asdsdaasd",
-      "fileUrl": null,
-      "replies": [
-        {
-          "id": "1746980632819",
-          "user": "Usuario",
-          "content": "asdasdasdasd",
-          "fileUrl": null,
-          "replies": [],
-          "timestamp": "2025-05-11T16:23:52.819Z"
-        }
-      ],
-      "timestamp": "2025-05-11T16:23:50.337Z"
-    }
+ 
   ]
 }
