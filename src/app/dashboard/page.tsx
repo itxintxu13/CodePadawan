@@ -1,8 +1,7 @@
 "use client";
-import { SignOutButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import CodeEditor from "../components/CodeEditor";
 
 export default function Dashboard() {
   const { isLoaded, user } = useUser();
@@ -72,18 +71,9 @@ export default function Dashboard() {
         </Link>
       </div>
       
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold mb-4 text-center">Prueba el Editor de Código</h2>
-        <CodeEditor/>
-      </div>
       
-      <div className="text-center mt-8">
-        <SignOutButton>
-          <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors">
-            Cerrar sesión
-          </button>
-        </SignOutButton>
-      </div>
+      
+      
     </main>
   );
 }
