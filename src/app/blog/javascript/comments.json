@@ -1,0 +1,37 @@
+{
+  "comments": [
+    {
+      "id": "1746979982394",
+      "user": "Usuario",
+      "content": "hvhguvvgh",
+      "fileUrl": null,
+      "replies": [
+        {
+          "id": "1746979985840",
+          "user": "Usuario",
+          "content": "jnobjbjb",
+          "fileUrl": null,
+          "replies": [],
+          "timestamp": "2025-05-11T16:13:05.840Z"
+        }
+      ],
+      "timestamp": "2025-05-11T16:13:02.394Z"
+    },
+    {
+      "id": "1746980038212",
+      "user": "Usuario",
+      "content": "hola",
+      "fileUrl": null,
+      "replies": [],
+      "timestamp": "2025-05-11T16:13:58.212Z"
+    },
+    {
+      "id": "1746980178221",
+      "user": "Usuario",
+      "content": "dsasd",
+      "fileUrl": null,
+      "replies": [],
+      "timestamp": "2025-05-11T16:16:18.221Z"
+    }
+  ]
+}

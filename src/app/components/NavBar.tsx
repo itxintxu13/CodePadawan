@@ -16,6 +16,9 @@ export default function Navbar() {
           <Link href="/ranking" className="hover:text-blue-400 transition-colors">
             Ranking
           </Link>
+          <Link href="/blog" className="hover:text-blue-400 transition-colors">
+            Blog
+          </Link>
         </div>
       </div>
 
