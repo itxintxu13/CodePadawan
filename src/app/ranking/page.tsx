@@ -9,6 +9,7 @@ interface Usuario {
   retosResueltos: number[];
 }
 
+
 export default function RankingPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [cargando, setCargando] = useState(true);
@@ -16,45 +17,27 @@ export default function RankingPage() {
 
   useEffect(() => {
     const cargarUsuarios = async () => {
-
       try {
-        // En un entorno real, esto se conectaría con Clerk para obtener todos los usuarios
-        // Como ejemplo, creamos algunos usuarios ficticios y añadimos al usuario actual si existe
-        const usuariosFicticios: Usuario[] = [
-          { id: '1', nombre: 'Usuario1', puntos: 120, retosResueltos: [1, 2, 3] },
-          { id: '2', nombre: 'Usuario2', puntos: 90, retosResueltos: [1, 2] },
-          { id: '3', nombre: 'Usuario3', puntos: 50, retosResueltos: [1] },
-        ];
-        
-        // Añadir al usuario actual si existe
-        if (user) {
-          const usuarioActual: Usuario = {
-            id: user.id,
-            nombre: user.firstName || user.username || 'Usuario',
-            puntos: (user.publicMetadata.puntos as number) || 0,
-            retosResueltos: (user.publicMetadata.retosResueltos as number[]) || [],
-          };
-          
-          // Verificar si el usuario ya está en la lista
-          const usuarioExistente = usuariosFicticios.findIndex(u => u.id === user.id);
-          if (usuarioExistente >= 0) {
-            usuariosFicticios[usuarioExistente] = usuarioActual;
-          } else {
-            usuariosFicticios.push(usuarioActual);
-          }
-        }
-        
-        // Ordenar por puntos (de mayor a menor)
-        const usuariosOrdenados = usuariosFicticios.sort((a, b) => b.puntos - a.puntos);
-        setUsuarios(usuariosOrdenados);
+        const response = await fetch("/api/updatePoints"); // 🔥 Llamada a la API
+        const data = await response.json();
+
+        const usuariosClerk = data.map((usuario: any) => ({
+          id: usuario.id,
+          nombre: usuario.username || "Usuario",
+          puntos: usuario.publicMetadata?.points || 0,
+          retosResueltos: usuario.publicMetadata?.retosResueltos || [],
+        }));
+
+        // Ordenar por puntos (de mayor a menor) ( Pendiente )
+        setUsuarios(usuariosClerk);
       } catch (error) {
-        console.error('Error al cargar usuarios:', error);
+        console.error("Error al obtener usuarios:", error);
       } finally {
         setCargando(false);
       }
     };
 
-    cargarUsuarios();
+    cargarUsuarios(); 
   }, [user]);
 
   // Función para determinar el emoji de la posición
