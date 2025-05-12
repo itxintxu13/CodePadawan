@@ -61,62 +61,63 @@ export default function RetosPage() {
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="flex flex-col items-center mb-8">
-        <div className="w-28 h-28 rounded-full flex items-center justify-center mb-4" style={{ background: "linear-gradient(135deg, #ffe29f 0%, #ffa99f 100%)" }}>
-          <span className="text-5xl">🏆</span>
+    <main className="container mx-auto p-8 bg-gray-900 text-white">
+      <div className="container mx-auto p-8">
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-28 h-28 rounded-full flex items-center justify-center mb-4" style={{ background: "linear-gradient(135deg, #ffe29f 0%, #ffa99f 100%)" }}>
+            <span className="text-5xl">🏆</span>
+          </div>
+          <h1 className="text-4xl font-bold text-center mb-2" style={{ color: "#FFB800" }}>Retos de Programación</h1>
+          <p className="text-center text-gray-400 text-lg">Pon a prueba tus habilidades con nuestros desafíos y sube en el ranking</p>
         </div>
-        <h1 className="text-4xl font-bold text-center mb-2" style={{ color: "#FFB800" }}>Retos de Programación</h1>
-        <p className="text-center text-gray-400 text-lg">Pon a prueba tus habilidades con nuestros desafíos y sube en el ranking</p>
+        {cargando ? (
+          <div className="text-center">
+            <p>Cargando retos...</p>
+          </div>
+        ) : (
+          <div className="space-y-12">
+            {LENGUAJES.map((lang) => {
+              const retosLenguaje = retos.filter((r) => r.lenguajes.includes(lang.id)).slice(0, 3);
+              return (
+                <div key={lang.id}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <img src={lang.icon} alt={lang.nombre} className="w-8 h-8" />
+                    <h2 className="text-2xl font-bold" style={{ color: lang.color }}>{lang.nombre}</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {retosLenguaje.length === 0 ? (
+                      <div className="col-span-3 text-gray-500">No hay retos disponibles para este lenguaje.</div>
+                    ) : (
+                      retosLenguaje.map((reto) => (
+                        <div
+                          key={reto.id}
+                          className="border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+                          style={{ background: lang.bg }}
+                          onClick={() => seleccionarReto(reto.id)}
+                        >
+                          <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-blue-700 transition-colors">{reto.titulo}</h3>
+                          <p className="text-gray-700 mb-4 group-hover:text-gray-900 transition-colors">{reto.descripcion}</p>
+                          <div className="flex justify-between items-center">
+                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${reto.dificultad === 'Fácil' ? 'bg-green-100 text-green-700' :
+                                reto.dificultad === 'Media' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-700'
+                              }`}>
+                              {reto.dificultad}
+                            </span>
+                            <span className="text-purple-700 font-bold group-hover:text-purple-900 transition-colors">{reto.puntos} pts</span>
+                          </div>
+                          <div className="mt-4">
+                            {/* Eliminado el renderizado de editores de código aquí para evitar errores de JSX y mantener solo la información básica del reto. */}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-      {cargando ? (
-        <div className="text-center">
-          <p>Cargando retos...</p>
-        </div>
-      ) : (
-        <div className="space-y-12">
-          {LENGUAJES.map((lang) => {
-            const retosLenguaje = retos.filter((r) => r.lenguajes.includes(lang.id)).slice(0, 3);
-            return (
-              <div key={lang.id}>
-                <div className="flex items-center gap-3 mb-4">
-                  <img src={lang.icon} alt={lang.nombre} className="w-8 h-8" />
-                  <h2 className="text-2xl font-bold" style={{ color: lang.color }}>{lang.nombre}</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {retosLenguaje.length === 0 ? (
-                    <div className="col-span-3 text-gray-500">No hay retos disponibles para este lenguaje.</div>
-                  ) : (
-                    retosLenguaje.map((reto) => (
-                      <div
-                        key={reto.id}
-                        className="border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
-                        style={{ background: lang.bg }}
-                        onClick={() => seleccionarReto(reto.id)}
-                      >
-                        <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-blue-700 transition-colors">{reto.titulo}</h3>
-                        <p className="text-gray-700 mb-4 group-hover:text-gray-900 transition-colors">{reto.descripcion}</p>
-                        <div className="flex justify-between items-center">
-                          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                            reto.dificultad === 'Fácil' ? 'bg-green-100 text-green-700' :
-                            reto.dificultad === 'Media' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-700'
-                          }`}>
-                            {reto.dificultad}
-                          </span>
-                          <span className="text-purple-700 font-bold group-hover:text-purple-900 transition-colors">{reto.puntos} pts</span>
-                        </div>
-                        <div className="mt-4">
-                          {/* Eliminado el renderizado de editores de código aquí para evitar errores de JSX y mantener solo la información básica del reto. */}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    </main >
   );
 }

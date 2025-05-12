@@ -80,7 +80,7 @@ export default function RankingPage() {
   };
 
   return (
-    <div className="container mx-auto p-8">
+    <main className="container mx-auto p-8 bg-gray-900 text-white">
       <h1 className="text-4xl font-bold text-center mb-8">Ranking de Usuarios 🏆</h1>
       
       {cargando ? (
@@ -155,6 +155,6 @@ export default function RankingPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -29,7 +29,8 @@ export default function Dashboard() {
   }, [isLoaded, user]);
 
   return (
-    <main className="container mx-auto p-8">
+    <main className="container mx-auto p-8 bg-gray-900 text-white">
+
       <h1 className="text-4xl font-bold text-center">Bienvenido al Dashboard 🚀</h1>
       <p className="text-lg text-gray-600 mt-4 text-center mb-8">
         Aquí puedes gestionar tu cuenta y explorar contenido exclusivo.
