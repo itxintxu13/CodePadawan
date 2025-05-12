@@ -2,6 +2,8 @@
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import CodeEditor from "../components/CodeEditor";
+
 
 export default function Dashboard() {
   const { isLoaded, user } = useUser();
@@ -71,6 +73,8 @@ export default function Dashboard() {
           Explorar Retos de Programación
         </Link>
       </div>
+
+      <CodeEditor/>
       
       
       

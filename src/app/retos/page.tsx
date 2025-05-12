@@ -27,6 +27,7 @@ export default function RetosPage() {
   const [cargando, setCargando] = useState(true);
   const router = useRouter();
   const { isSignedIn, user } = useUser();
+  
 
   useEffect(() => {
     const cargarRetos = async () => {

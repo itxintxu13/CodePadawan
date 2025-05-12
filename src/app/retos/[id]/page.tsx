@@ -58,7 +58,7 @@ export default function RetoPage() {
         }
         const retos = await response.json();
         const retoActual = retos.find((r: Reto) => r.id.toString() === params.id);
-
+        
         if (retoActual) {
           setReto(retoActual);
           // Establecer el lenguaje predeterminado al primer lenguaje disponible
@@ -103,8 +103,8 @@ export default function RetoPage() {
       lenguaje === "javascript"
         ? javascript()
         : lenguaje === "python"
-          ? python()
-          : java();
+        ? python()
+        : java();
 
     // Crear el estado del editor
     const state = EditorState.create({
@@ -247,7 +247,7 @@ export default function RetoPage() {
       // Obtener los puntos actuales del usuario
       const puntosActuales = user.publicMetadata.puntos || 0;
       const retosResueltos = user.publicMetadata.retosResueltos || [];
-
+      
       // Actualizar los metadatos del usuario
       await user.update({
         publicMetadata: {
@@ -292,71 +292,78 @@ export default function RetoPage() {
   }
 
   return (
-    <main className="container mx-auto p-8 bg-gray-900 text-white">
-      <div className="container mx-auto p-4 max-w-6xl">
-        <div className="mb-6">
-          <button
-            onClick={() => router.push('/retos')}
-            className="text-blue-500 hover:underline flex items-center"
+        <main className="container mx-auto p-8 bg-gray-900 text-white">
+    <div className="container mx-auto p-4 max-w-6xl">
+      <div className="mb-6">
+        <button
+          onClick={() => router.push('/retos')}
+          className="text-blue-500 hover:underline flex items-center"
+        >
+          ← Volver a la lista de retos
+        </button>
+      </div>
+
+      <div className="bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
+        <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
+        <div className="flex items-center gap-4 mb-4">
+          <span className={`px-3 py-1 rounded-full text-sm ${
+            reto.dificultad === 'Fácil' ? 'bg-green-600' : 
+            reto.dificultad === 'Media' ? 'bg-yellow-600' : 'bg-red-600'
+          }`}>
+            {reto.dificultad}
+          </span>
+          <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
+        </div>
+        <div className="flex items-center gap-4 mb-4">
+          <select
+            value={lenguaje}
+            onChange={(e) => cambiarLenguaje(e.target.value)}
+            className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
           >
-            ← Volver a la lista de retos
+            {reto.lenguajes.map((lang) => (
+              <option key={lang} value={lang}>
+                {lang.charAt(0).toUpperCase() + lang.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <p className="text-gray-300 mb-6">{reto.descripcion}</p>
+      </div>
+
+      <div className="mb-4">
+        {/* Renderizado del editor específico según el lenguaje, pasando props */}
+        {lenguaje === 'javascript' && (
+          <CodeEditorJavaScript codigo={codigo} setCodigo={setCodigo} />
+        )}
+        {lenguaje === 'python' && (
+          <CodeEditorPython codigo={codigo} setCodigo={setCodigo} />
+        )}
+        {lenguaje === 'java' && (
+          <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />
+        )}
+
+        {/* Botones y salida */}
+        <div className="mt-4 flex gap-4">
+          <button
+            onClick={entregarSolucion}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            disabled={enviando}
+          >
+            Entregar solución
           </button>
         </div>
-
-        <div className="bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
-          <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
-          <div className="flex items-center gap-4 mb-4">
-            <span className={`px-3 py-1 rounded-full text-sm ${reto.dificultad === 'Fácil' ? 'bg-green-600' :
-                reto.dificultad === 'Media' ? 'bg-yellow-600' : 'bg-red-600'
-              }`}>
-              {reto.dificultad}
-            </span>
-            <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
+        {output && (
+          <div className="bg-gray-900 text-green-400 p-4 rounded mt-4 whitespace-pre-wrap">
+            {output}
           </div>
-          <p className="text-gray-300 mb-6">{reto.descripcion}</p>
-        </div>
-
-        <div className="mb-4">
-          {/* Renderizado del editor específico según el lenguaje, pasando props */}
-          {lenguaje === 'javascript' && (
-            <CodeEditorJavaScript codigo={codigo} setCodigo={setCodigo} />
-          )}
-          {lenguaje === 'python' && (
-            <CodeEditorPython codigo={codigo} setCodigo={setCodigo} />
-          )}
-          {lenguaje === 'java' && (
-            <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />
-          )}
-
-          {/* Botones y salida */}
-          <div className="mt-4 flex gap-4">
-            <button
-              onClick={ejecutarCodigo}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              disabled={enviando}
-            >
-              Ejecutar código
-            </button>
-            <button
-              onClick={entregarSolucion}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-              disabled={enviando}
-            >
-              Entregar solución
-            </button>
+        )}
+        {resultado && (
+          <div className={`mt-4 p-4 rounded ${resultado.success ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'}`}>
+            {resultado.message}
           </div>
-          {output && (
-            <div className="bg-gray-900 text-green-400 p-4 rounded mt-4 whitespace-pre-wrap">
-              {output}
-            </div>
-          )}
-          {resultado && (
-            <div className={`mt-4 p-4 rounded ${resultado.success ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'}`}>
-              {resultado.message}
-            </div>
-          )}
-        </div>
+        )}
       </div>
+    </div>
     </main>
   );
 }
