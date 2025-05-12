@@ -2,6 +2,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import CodeEditor from "../components/CodeEditor";
 
 export default function Dashboard() {
   const { isLoaded, user } = useUser();
@@ -63,14 +64,13 @@ export default function Dashboard() {
       </div>
       
       <div className="mb-8 text-center">
-        <Link 
+        <Link
           href="/retos" 
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors"
         >
           Explorar Retos de Programación
         </Link>
       </div>
-      
       
       
       
