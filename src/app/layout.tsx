@@ -18,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html lang="es">
         <body className="antialiased flex flex-col min-h-screen">
           <SignedIn>
+            { /* Tarda en cargar, se ve un segundo y se quita */}
             <Navbar />
           </SignedIn>
           <main className="container mx-auto p-8 bg-gray-900 text-white flex-grow">
