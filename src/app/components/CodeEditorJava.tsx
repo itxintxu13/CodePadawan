@@ -22,7 +22,12 @@ function javaCompletions(context: CompletionContext) {
   };
 }
 
-const CodeEditor: React.FC = () => {
+interface CodeEditorJavaProps {
+  codigo: string;
+  setCodigo: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const CodeEditor: React.FC<CodeEditorJavaProps> = ({ codigo, setCodigo }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
   const [code, setCode] = useState<string>("");
@@ -51,12 +56,9 @@ const CodeEditor: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!editorRef.current) return;
-
-    const initialDoc = 'System.out.println("Hola, mundo!");';
-
+    if (!editorRef.current || editorInstance.current) return;
     const state = EditorState.create({
-      doc: initialDoc,
+      doc: codigo,
       extensions: [
         basicSetup,
         java(),
@@ -66,24 +68,16 @@ const CodeEditor: React.FC = () => {
         keymap.of(defaultKeymap),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            setCode(update.state.doc.toString());
+            setCodigo(update.state.doc.toString());
           }
         }),
       ],
     });
-
-    if (editorInstance.current) {
-      editorInstance.current.destroy();
-      editorInstance.current = null;
-    }
-
     editorInstance.current = new EditorView({
       state,
       parent: editorRef.current,
     });
-
     console.log(`Editor initialized for ${language}`);
-
     return () => {
       if (editorInstance.current) {
         editorInstance.current.destroy();
@@ -91,6 +85,22 @@ const CodeEditor: React.FC = () => {
       }
     };
   }, []);
+
+  // Sincroniza el contenido externo sin recrear el editor
+  useEffect(() => {
+    if (
+      editorInstance.current &&
+      editorInstance.current.state.doc.toString() !== codigo
+    ) {
+      editorInstance.current.dispatch({
+        changes: {
+          from: 0,
+          to: editorInstance.current.state.doc.length,
+          insert: codigo,
+        },
+      });
+    }
+  }, [codigo]);
 
   const ejecutarCodigo = async () => {
     const codigo = editorInstance.current?.state.doc.toString();

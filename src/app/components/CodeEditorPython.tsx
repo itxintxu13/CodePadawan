@@ -31,7 +31,11 @@ const loadPyodide = async (): Promise<PyodideInterface> => {
   });
 };
 
-const CodeEditor: React.FC = () => {
+interface CodeEditorPythonProps {
+  codigo: string;
+  setCodigo: React.Dispatch<React.SetStateAction<string>>;
+}
+const CodeEditor: React.FC<CodeEditorPythonProps> = ({ codigo, setCodigo }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
   const [code, setCode] = useState<string>("");
@@ -71,46 +75,53 @@ const CodeEditor: React.FC = () => {
       .catch((error) => console.error("❌ Error al cargar Pyodide:", error));
   }, []);
 
+  // Inicializa el editor SOLO una vez al montar
   useEffect(() => {
-    if (!editorRef.current) return;
-
-    const initialDoc = 'print("¡Hola, mundo! 🚀")';
-
+    if (!editorRef.current || editorInstance.current) return;
     const state = EditorState.create({
-      doc: initialDoc,
+      doc: codigo,
       extensions: [
         basicSetup,
-        python(), 
+        python(),
         oneDark,
         customTheme,
         keymap.of(defaultKeymap),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            setCode(update.state.doc.toString());
+            setCodigo(update.state.doc.toString());
           }
         }),
       ],
     });
-
-    if (editorInstance.current) {
-      editorInstance.current.destroy();
-      editorInstance.current = null;
-    }
-
     editorInstance.current = new EditorView({
       state,
       parent: editorRef.current,
     });
-
     console.log(`Editor initialized for ${language}`);
-
+    // Limpieza al desmontar
     return () => {
       if (editorInstance.current) {
         editorInstance.current.destroy();
         editorInstance.current = null;
       }
     };
-  }, [language]);
+  }, []);
+
+  // Sincroniza el contenido externo sin recrear el editor
+  useEffect(() => {
+    if (
+      editorInstance.current &&
+      editorInstance.current.state.doc.toString() !== codigo
+    ) {
+      editorInstance.current.dispatch({
+        changes: {
+          from: 0,
+          to: editorInstance.current.state.doc.length,
+          insert: codigo,
+        },
+      });
+    }
+  }, [codigo]);
 
   const ejecutarCodigo = async () => {
     const codigo = editorInstance.current?.state.doc.toString();
