@@ -13,10 +13,10 @@ export default function RankingPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [cargando, setCargando] = useState(true);
   const { user } = useUser();
-  const { users } = useClerk();
 
   useEffect(() => {
     const cargarUsuarios = async () => {
+
       try {
         // En un entorno real, esto se conectaría con Clerk para obtener todos los usuarios
         // Como ejemplo, creamos algunos usuarios ficticios y añadimos al usuario actual si existe
