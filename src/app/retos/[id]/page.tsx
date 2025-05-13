@@ -46,6 +46,7 @@ export default function RetoPage() {
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ success: boolean; message: string } | null>(null);
   const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [editorInstance, setEditorInstance] = useState<EditorView | null>(null);
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -332,7 +333,7 @@ export default function RetoPage() {
         <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
         <div className="flex items-center gap-4 mb-4">
           <span className={`px-3 py-1 rounded-full text-sm ${
-            reto.dificultad === 'Fácil' ? 'bg-green-600' : 
+            reto.dificultad === 'Fácil' ? 'bg-green-600' :
             reto.dificultad === 'Media' ? 'bg-yellow-600' : 'bg-red-600'
           }`}>
             {reto.dificultad}

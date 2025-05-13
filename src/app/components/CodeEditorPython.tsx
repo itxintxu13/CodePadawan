@@ -1,11 +1,14 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+
 import { EditorView, basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
 import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
+
 import { keymap } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
+
 import { PyodideInterface } from "../types/pyodide";
 
 const loadPyodide = async (): Promise<PyodideInterface> => {
@@ -33,14 +36,13 @@ const loadPyodide = async (): Promise<PyodideInterface> => {
 
 interface CodeEditorPythonProps {
   codigo: string;
-  setCodigo: React.Dispatch<React.SetStateAction<string>>;
+  setCodigo: (code: string) => void;
 }
-const CodeEditor: React.FC<CodeEditorPythonProps> = ({ codigo, setCodigo }) => {
+
+const CodeEditorPython: React.FC<CodeEditorPythonProps> = ({ codigo, setCodigo }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
-  const [code, setCode] = useState<string>("");
   const [output, setOutput] = useState<string>("");
-  const [language, setLanguage] = useState<"python">("python");
   const [pyodideInstance, setPyodideInstance] =
     useState<PyodideInterface | null>(null);
   const [isPyodideReady, setIsPyodideReady] = useState<boolean>(false);
@@ -97,7 +99,7 @@ const CodeEditor: React.FC<CodeEditorPythonProps> = ({ codigo, setCodigo }) => {
       state,
       parent: editorRef.current,
     });
-    console.log(`Editor initialized for ${language}`);
+    console.log(`Editor initialized for Python`);
     // Limpieza al desmontar
     return () => {
       if (editorInstance.current) {
@@ -105,7 +107,7 @@ const CodeEditor: React.FC<CodeEditorPythonProps> = ({ codigo, setCodigo }) => {
         editorInstance.current = null;
       }
     };
-  }, []);
+  }, [codigo, setCodigo]);
 
   // Sincroniza el contenido externo sin recrear el editor
   useEffect(() => {
@@ -202,12 +204,10 @@ sys.stdout.getvalue()`;
           background: "#007BFF",
           border: "none",
           cursor: "pointer",
-          color: "#000",
+          color: "#fff",
         }}
       >
-        {isPyodideReady || language !== "python"
-          ? "Ejecutar Código"
-          : "Cargando Pyodide..."}
+        {isPyodideReady ? "Ejecutar Código" : "Cargando Pyodide..."}
       </button>
 
       <div
@@ -228,4 +228,4 @@ sys.stdout.getvalue()`;
   );
 };
 
-export default CodeEditor;
+export default CodeEditorPython;
