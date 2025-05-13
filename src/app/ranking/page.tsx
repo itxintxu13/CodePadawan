@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 
 interface Usuario {
   id: string;
@@ -8,7 +8,6 @@ interface Usuario {
   puntos: number;
   retosResueltos: number[];
 }
-
 
 export default function RankingPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -18,18 +17,49 @@ export default function RankingPage() {
   useEffect(() => {
     const cargarUsuarios = async () => {
       try {
-        const response = await fetch("/api/updatePoints"); // 🔥 Llamada a la API
+        const response = await fetch("/api/updatePoints");
+        if (!response.ok) throw new Error("Error en la respuesta de la API");
+
         const data = await response.json();
+        console.log("Datos recibidos de la API:", JSON.stringify(data, null, 2));
 
-        const usuariosClerk = data.map((usuario: any) => ({
-          id: usuario.id,
-          nombre: usuario.username || "Usuario",
-          puntos: usuario.publicMetadata?.points || 0,
-          retosResueltos: usuario.publicMetadata?.retosResueltos || [],
-        }));
+        const usuariosClerk = data.map((usuario: any) => {
+          console.log("Usuario procesado:", JSON.stringify(usuario, null, 2));
+        
+          // Ahora accedemos directamente a usuario.points en lugar de publicMetadata.points
+          const puntosAsignados =
+            typeof usuario.points === "number" ? usuario.points : 0;
+        
+          console.log(`Usuario: ${usuario.username}, Puntos antes de asignar:`, usuario.points);
+          console.log(`Puntos asignados después del mapeo: ${puntosAsignados}`);
+        
+          return {
+            id: usuario.id,
+            nombre: usuario.username || "Usuario",
+            puntos: puntosAsignados,
+            retosResueltos: Array.isArray(usuario.publicMetadata?.retosResueltos)
+              ? usuario.publicMetadata.retosResueltos
+              : [],
+          };
+        });
+        
 
-        // Ordenar por puntos (de mayor a menor) ( Pendiente )
-        setUsuarios(usuariosClerk);
+        console.log(
+          "Usuarios después del mapeo (con puntos asignados):",
+          JSON.stringify(usuariosClerk, null, 2)
+        );
+
+        // Ordenar usuarios por puntos de mayor a menor con conversión segura
+        const usuariosOrdenados = [...usuariosClerk].sort(
+          (a: Usuario, b: Usuario) => (b.puntos ?? 0) - (a.puntos ?? 0)
+        );
+
+        console.log(
+          "Usuarios después de ordenar:",
+          JSON.stringify(usuariosOrdenados, null, 2)
+        );
+
+        setUsuarios(usuariosOrdenados);
       } catch (error) {
         console.error("Error al obtener usuarios:", error);
       } finally {
@@ -37,8 +67,8 @@ export default function RankingPage() {
       }
     };
 
-    cargarUsuarios(); 
-  }, [user]);
+    cargarUsuarios();
+  },   [user]);
 
   // Función para determinar el emoji de la posición
   const getPositionEmoji = (index: number) => {
@@ -62,82 +92,58 @@ export default function RankingPage() {
     return logros;
   };
 
-  return (
-    <main className="container mx-auto p-8 bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold text-center mb-8">Ranking de Usuarios 🏆</h1>
-      
-      {cargando ? (
-        <div className="text-center">
-          <p>Cargando ranking...</p>
-        </div>
-      ) : (
-        <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <table className="min-w-full">
-            <thead>
-              <tr className="bg-gray-700">
-                <th className="py-3 px-4 text-left">Posición</th>
-                <th className="py-3 px-4 text-left">Usuario</th>
-                <th className="py-3 px-4 text-left">Puntos</th>
-                <th className="py-3 px-4 text-left">Retos Resueltos</th>
-                <th className="py-3 px-4 text-left">Logros</th>
-              </tr>
-            </thead>
-            <tbody>
-              {usuarios.map((usuario, index) => (
-                <tr 
-                  key={usuario.id} 
-                  className={`border-t border-gray-700 ${user && usuario.id === user.id ? 'bg-blue-900 bg-opacity-30' : ''}`}
-                >
-                  <td className="py-3 px-4">
-                    <span className="text-xl">{getPositionEmoji(index)}</span>
-                  </td>
-                  <td className="py-3 px-4">
-                    {usuario.nombre}
-                    {user && usuario.id === user.id && (
-                      <span className="ml-2 text-xs bg-blue-600 px-2 py-1 rounded">Tú</span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="font-bold text-yellow-400">{usuario.puntos}</span>
-                  </td>
-                  <td className="py-3 px-4">{usuario.retosResueltos.length}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex flex-wrap gap-2">
-                      {getLogros(usuario.retosResueltos).map((logro, i) => (
-                        <span key={i} className="bg-gray-700 px-2 py-1 rounded text-xs">
-                          {logro}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      
-      <div className="mt-8 bg-gray-800 rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-4">Logros Disponibles</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-gray-700 p-4 rounded-lg">
-            <p className="text-xl mb-2">🌱 Principiante</p>
-            <p className="text-gray-300">Resuelve tu primer reto</p>
-          </div>
-          <div className="bg-gray-700 p-4 rounded-lg">
-            <p className="text-xl mb-2">🚀 Explorador</p>
-            <p className="text-gray-300">Resuelve 3 retos</p>
-          </div>
-          <div className="bg-gray-700 p-4 rounded-lg">
-            <p className="text-xl mb-2">⭐ Experto</p>
-            <p className="text-gray-300">Resuelve 5 retos</p>
-          </div>
-          <div className="bg-gray-700 p-4 rounded-lg">
-            <p className="text-xl mb-2">🏆 Maestro</p>
-            <p className="text-gray-300">Resuelve 10 retos</p>
-          </div>
-        </div>
+  console.log("Usuarios en el render:", usuarios); // ✅ Fuera del return
+
+return (
+  <main className="container mx-auto p-8 bg-gray-900 text-white">
+    <h1 className="text-4xl font-bold text-center mb-8">Ranking de Usuarios 🏆</h1>
+    
+    {cargando ? (
+      <div className="text-center">
+        <p>Cargando ranking...</p>
       </div>
-    </main>
-  );
-}
+    ) : (
+      <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <table className="min-w-full">
+          <thead>
+            <tr className="bg-gray-700">
+              <th className="py-3 px-4 text-left">Posición</th>
+              <th className="py-3 px-4 text-left">Usuario</th>
+              <th className="py-3 px-4 text-left">Puntos</th>
+              <th className="py-3 px-4 text-left">Retos Resueltos</th>
+              <th className="py-3 px-4 text-left">Logros</th>
+            </tr>
+          </thead>
+          <tbody>
+            {usuarios.map((usuario, index) => (
+              <tr key={usuario.id} className={`border-t border-gray-700 ${user && usuario.id === user.id ? 'bg-blue-900 bg-opacity-30' : ''}`}>
+                <td className="py-3 px-4">
+                  <span className="text-xl">{getPositionEmoji(index)}</span>
+                </td>
+                <td className="py-3 px-4">
+                  {usuario.nombre}
+                  {user && usuario.id === user.id && (
+                    <span className="ml-2 text-xs bg-blue-600 px-2 py-1 rounded">Tú</span>
+                  )}
+                </td>
+                <td className="py-3 px-4">
+                  <span className="font-bold text-yellow-400">{usuario.puntos}</span>
+                </td>
+                <td className="py-3 px-4">{usuario.retosResueltos.length}</td>
+                <td className="py-3 px-4">
+                  <div className="flex flex-wrap gap-2">
+                    {getLogros(usuario.retosResueltos).map((logro, i) => (
+                      <span key={i} className="bg-gray-700 px-2 py-1 rounded text-xs">
+                        {logro}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </main>
+)};

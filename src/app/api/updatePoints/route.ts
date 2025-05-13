@@ -5,7 +5,7 @@ import { currentUser } from "@clerk/nextjs/server"; // ✅ Importación correcta
 export async function GET() {
   try {
     const users = await clerkClient.users.getUserList();
-    const userIds = users.map(user => ({ id: user.id,username: user.username }));
+    const userIds = users.map(user => ({ id: user.id,username: user.username, points: user.publicMetadata.points }));
 
     return NextResponse.json(userIds);
   } catch (error) {
