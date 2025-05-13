@@ -15,6 +15,7 @@ import CodeEditorJava from "../../components/CodeEditorJava";
 import CodeEditorJavaScript from "../../components/CodeEditorJavaScript";
 import CodeEditorPython from "../../components/CodeEditorPython";
 import CodeEditorHtml from "../../components/CodeEditorHtml";
+
 interface Reto {
   id: number;
   titulo: string;
@@ -44,6 +45,7 @@ export default function RetoPage() {
   const [output, setOutput] = useState<string>('');
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ success: boolean; message: string } | null>(null);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -196,18 +198,18 @@ export default function RetoPage() {
     if (!codigo || !reto || !user) {
       setResultado({
         success: false,
-        message: 'Falta información necesaria para entregar la solución'
+        message: "Falta información necesaria para entregar la solución",
       });
       return;
     }
-
+  
     setEnviando(true);
     try {
       // Enviar la solución al servidor
-      const response = await fetch('/api/retos', {
-        method: 'POST',
+      const response = await fetch("/api/retos", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId: user.id,
@@ -217,51 +219,73 @@ export default function RetoPage() {
           puntos: reto.puntos,
         }),
       });
-
+  
       if (!response.ok) {
-        throw new Error('Error al entregar la solución');
+        throw new Error("Error al entregar la solución");
       }
-
+  
       const data = await response.json();
       setResultado({
         success: true,
-        message: 'Solución entregada correctamente. Has ganado ' + reto.puntos + ' puntos!'
+        message:
+          "Solución entregada correctamente. Has ganado " +
+          reto.puntos +
+          " puntos!",
       });
-
+  
       // Actualizar los metadatos del usuario en Clerk
-      await actualizarPuntosUsuario(reto.puntos);
+      await actualizarPuntosUsuario(reto.puntos, reto.id);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       setResultado({
         success: false,
-        message: 'Error al entregar la solución'
+        message: "Error al entregar la solución",
       });
     } finally {
       setEnviando(false);
     }
   };
 
-  const actualizarPuntosUsuario = async (puntos: number) => {
-    if (!user) return;
 
+  useEffect(() => {
+    const obtenerUsuarios = async () => {
+      const response = await fetch("/api/updatePoints");
+      const data = await response.json();
+      setUsuarios(data); // 🔥 Actualiza el estado con los datos nuevos
+    };
+  
+    obtenerUsuarios();
+  }, [resultado]); // ✅ Ahora se recarga cuando el resultado cambia
+  
+  const actualizarPuntosUsuario = async (puntos: number, retoId: number) => {
+    if (!user) return;
+  
     try {
-      // Obtener los puntos actuales del usuario
-      const puntosActuales = user.publicMetadata.puntos || 0;
-      const retosResueltos = user.publicMetadata.retosResueltos || [];
+      // ✅ Convertir publicMetadata.puntos a número de forma segura
+      const puntosActuales = Number(user.publicMetadata?.puntos ?? 0);
+      const retosResueltosActuales = Number(user.publicMetadata?.retosResueltos ?? 0);
       
-      // Actualizar los metadatos del usuario
-      await user.update({
-        publicMetadata: {
-          ...user.publicMetadata,
-          puntos: puntosActuales + puntos,
-          retosResueltos: [...retosResueltos, reto?.id],
-        },
+      const response = await fetch("/api/updatePoints", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          points: puntosActuales + puntos, // ✅ Ahora sí estamos sumando dos números correctamente
+          retosResuletos: retosResueltosActuales + 1, //Incrementando cada vez que se complete uno
+        }),
       });
+  
+      if (!response.ok) {
+        throw new Error("Error al actualizar los puntos del usuario");
+      }
+  
+      console.log("Puntos actualizados correctamente en Clerk.");
     } catch (error) {
-      console.error('Error al actualizar los puntos del usuario:', error);
+      console.error("Error al actualizar los puntos del usuario:", error);
     }
   };
-
+  
+  
   const cambiarLenguaje = (nuevoLenguaje: string) => {
     if (reto?.lenguajes.includes(nuevoLenguaje)) {
       setLenguaje(nuevoLenguaje);
