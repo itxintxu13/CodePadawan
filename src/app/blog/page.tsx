@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 
-const courses = [
-  { name: "Java", path: "/blog/java", color: "bg-orange-600", hover: "hover:bg-orange-700" },
-  { name: "JavaScript", path: "/blog/javascript", color: "bg-blue-500", hover: "hover:bg-blue-600 text-black" },
-  { name: "Python", path: "/blog/python", color: "bg-green-600", hover: "hover:bg-green-700" },
-  { name: "HTML/CSS", path: "/blog/html-css", color: "bg-purple-500", hover: "hover:bg-purple-600" },
-];
+  const courses = [
+    { name: "Java", path: "/blog/java", color: "bg-orange-600", hover: "hover:bg-orange-700" },
+    { name: "JavaScript", path: "/blog/javascript", color: "bg-blue-500", hover: "hover:bg-blue-600" },
+    { name: "Python", path: "/blog/python", color: "bg-green-600", hover: "hover:bg-green-700" },
+    { name: "HTML/CSS", path: "/blog/html-css", color: "bg-purple-500", hover: "hover:bg-purple-600" },
+  ];
+  
 
 export default function BlogPage() {
   return (
@@ -19,9 +20,23 @@ export default function BlogPage() {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {courses.map((course) => (
-          <Link key={course.name} href={course.path}>
+          <Link key={course.name} href={course.path} className="text-white visited:text-white">
             <div className={`p-6 rounded-lg shadow-md text-white text-center cursor-pointer transition-all duration-300 ${course.color} ${course.hover}`}>
-              <h2 className="text-xl font-semibold">{course.name}</h2>
+              <div className="flex items-center justify-center gap-3">
+                {course.name === "Java" && (
+                  <img src="/icons/java.svg" alt="Java" className="w-12 h-12" style={{filter: 'brightness(0) invert(1)'}} />
+                )}
+                {course.name === "JavaScript" && (
+                  <img src="/icons/javascript.svg" alt="JavaScript" className="w-12 h-12" />
+                )}
+                {course.name === "Python" && (
+                  <img src="/icons/python.svg" alt="Python" className="w-12 h-12" />
+                )}
+                {course.name === "HTML/CSS" && (
+                  <img src="/icons/html.svg" alt="HTML/CSS" className="w-12 h-12" />
+                )}
+                <h2 className="text-xl font-semibold !text-white">{course.name}</h2>
+              </div>
             </div>
           </Link>
         ))}

@@ -116,7 +116,7 @@ ${codigo}
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto", boxSizing: "border-box", width: "100%", minWidth: 0 }}>
       <h1
         style={{
           marginBottom: "10px",
@@ -142,6 +142,7 @@ ${codigo}
             textAlign: "center",
             cursor: "default",
             userSelect: "none",
+            fontSize: "clamp(1rem, 4vw, 1.3rem)",
           }}
         >
           HTML - CSS
@@ -155,6 +156,9 @@ ${codigo}
           borderRadius: "8px",
           overflow: "hidden",
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
         }}
       />
       <button
@@ -167,6 +171,12 @@ ${codigo}
           border: "none",
           cursor: "pointer",
           color: "#000",
+          width: "100%",
+          maxWidth: "300px",
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto",
+          fontSize: "clamp(1rem, 4vw, 1.1rem)",
         }}
       >
         Ejecutar Código
@@ -181,6 +191,10 @@ ${codigo}
           borderRadius: "5px",
           textAlign: "left",
           border: "1px solid #ddd",
+          wordBreak: "break-word",
+          fontSize: "clamp(0.9rem, 3vw, 1.05rem)",
+          width: "100%",
+          maxWidth: "100%",
         }}
       >
         {language === "html" ? (

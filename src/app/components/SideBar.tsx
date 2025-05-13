@@ -49,7 +49,7 @@ export default function Sidebar() {
           href="/user-profile"
           className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
         >
-          <span className="mr-3 text-purple-400 group-hover:text-purple-300 transition-colors duration-200">
+          <span className="mr-3 text-white-400 group-hover:text-purple-300 transition-colors duration-200">
             👤
           </span>
           <span className="group-hover:text-blue-100 transition-colors duration-200">

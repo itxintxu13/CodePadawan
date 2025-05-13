@@ -67,5 +67,113 @@
       "python": "output.includes('120')",
       "java": "output.includes('120')"
     }
+  },
+  {
+    "id": 4,
+    "titulo": "Encabezado HTML",
+    "descripcion": "Crea una página HTML que muestre un encabezado <h1> con el texto 'Bienvenido a HTML'.",
+    "dificultad": "Fácil",
+    "puntos": 10,
+    "lenguajes": ["html"],
+    "plantilla": {
+      "html": "<!-- Escribe tu código HTML aquí -->\n"
+    },
+    "solucion": {
+      "html": "<h1>Bienvenido a HTML</h1>"
+    },
+    "tests": {
+      "html": "output.includes('<h1>Bienvenido a HTML</h1>')"
+    }
+  },
+  {
+    "id": 5,
+    "titulo": "Lista de Elementos",
+    "descripcion": "Crea una lista HTML (<ul>) con tres elementos: 'Manzana', 'Banana' y 'Cereza'.",
+    "dificultad": "Fácil",
+    "puntos": 15,
+    "lenguajes": ["html"],
+    "plantilla": {
+      "html": "<!-- Escribe tu código HTML aquí -->\n"
+    },
+    "solucion": {
+      "html": "<ul>\n  <li>Manzana</li>\n  <li>Banana</li>\n  <li>Cereza</li>\n</ul>"
+    },
+    "tests": {
+      "html": "output.includes('<li>Manzana</li>') && output.includes('<li>Banana</li>') && output.includes('<li>Cereza</li>')"
+    }
+  },
+  {
+    "id": 6,
+    "titulo": "Imagen con etiqueta <img>",
+    "descripcion": "Crea una página HTML que muestre una imagen usando la etiqueta <img> y la URL 'https://via.placeholder.com/150'.",
+    "dificultad": "Fácil",
+    "puntos": 15,
+    "lenguajes": ["html"],
+    "plantilla": {
+      "html": "<!-- Escribe tu código HTML aquí -->\n"
+    },
+    "solucion": {
+      "html": "<img src=\"https://via.placeholder.com/150\" alt=\"Imagen de ejemplo\">"
+    },
+    "tests": {
+      "html": "output.includes('<img src=\\\"https://via.placeholder.com/150\\\"')"
+    }
+  },
+  {
+    "id": 7,
+    "titulo": "Tabla de Contactos",
+    "descripcion": "Crea una tabla HTML con dos columnas: 'Nombre' y 'Teléfono', y agrega dos filas de ejemplo.",
+    "dificultad": "Media",
+    "puntos": 30,
+    "lenguajes": ["html"],
+    "plantilla": {
+      "html": "<!-- Escribe tu código HTML aquí -->\n"
+    },
+    "solucion": {
+      "html": "<table>\n  <tr><th>Nombre</th><th>Teléfono</th></tr>\n  <tr><td>Ana</td><td>123456789</td></tr>\n  <tr><td>Carlos</td><td>987654321</td></tr>\n</table>"
+    },
+    "tests": {
+      "html": "output.includes('<th>Nombre</th>') && output.includes('<td>Ana</td>') && output.includes('<td>987654321</td>')"
+    }
+  },
+  {
+    "id": 8,
+    "titulo": "Formulario de Registro Completo",
+    "descripcion": "Crea un formulario HTML que solicite nombre, correo electrónico y contraseña, y tenga un botón para enviar.",
+    "dificultad": "Difícil",
+    "puntos": 50,
+    "lenguajes": ["html"],
+    "plantilla": {
+      "html": "<!-- Escribe tu código HTML aquí -->\n"
+    },
+    "solucion": {
+      "html": "<form>\n  <label>Nombre: <input type=\"text\" name=\"nombre\"></label><br>\n  <label>Email: <input type=\"email\" name=\"email\"></label><br>\n  <label>Contraseña: <input type=\"password\" name=\"password\"></label><br>\n  <button type=\"submit\">Registrarse</button>\n</form>"
+    },
+    "tests": {
+      "html": "output.includes('<form>') && output.includes('type=\\\"password\\\"') && output.includes('Registrarse')"
+    }
+  },
+  {
+    "id": 9,
+    "titulo": "Palíndromo",
+    "descripcion": "Crea una función que determine si una cadena es un palíndromo (se lee igual al derecho y al revés).",
+    "dificultad": "Difícil",
+    "puntos": 50,
+    "lenguajes": ["javascript", "python", "java"],
+    "plantilla": {
+      "javascript": "// Completa la función esPalindromo\nfunction esPalindromo(str) {\n  // Tu código aquí\n}\n\nconsole.log(esPalindromo('reconocer')); // Debería mostrar true\nconsole.log(esPalindromo('hola')); // Debería mostrar false",
+      "python": "# Completa la función es_palindromo\ndef es_palindromo(cadena):\n    # Tu código aquí\n    pass\n\nprint(es_palindromo('reconocer'))  # Debería mostrar True\nprint(es_palindromo('hola'))  # Debería mostrar False",
+      "java": "// Completa la función esPalindromo\npublic static boolean esPalindromo(String str) {\n    // Tu código aquí\n    return false;\n}\n\nSystem.out.println(esPalindromo(\"reconocer\")); // Debería mostrar true\nSystem.out.println(esPalindromo(\"hola\")); // Debería mostrar false"
+    },
+    "solucion": {
+      "javascript": "function esPalindromo(str) {\n  return str === str.split('').reverse().join('');\n}\nconsole.log(esPalindromo('reconocer'));\nconsole.log(esPalindromo('hola'));",
+      "python": "def es_palindromo(cadena):\n    return cadena == cadena[::-1]\nprint(es_palindromo('reconocer'))\nprint(es_palindromo('hola'))",
+      "java": "public static boolean esPalindromo(String str) {\n    return str.equals(new StringBuilder(str).reverse().toString());\n}\nSystem.out.println(esPalindromo(\"reconocer\"));\nSystem.out.println(esPalindromo(\"hola\"));"
+    },
+    "tests": {
+      "javascript": "output.includes('true') && output.includes('false')",
+      "python": "output.includes('True') && output.includes('False')",
+      "java": "output.includes('true') && output.includes('false')"
+    }
   }
 ]

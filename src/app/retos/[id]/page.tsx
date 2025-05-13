@@ -14,6 +14,7 @@ import { autocompletion } from "@codemirror/autocomplete";
 import CodeEditorJava from "../../components/CodeEditorJava";
 import CodeEditorJavaScript from "../../components/CodeEditorJavaScript";
 import CodeEditorPython from "../../components/CodeEditorPython";
+import CodeEditorHtml from "../../components/CodeEditorHtml";
 interface Reto {
   id: number;
   titulo: string;
@@ -38,7 +39,7 @@ export default function RetoPage() {
   const { isSignedIn, user } = useUser();
   const [reto, setReto] = useState<Reto | null>(null);
   const [cargando, setCargando] = useState(true);
-  const [lenguaje, setLenguaje] = useState<string>('javascript');
+  const [lenguaje, setLenguaje] = useState<string>("");
   const [codigo, setCodigo] = useState<string>('');
   const [output, setOutput] = useState<string>('');
   const [enviando, setEnviando] = useState(false);
@@ -315,17 +316,23 @@ export default function RetoPage() {
           <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
         </div>
         <div className="flex items-center gap-4 mb-4">
-          <select
-            value={lenguaje}
-            onChange={(e) => cambiarLenguaje(e.target.value)}
-            className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
-          >
-            {reto.lenguajes.map((lang) => (
-              <option key={lang} value={lang}>
-                {lang.charAt(0).toUpperCase() + lang.slice(1)}
-              </option>
-            ))}
-          </select>
+          {reto.lenguajes.length > 1 ? (
+            <select
+              value={lenguaje}
+              onChange={(e) => cambiarLenguaje(e.target.value)}
+              className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
+            >
+              {reto.lenguajes.map((lang) => (
+                <option key={lang} value={lang}>
+                  {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <span className="bg-gray-700 text-white px-4 py-2 rounded">
+              {reto.lenguajes[0].charAt(0).toUpperCase() + reto.lenguajes[0].slice(1)}
+            </span>
+          )}
         </div>
         <p className="text-gray-300 mb-6">{reto.descripcion}</p>
       </div>
@@ -341,17 +348,11 @@ export default function RetoPage() {
         {lenguaje === 'java' && (
           <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />
         )}
+        {lenguaje === 'html' && (
+          <CodeEditorHtml codigo={codigo} setCodigo={setCodigo} />
+        )}
 
         {/* Botones y salida */}
-        <div className="mt-4 flex gap-4">
-          <button
-            onClick={entregarSolucion}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            disabled={enviando}
-          >
-            Entregar solución
-          </button>
-        </div>
         {output && (
           <div className="bg-gray-900 text-green-400 p-4 rounded mt-4 whitespace-pre-wrap">
             {output}
@@ -362,6 +363,15 @@ export default function RetoPage() {
             {resultado.message}
           </div>
         )}
+        <div className="mt-4 flex gap-4 justify-center">
+          <button
+            onClick={entregarSolucion}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            disabled={enviando}
+          >
+            Entregar solución
+          </button>
+        </div>
       </div>
     </div>
     </main>

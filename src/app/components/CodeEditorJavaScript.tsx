@@ -142,7 +142,7 @@ const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({ codigo, setCodigo }) 
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto", boxSizing: "border-box", width: "100%", minWidth: 0 }}>
       <h1
         style={{
           marginBottom: "10px",
@@ -168,6 +168,7 @@ const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({ codigo, setCodigo }) 
           textAlign: "center",
           cursor: "default",
           userSelect: "none",
+          fontSize: "clamp(1rem, 4vw, 1.3rem)",
         }}
       >
         JavaScript
@@ -181,6 +182,9 @@ const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({ codigo, setCodigo }) 
           borderRadius: "8px",
           overflow: "hidden",
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
         }}
       />
       <button
@@ -193,6 +197,12 @@ const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({ codigo, setCodigo }) 
           border: "none",
           cursor: "pointer",
           color: "#000",
+          width: "100%",
+          maxWidth: "300px",
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto",
+          fontSize: "clamp(1rem, 4vw, 1.1rem)",
         }}
       >
         Ejecutar Código
@@ -207,11 +217,42 @@ const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({ codigo, setCodigo }) 
           borderRadius: "5px",
           textAlign: "left",
           border: "1px solid #ddd",
+          wordBreak: "break-word",
+          fontSize: "clamp(0.9rem, 3vw, 1.05rem)",
+          width: "100%",
+          maxWidth: "100%",
         }}
       >
         <strong>Salida:</strong>
         <pre>{output || "Aquí se mostrará la salida..."}</pre>
       </div>
+      <style>{`
+        @media (max-width: 600px) {
+          div[style*='max-width: 800px'] {
+            padding: 8px !important;
+            max-width: 100vw !important;
+          }
+          h1 {
+            font-size: 24px !important;
+          }
+          div[style*='width: 120px'] {
+            width: 100% !important;
+            font-size: 18px !important;
+            padding: 8px !important;
+          }
+          button {
+            font-size: 16px !important;
+            padding: 8px 0 !important;
+          }
+          div[style*='min-height: 200px'] {
+            min-height: 120px !important;
+          }
+          div[style*='padding: 10px'] {
+            font-size: 14px !important;
+            padding: 6px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
