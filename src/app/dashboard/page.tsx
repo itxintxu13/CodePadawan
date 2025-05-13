@@ -3,6 +3,7 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+
 export default function Dashboard() {
   const { isLoaded, user } = useUser();
   const [puntos, setPuntos] = useState(0);
@@ -71,7 +72,6 @@ export default function Dashboard() {
           Explorar Retos de Programación
         </Link>
       </div>
-      
       
       
     </main>
