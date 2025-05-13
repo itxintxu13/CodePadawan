@@ -20,23 +20,31 @@ export default function UserProfilePage() {
 
   useEffect(() => {
     if (!isLoaded || !user) return;
+
     const cargarRetosCompletados = async () => {
       try {
-        const retosResueltos = (user.publicMetadata.retosResueltos as number[]) || [];
+        let retosResueltos = (user.publicMetadata.retosResueltos as number[]) || [];
+
+        // Asegurar que retosResueltos sea un array
+        retosResueltos = Array.isArray(retosResueltos) ? retosResueltos : [retosResueltos];
+
         const response = await fetch('/api/retos');
         if (!response.ok) {
           throw new Error('Error al cargar los retos');
         }
         const todosRetos = await response.json();
+
         const retosDelUsuario = todosRetos
-          .filter((reto: any) => retosResueltos.includes(reto.id))
+          .filter((reto: any) => retosResueltos.includes(reto.id)) // Ahora retosResueltos es siempre un array
           .map((reto: any) => ({
             id: reto.id,
             titulo: reto.titulo,
             puntos: reto.puntos,
             fechaEntrega: new Date().toLocaleDateString()
           }));
+
         setRetosCompletados(retosDelUsuario);
+
         // Mostrar confetti si se desbloquea un logro nuevo
         if (getLogros().length > 0) {
           setShowConfetti(true);
@@ -48,6 +56,7 @@ export default function UserProfilePage() {
         setCargando(false);
       }
     };
+
     cargarRetosCompletados();
   }, [isLoaded, user]);
 
@@ -56,6 +65,8 @@ export default function UserProfilePage() {
     if (!user) return [];
     
     const retosResueltos = (user.publicMetadata.retosResueltos as number[]) || [];
+    console.log(typeof retosResueltos);
+
     const logros = [];
     
     if (retosResueltos.length >= 1) logros.push({ nombre: '🌱 Principiante', descripcion: 'Resolviste tu primer reto' });
