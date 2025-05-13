@@ -2,7 +2,9 @@
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
+import ProgressChart from "../components/ProgressChart";
+import AchievementBadge from "../components/AchievementBadge";
+import ActivityFeed from './ActivityFeed';
 export default function Dashboard() {
   const { isLoaded, user } = useUser();
   const [puntos, setPuntos] = useState(0);
@@ -29,51 +31,49 @@ export default function Dashboard() {
   }, [isLoaded, user]);
 
   return (
-    <main className="container mx-auto p-8 bg-gray-900 text-white">
-
-      <h1 className="text-4xl font-bold text-center">Bienvenido al Dashboard 🚀</h1>
-      <p className="text-lg text-gray-600 mt-4 text-center mb-8">
-        Aquí puedes gestionar tu cuenta y explorar contenido exclusivo.
-      </p>
-      
-      {/* Tarjetas de resumen */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-800 rounded-lg p-6 shadow-lg text-center">
-          <h2 className="text-xl font-bold mb-2">Puntos Totales</h2>
-          <p className="text-3xl font-bold text-yellow-400">{puntos}</p>
+    <main className="container mx-auto p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 min-h-screen text-white animate-fade-in">
+      <div className="flex flex-col items-center mb-10">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-center drop-shadow-lg animate-slide-down">¡Bienvenido{user?.firstName ? `, ${user.firstName}` : ""} al Dashboard 🚀</h1>
+        <p className="text-lg text-indigo-200 mt-4 text-center mb-2 animate-fade-in-delay">
+          Gestiona tu cuenta y explora contenido exclusivo.
+        </p>
+      </div>
+      {/* Tarjetas de resumen con animaciones y gráficos */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl text-center transform hover:scale-105 transition-transform duration-300 animate-card-fade-in">
+          <h2 className="text-xl font-bold mb-2 text-yellow-300">Puntos Totales</h2>
+          <div className="flex justify-center mb-2">
+            <ProgressChart value={puntos} max={1000} label="Progreso" color="#facc15" />
+          </div>
+          <p className="text-3xl font-extrabold text-yellow-400 drop-shadow">{puntos}</p>
           <Link href="/ranking" className="text-blue-400 text-sm hover:underline block mt-2">
             Ver ranking
           </Link>
         </div>
-        
-        <div className="bg-gray-800 rounded-lg p-6 shadow-lg text-center">
-          <h2 className="text-xl font-bold mb-2">Retos Resueltos</h2>
-          <p className="text-3xl font-bold text-blue-400">{retosResueltos}</p>
+        <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl text-center transform hover:scale-105 transition-transform duration-300 animate-card-fade-in">
+          <h2 className="text-xl font-bold mb-2 text-blue-300">Retos Resueltos</h2>
+          <div className="flex justify-center mb-2">
+            <ProgressChart value={retosResueltos} max={10} label="Retos" color="#60a5fa" />
+          </div>
+          <p className="text-3xl font-extrabold text-blue-400 drop-shadow">{retosResueltos}</p>
           <Link href="/retos" className="text-blue-400 text-sm hover:underline block mt-2">
             Ver retos
           </Link>
         </div>
-        
-        <div className="bg-gray-800 rounded-lg p-6 shadow-lg text-center">
-          <h2 className="text-xl font-bold mb-2">Logros Desbloqueados</h2>
-          <p className="text-3xl font-bold text-green-400">{logros}</p>
+        <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl text-center transform hover:scale-105 transition-transform duration-300 animate-card-fade-in">
+          <h2 className="text-xl font-bold mb-2 text-green-300">Logros Desbloqueados</h2>
+          <div className="flex justify-center gap-2 mb-2">
+            <AchievementBadge unlocked={retosResueltos>=1} label="Primer reto" icon="🏅" color="#fbbf24" />
+            <AchievementBadge unlocked={retosResueltos>=3} label="3 retos" icon="🥈" color="#60a5fa" />
+            <AchievementBadge unlocked={retosResueltos>=5} label="5 retos" icon="🥇" color="#34d399" />
+            <AchievementBadge unlocked={retosResueltos>=10} label="10 retos" icon="🏆" color="#f472b6" />
+          </div>
+          <p className="text-3xl font-extrabold text-green-400 drop-shadow">{logros}</p>
           <Link href="/user-profile" className="text-blue-400 text-sm hover:underline block mt-2">
             Ver perfil
           </Link>
         </div>
       </div>
-      
-      <div className="mb-8 text-center">
-        <Link
-          href="/retos" 
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors"
-        >
-          Explorar Retos de Programación
-        </Link>
-      </div>
-      
-      
-      
     </main>
   );
 }
