@@ -10,11 +10,12 @@ import {
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Navbar from './components/NavBar';
+import { shadesOfPurple } from '@clerk/themes';
 
 // LO QUE HAY AQUI SE APLICA A TODAS LAS PAGINAS
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{baseTheme: shadesOfPurple}}>
       <html lang="es">
         <body className="antialiased flex flex-col min-h-screen">
           <SignedIn>
