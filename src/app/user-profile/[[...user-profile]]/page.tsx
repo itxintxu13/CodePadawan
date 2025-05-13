@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { UserProfile, useUser } from '@clerk/nextjs';
 import Sidebar from "@/app/components/SideBar";
 import { motion, AnimatePresence } from "framer-motion";
+import Estadisticas from '@/app/components/Estadisticas';
 
 interface RetoCompletado {
   id: number;
@@ -73,6 +74,35 @@ export default function UserProfilePage() {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-gray-800">
       <Sidebar/>
       <main className="flex flex-col items-center justify-center flex-1 pt-8">
+        {/* Tarjetas de resumen con animaciones y gráficos */}
+      <div className="flex gap-4 justify-between w-full">
+        <Estadisticas
+          titulo="Puntos Totales"
+          maximo={1000}
+          label="Progreso"
+          color="#facc15"
+          link="/ranking"
+          tipoDato="puntos"
+        />
+
+        <Estadisticas
+          titulo="Retos Resueltos"
+          maximo={10}
+          label="Retos"
+          color="#60a5fa"
+          link="/retos"
+          tipoDato="retos"
+        />
+
+        <Estadisticas
+          titulo="Logros Desbloqueados"
+          maximo={10}
+          label="Logros"
+          color="#22c55e"
+          link="/user-profile"
+          tipoDato="logros"
+        />
+      </div>
         <div className="w-full max-w-3xl flex flex-col gap-10 mt-0 items-center">
           {/* Confetti animación */}
           <AnimatePresence>
@@ -93,6 +123,9 @@ export default function UserProfilePage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
+
+
+
             <h2 className="text-3xl font-extrabold mb-4 text-center text-purple-300 tracking-wide">Estadísticas</h2>
             <div className="flex flex-row justify-center gap-10 w-full">
               <div className="flex flex-col items-center">
