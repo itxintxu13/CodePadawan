@@ -80,6 +80,7 @@ const CodeEditorPython: React.FC<CodeEditorPythonProps> = ({ codigo, setCodigo }
   // Inicializa el editor SOLO una vez al montar
   useEffect(() => {
     if (!editorRef.current || editorInstance.current) return;
+
     const state = EditorState.create({
       doc: codigo,
       extensions: [
@@ -90,24 +91,29 @@ const CodeEditorPython: React.FC<CodeEditorPythonProps> = ({ codigo, setCodigo }
         keymap.of(defaultKeymap),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            setCodigo(update.state.doc.toString());
+            const newCode = update.state.doc.toString();
+            if (newCode !== codigo) {
+              setCodigo(newCode); // Solo actualiza si el contenido realmente cambió
+            }
           }
         }),
       ],
     });
+
     editorInstance.current = new EditorView({
       state,
       parent: editorRef.current,
     });
+
     console.log(`Editor initialized for Python`);
-    // Limpieza al desmontar
+
     return () => {
       if (editorInstance.current) {
         editorInstance.current.destroy();
         editorInstance.current = null;
       }
     };
-  }, [codigo, setCodigo]);
+  }, []);
 
   // Sincroniza el contenido externo sin recrear el editor
   useEffect(() => {
@@ -116,11 +122,7 @@ const CodeEditorPython: React.FC<CodeEditorPythonProps> = ({ codigo, setCodigo }
       editorInstance.current.state.doc.toString() !== codigo
     ) {
       editorInstance.current.dispatch({
-        changes: {
-          from: 0,
-          to: editorInstance.current.state.doc.length,
-          insert: codigo,
-        },
+        changes: { from: 0, to: editorInstance.current.state.doc.length, insert: codigo },
       });
     }
   }, [codigo]);

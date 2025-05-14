@@ -140,112 +140,120 @@ export default function RetoPage() {
     };
   }, [codigo, lenguaje]);
 
-  const ejecutarCodigo = async () => {
-    if (!codigo) {
-      setOutput('❌ No hay código para ejecutar.');
-      return;
-    }
+  // const ejecutarCodigo = async () => {
+  //   if (!codigo) {
+  //     setOutput('❌ No hay código para ejecutar.');
+  //     return;
+  //   }
 
-    try {
-      // Validación real del código ejecutado
-      let resultadoValidacion = '';
-      let exito = false;
-      if (reto && reto.tests && reto.tests[lenguaje]) {
-        // Para JavaScript, usar eval de forma controlada (solo para demo, en producción usar sandbox seguro)
-        if (lenguaje === 'javascript') {
-          try {
-            // eslint-disable-next-line no-eval
-            const userFunc = new Function('return ' + codigo)();
-            // Extraer el test, por ejemplo: "console.log(suma(5, 3)); // Debería mostrar 8"
-            const testLines = reto.tests[lenguaje].split('\n');
-            let outputTest = '';
-            const originalLog = console.log;
-            let logOutput = '';
-            console.log = (...args) => { logOutput += args.join(' ') + '\n'; };
-            for (const line of testLines) {
-              // Ejecutar cada línea de test
-              try {
-                // eslint-disable-next-line no-eval
-                eval(line);
-              } catch (e) {
-                logOutput += '❌ Error en test: ' + e + '\n';
-              }
-            }
-            console.log = originalLog;
-            // Comparar con la salida esperada
-            const salidaEsperada = reto.solucion[lenguaje].trim();
-            if (logOutput.trim() === salidaEsperada) {
-              resultadoValidacion = '✅ ¡Salida correcta!';
-              exito = true;
-            } else {
-              resultadoValidacion = `❌ Salida incorrecta.\nEsperado: ${salidaEsperada}\nObtenido: ${logOutput.trim()}`;
-            }
-            setOutput(`Ejecutando código en ${lenguaje}...\n${codigo}\n\n${resultadoValidacion}`);
-          } catch (e) {
-            setOutput(`❌ Error al ejecutar el código: ${e}`);
-          }
-        } else {
-          setOutput('❌ Validación automática solo disponible para JavaScript en este entorno.');
-        }
-      } else {
-        setOutput('❌ No hay tests definidos para este reto/lenguaje.');
-      }
-    } catch (error) {
-      setOutput(`❌ Error: ${error}`);
-    }
-  };
+  //   try {
+  //     // Validación real del código ejecutado
+  //     let resultadoValidacion = '';
+  //     let exito = false;
+  //     if (reto && reto.tests && reto.tests[lenguaje]) {
+  //       // Para JavaScript, usar eval de forma controlada (solo para demo, en producción usar sandbox seguro)
+  //       if (lenguaje === 'javascript') {
+  //         try {
+  //           // eslint-disable-next-line no-eval
+  //           const userFunc = new Function('return ' + codigo)();
+  //           // Extraer el test, por ejemplo: "console.log(suma(5, 3)); // Debería mostrar 8"
+  //           const testLines = reto.tests[lenguaje].split('\n');
+  //           let outputTest = '';
+  //           const originalLog = console.log;
+  //           let logOutput = '';
+  //           console.log = (...args) => { logOutput += args.join(' ') + '\n'; };
+  //           for (const line of testLines) {
+  //             // Ejecutar cada línea de test
+  //             try {
+  //               // eslint-disable-next-line no-eval
+  //               eval(line);
+  //             } catch (e) {
+  //               logOutput += '❌ Error en test: ' + e + '\n';
+  //             }
+  //           }
+  //           console.log = originalLog;
+  //           // Comparar con la salida esperada
+  //           const salidaEsperada = reto.solucion[lenguaje].trim();
+  //           if (logOutput.trim() === salidaEsperada) {
+  //             resultadoValidacion = '✅ ¡Salida correcta!';
+  //             exito = true;
+  //           } else {
+  //             resultadoValidacion = `❌ Salida incorrecta.\nEsperado: ${salidaEsperada}\nObtenido: ${logOutput.trim()}`;
+  //           }
+  //           setOutput(`Ejecutando código en ${lenguaje}...\n${codigo}\n\n${resultadoValidacion}`);
+  //         } catch (e) {
+  //           setOutput(`❌ Error al ejecutar el código: ${e}`);
+  //         }
+  //       } else {
+  //         setOutput('❌ Validación automática solo disponible para JavaScript en este entorno.');
+  //       }
+  //     } else {
+  //       setOutput('❌ No hay tests definidos para este reto/lenguaje.');
+  //     }
+  //   } catch (error) {
+  //     setOutput(`❌ Error: ${error}`);
+  //   }
+  // };
 
   const entregarSolucion = async () => {
-    if (!codigo || !reto || !user) {
-      setResultado({
-        success: false,
-        message: "Falta información necesaria para entregar la solución",
-      });
-      return;
+  if (!codigo || !reto || !user) {
+    setResultado({
+      success: false,
+      message: "Falta información necesaria para entregar la solución",
+    });
+    return;
+  }
+
+  // Validar si el código del usuario coincide con la solución esperada
+  const solucionCorrecta = reto.solucion[lenguaje].trim();
+  const codigoUsuario = codigo.trim();
+
+  if (codigoUsuario !== solucionCorrecta) {
+    setResultado({
+      success: false,
+      message: "La solución no es correcta. Intenta nuevamente.",
+    });
+    return;
+  }
+
+  setEnviando(true);
+  try {
+    const response = await fetch("/api/retos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: user.id,
+        retoId: reto.id,
+        codigo,
+        lenguaje,
+        puntos: reto.puntos,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al entregar la solución");
     }
-  
-    setEnviando(true);
-    try {
-      // Enviar la solución al servidor
-      const response = await fetch("/api/retos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          retoId: reto.id,
-          codigo,
-          lenguaje,
-          puntos: reto.puntos,
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Error al entregar la solución");
-      }
-  
-      const data = await response.json();
-      setResultado({
-        success: true,
-        message:
-          "Solución entregada correctamente. Has ganado " +
-          reto.puntos +
-          " puntos!",
-      });
-  
-      // Actualizar los metadatos del usuario en Clerk
-      await actualizarPuntosUsuario(reto.puntos, reto.id);
-    } catch (error) {
-      console.error("Error:", error);
-      setResultado({
-        success: false,
-        message: "Error al entregar la solución",
-      });
-    } finally {
-      setEnviando(false);
-    }
-  };
+
+    const data = await response.json();
+    setResultado({
+      success: true,
+      message: `Solución correcta. Has ganado ${reto.puntos} puntos!`,
+    });
+
+    // Actualizar los puntos del usuario
+    await actualizarPuntosUsuario(reto.puntos, reto.id);
+  } catch (error) {
+    console.error("Error:", error);
+    setResultado({
+      success: false,
+      message: "Error al entregar la solución",
+    });
+  } finally {
+    setEnviando(false);
+  }
+};
 
 
   useEffect(() => {

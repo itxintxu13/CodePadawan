@@ -31,7 +31,7 @@ export default function Estadisticas({
   color,
   link,
   tipoDato,
-  tamano = "w-80", 
+  tamano = "w-80",
 }: EstadisticasProps) {
   const { isLoaded, user } = useUser();
   const [valor, setValor] = useState(0);
@@ -83,8 +83,7 @@ export default function Estadisticas({
   }, [isLoaded, user, tipoDato]);
 
   return (
-    <div className={`bg-gray-800 rounded-2xl p-8 shadow-2xl text-center transform hover:scale-105 transition-transform duration-300 animate-card-fade-in ${tamano}`}>
-      <h2 className="text-xl font-bold mb-2" style={{ color }}>{titulo}</h2>
+<div className={`bg-gray-800 rounded-2xl p-8 shadow-2xl text-center transform hover:scale-105 transition-transform duration-300 animate-card-fade-in ${tamano}`}>      <h2 className="text-xl font-bold mb-2" style={{ color }}>{titulo}</h2>
       {cargando ? (
         <p className="text-lg text-gray-400">Cargando...</p>
       ) : (
