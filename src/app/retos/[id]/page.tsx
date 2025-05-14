@@ -21,7 +21,7 @@ const lanzarConfeti = () => {
   confetti({
     particleCount: 100,
     spread: 70,
-    origin: { y: 0.6 }, 
+    origin: { y: 0.6 },
   });
 };
 
@@ -151,64 +151,64 @@ export default function RetoPage() {
   }, [codigo, lenguaje]);
 
   const entregarSolucion = async () => {
-  if (!codigo || !reto || !user) {
-    setResultado({
-      success: false,
-      message: "Falta información necesaria para entregar la solución",
-    });
-    return;
-  }
-
-  const solucionCorrecta = reto.solucion[lenguaje].trim();
-  const codigoUsuario = codigo.trim();
-
-  if (codigoUsuario !== solucionCorrecta) {
-    setResultado({
-      success: false,
-      message: "La solución no es correcta. Intenta nuevamente.",
-    });
-    return;
-  }
-
-  setEnviando(true);
-  try {
-    const response = await fetch("/api/retos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: user.id,
-        retoId: reto.id,
-        codigo,
-        lenguaje,
-        puntos: reto.puntos,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Error al entregar la solución");
+    if (!codigo || !reto || !user) {
+      setResultado({
+        success: false,
+        message: "Falta información necesaria para entregar la solución",
+      });
+      return;
     }
 
-    const data = await response.json();
-    setResultado({
-      success: true,
-      message: `🎉 ¡Solución correcta! Has ganado ${reto.puntos} puntos! 🎉`,
-    });
+    const solucionCorrecta = reto.solucion[lenguaje].toLowerCase().replace(/'/g, '"').replace(/\s+/g, '').normalize("NFC");
+    const codigoUsuario = codigo.toLowerCase().replace(/'/g, '"').replace(/\s+/g, '').normalize("NFC");
 
-    lanzarConfeti(); // 🚀 🎊 Lanza el confeti cuando la solución es correcta
+    if (codigoUsuario !== solucionCorrecta) {
+      setResultado({
+        success: false,
+        message: "La solución no es correcta. Intenta nuevamente.",
+      });
+      return;
+    }
 
-    await actualizarPuntosUsuario(reto.puntos, reto.id);
-  } catch (error) {
-    console.error("Error:", error);
-    setResultado({
-      success: false,
-      message: "Error al entregar la solución",
-    });
-  } finally {
-    setEnviando(false);
-  }
-};
+    setEnviando(true);
+    try {
+      const response = await fetch("/api/retos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          retoId: reto.id,
+          codigo,
+          lenguaje,
+          puntos: reto.puntos,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al entregar la solución");
+      }
+
+      const data = await response.json();
+      setResultado({
+        success: true,
+        message: `🎉 ¡Solución correcta! Has ganado ${reto.puntos} puntos! 🎉`,
+      });
+
+      lanzarConfeti(); // 🚀 🎊 Lanza el confeti cuando la solución es correcta
+
+      await actualizarPuntosUsuario(reto.puntos, reto.id);
+    } catch (error) {
+      console.error("Error:", error);
+      setResultado({
+        success: false,
+        message: "Error al entregar la solución",
+      });
+    } finally {
+      setEnviando(false);
+    }
+  };
 
 
 
@@ -341,7 +341,7 @@ export default function RetoPage() {
             <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />
           )}
           {lenguaje === 'html' && (
-            <CodeEditorHtml codigo={codigo} setCodigo={setCodigo} />
+            <CodeEditorHtml codigo={codigo} setCodigo={setCodigo}/>
           )}
 
           {/* Botones y salida */}
