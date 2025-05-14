@@ -15,6 +15,15 @@ import CodeEditorJava from "../../components/CodeEditorJava";
 import CodeEditorJavaScript from "../../components/CodeEditorJavaScript";
 import CodeEditorPython from "../../components/CodeEditorPython";
 import CodeEditorHtml from "../../components/CodeEditorHtml";
+import confetti from "canvas-confetti";
+
+const lanzarConfeti = () => {
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 }, 
+  });
+};
 
 interface Reto {
   id: number;
@@ -47,6 +56,7 @@ export default function RetoPage() {
   const [resultado, setResultado] = useState<{ success: boolean; message: string } | null>(null);
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [editorInstance, setEditorInstance] = useState<EditorView | null>(null);
+  const [mostrarSolucion, setMostrarSolucion] = useState(false);
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -62,7 +72,7 @@ export default function RetoPage() {
         }
         const retos = await response.json();
         const retoActual = retos.find((r: Reto) => r.id.toString() === params.id);
-        
+
         if (retoActual) {
           setReto(retoActual);
           // Establecer el lenguaje predeterminado al primer lenguaje disponible
@@ -107,8 +117,8 @@ export default function RetoPage() {
       lenguaje === "javascript"
         ? javascript()
         : lenguaje === "python"
-        ? python()
-        : java();
+          ? python()
+          : java();
 
     // Crear el estado del editor
     const state = EditorState.create({
@@ -140,61 +150,6 @@ export default function RetoPage() {
     };
   }, [codigo, lenguaje]);
 
-  // const ejecutarCodigo = async () => {
-  //   if (!codigo) {
-  //     setOutput('❌ No hay código para ejecutar.');
-  //     return;
-  //   }
-
-  //   try {
-  //     // Validación real del código ejecutado
-  //     let resultadoValidacion = '';
-  //     let exito = false;
-  //     if (reto && reto.tests && reto.tests[lenguaje]) {
-  //       // Para JavaScript, usar eval de forma controlada (solo para demo, en producción usar sandbox seguro)
-  //       if (lenguaje === 'javascript') {
-  //         try {
-  //           // eslint-disable-next-line no-eval
-  //           const userFunc = new Function('return ' + codigo)();
-  //           // Extraer el test, por ejemplo: "console.log(suma(5, 3)); // Debería mostrar 8"
-  //           const testLines = reto.tests[lenguaje].split('\n');
-  //           let outputTest = '';
-  //           const originalLog = console.log;
-  //           let logOutput = '';
-  //           console.log = (...args) => { logOutput += args.join(' ') + '\n'; };
-  //           for (const line of testLines) {
-  //             // Ejecutar cada línea de test
-  //             try {
-  //               // eslint-disable-next-line no-eval
-  //               eval(line);
-  //             } catch (e) {
-  //               logOutput += '❌ Error en test: ' + e + '\n';
-  //             }
-  //           }
-  //           console.log = originalLog;
-  //           // Comparar con la salida esperada
-  //           const salidaEsperada = reto.solucion[lenguaje].trim();
-  //           if (logOutput.trim() === salidaEsperada) {
-  //             resultadoValidacion = '✅ ¡Salida correcta!';
-  //             exito = true;
-  //           } else {
-  //             resultadoValidacion = `❌ Salida incorrecta.\nEsperado: ${salidaEsperada}\nObtenido: ${logOutput.trim()}`;
-  //           }
-  //           setOutput(`Ejecutando código en ${lenguaje}...\n${codigo}\n\n${resultadoValidacion}`);
-  //         } catch (e) {
-  //           setOutput(`❌ Error al ejecutar el código: ${e}`);
-  //         }
-  //       } else {
-  //         setOutput('❌ Validación automática solo disponible para JavaScript en este entorno.');
-  //       }
-  //     } else {
-  //       setOutput('❌ No hay tests definidos para este reto/lenguaje.');
-  //     }
-  //   } catch (error) {
-  //     setOutput(`❌ Error: ${error}`);
-  //   }
-  // };
-
   const entregarSolucion = async () => {
   if (!codigo || !reto || !user) {
     setResultado({
@@ -204,7 +159,6 @@ export default function RetoPage() {
     return;
   }
 
-  // Validar si el código del usuario coincide con la solución esperada
   const solucionCorrecta = reto.solucion[lenguaje].trim();
   const codigoUsuario = codigo.trim();
 
@@ -239,10 +193,11 @@ export default function RetoPage() {
     const data = await response.json();
     setResultado({
       success: true,
-      message: `Solución correcta. Has ganado ${reto.puntos} puntos!`,
+      message: `🎉 ¡Solución correcta! Has ganado ${reto.puntos} puntos! 🎉`,
     });
 
-    // Actualizar los puntos del usuario
+    lanzarConfeti(); // 🚀 🎊 Lanza el confeti cuando la solución es correcta
+
     await actualizarPuntosUsuario(reto.puntos, reto.id);
   } catch (error) {
     console.error("Error:", error);
@@ -256,24 +211,25 @@ export default function RetoPage() {
 };
 
 
+
   useEffect(() => {
     const obtenerUsuarios = async () => {
       const response = await fetch("/api/updatePoints");
       const data = await response.json();
       setUsuarios(data); // 🔥 Actualiza el estado con los datos nuevos
     };
-  
+
     obtenerUsuarios();
   }, [resultado]); // ✅ Ahora se recarga cuando el resultado cambia
-  
+
   const actualizarPuntosUsuario = async (puntos: number, retoId: number) => {
     if (!user) return;
-  
+
     try {
       // ✅ Convertir publicMetadata.puntos a número de forma segura
       const puntosActuales = Number(user.publicMetadata?.puntos ?? 0);
       const retosResueltosActuales = Number(user.publicMetadata?.retosResueltos ?? 0);
-      
+
       const response = await fetch("/api/updatePoints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -283,24 +239,28 @@ export default function RetoPage() {
           retosResuletos: retosResueltosActuales + 1, //Incrementando cada vez que se complete uno
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Error al actualizar los puntos del usuario");
       }
-  
+
       console.log("Puntos actualizados correctamente en Clerk.");
     } catch (error) {
       console.error("Error al actualizar los puntos del usuario:", error);
     }
   };
-  
-  
+
+
   const cambiarLenguaje = (nuevoLenguaje: string) => {
     if (reto?.lenguajes.includes(nuevoLenguaje)) {
       setLenguaje(nuevoLenguaje);
       setOutput('');
       setResultado(null);
     }
+  };
+
+  const verSolucion = () => {
+    setMostrarSolucion(!mostrarSolucion);
   };
 
   if (cargando) {
@@ -326,87 +286,105 @@ export default function RetoPage() {
   }
 
   return (
-        <main className="container mx-auto p-8 bg-gray-900 text-white">
-    <div className="container mx-auto p-4 max-w-6xl">
-      <div className="mb-6">
-        <button
-          onClick={() => router.push('/retos')}
-          className="text-blue-500 hover:underline flex items-center"
-        >
-          ← Volver a la lista de retos
-        </button>
-      </div>
-
-      <div className="bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
-        <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
-        <div className="flex items-center gap-4 mb-4">
-          <span className={`px-3 py-1 rounded-full text-sm ${
-            reto.dificultad === 'Fácil' ? 'bg-green-600' :
-            reto.dificultad === 'Media' ? 'bg-yellow-600' : 'bg-red-600'
-          }`}>
-            {reto.dificultad}
-          </span>
-          <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
-        </div>
-        <div className="flex items-center gap-4 mb-4">
-          {reto.lenguajes.length > 1 ? (
-            <select
-              value={lenguaje}
-              onChange={(e) => cambiarLenguaje(e.target.value)}
-              className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
-            >
-              {reto.lenguajes.map((lang) => (
-                <option key={lang} value={lang}>
-                  {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span className="bg-gray-700 text-white px-4 py-2 rounded">
-              {reto.lenguajes[0].charAt(0).toUpperCase() + reto.lenguajes[0].slice(1)}
-            </span>
-          )}
-        </div>
-        <p className="text-gray-300 mb-6">{reto.descripcion}</p>
-      </div>
-
-      <div className="mb-4">
-        {/* Renderizado del editor específico según el lenguaje, pasando props */}
-        {lenguaje === 'javascript' && (
-          <CodeEditorJavaScript codigo={codigo} setCodigo={setCodigo} />
-        )}
-        {lenguaje === 'python' && (
-          <CodeEditorPython codigo={codigo} setCodigo={setCodigo} />
-        )}
-        {lenguaje === 'java' && (
-          <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />
-        )}
-        {lenguaje === 'html' && (
-          <CodeEditorHtml codigo={codigo} setCodigo={setCodigo} />
-        )}
-
-        {/* Botones y salida */}
-        {output && (
-          <div className="bg-gray-900 text-green-400 p-4 rounded mt-4 whitespace-pre-wrap">
-            {output}
-          </div>
-        )}
-        {resultado && (
-          <div className={`mt-4 p-4 rounded ${resultado.success ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'}`}>
-            {resultado.message}
-          </div>
-        )}
-        <div className="mt-4 flex gap-4 justify-center">
+    <main className="container mx-auto p-8 bg-gray-900 text-white">
+      <div className="container mx-auto p-4 max-w-6xl">
+        <div className="mb-6">
           <button
-            onClick={entregarSolucion}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            disabled={enviando}
+            onClick={() => router.push('/retos')}
+            className="text-blue-500 hover:underline flex items-center"
           >
-            Entregar solución
+            ← Volver a la lista de retos
           </button>
         </div>
+
+        <div className="bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
+          <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
+          <div className="flex items-center gap-4 mb-4">
+            <span className={`px-3 py-1 rounded-full text-sm ${reto.dificultad === 'Fácil' ? 'bg-green-600' :
+              reto.dificultad === 'Media' ? 'bg-yellow-600' : 'bg-red-600'
+              }`}>
+              {reto.dificultad}
+            </span>
+            <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
+          </div>
+          <div className="flex items-center gap-4 mb-4">
+            {reto.lenguajes.length > 1 ? (
+              <select
+                value={lenguaje}
+                onChange={(e) => cambiarLenguaje(e.target.value)}
+                className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
+              >
+                {reto.lenguajes.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span className="bg-gray-700 text-white px-4 py-2 rounded">
+                {reto.lenguajes[0].charAt(0).toUpperCase() + reto.lenguajes[0].slice(1)}
+              </span>
+            )}
+          </div>
+          <p className="text-gray-300 mb-6">{reto.descripcion}</p>
+        </div>
+
+        <div className="mb-4">
+          {/* Renderizado del editor específico según el lenguaje, pasando props */}
+          {lenguaje === 'javascript' && (
+            <CodeEditorJavaScript codigo={codigo} setCodigo={setCodigo} />
+          )}
+          {lenguaje === 'python' && (
+            <CodeEditorPython codigo={codigo} setCodigo={setCodigo} />
+          )}
+          {lenguaje === 'java' && (
+            <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />
+          )}
+          {lenguaje === 'html' && (
+            <CodeEditorHtml codigo={codigo} setCodigo={setCodigo} />
+          )}
+
+          {/* Botones y salida */}
+          {output && (
+            <div className="bg-gray-900 text-green-400 p-4 rounded mt-4 whitespace-pre-wrap">
+              {output}
+            </div>
+          )}
+          {resultado && (
+            <div className={`mt-4 p-4 rounded ${resultado.success ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'}`}>
+              {resultado.message}
+            </div>
+          )}
+          <div className="mt-4 flex gap-4 justify-center">
+            <button
+              onClick={entregarSolucion}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              disabled={enviando}
+            >
+              Entregar solución
+            </button>
+
+            <button
+              onClick={verSolucion}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              {mostrarSolucion ? "Ocultar solución" : "Ver solución"}
+            </button>
+
+
+          </div>
+          {mostrarSolucion && (
+            <div className="mt-8 flex flex-col items-center">
+              <label className="text-white font-bold mb-2">Solución Correcta en {lenguaje}:</label>
+              <textarea
+                readOnly
+                className="w-full max-w-lg p-4 bg-gray-900 text-yellow-400 rounded-lg border border-yellow-500"
+                value={reto.solucion[lenguaje]}
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     </main>
   );
 }

@@ -103,42 +103,30 @@ const CodeEditor: React.FC<CodeEditorJavaProps> = ({ codigo, setCodigo }) => {
   }, [codigo]);
 
   const ejecutarCodigo = async () => {
-    const codigo = editorInstance.current?.state.doc.toString();
-    if (!codigo) {
-      setOutput("❌ No hay código para ejecutar.");
-      return;
+  const codigoUsuario = editorInstance.current?.state.doc.toString();
+  if (!codigoUsuario) {
+    setOutput("❌ No hay código para ejecutar.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: codigoUsuario }), // 🚀 Envía el código tal cual
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status ${response.status}`);
     }
 
-    try {
-      if (language === "java") {
-        const wrappedCode = `
-public class Main {
-  public static void main(String[] args) {
-    ${codigo}
+    const data = await response.json();
+    setOutput(data.output || "❌ No se recibió salida.");
+  } catch (error) {
+    console.error("Fetch error:", error);
+    setOutput("❌ Error: No se pudo conectar con el servidor.");
   }
-}`;
-        try {
-          const response = await fetch("http://localhost:5000/run", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code: wrappedCode }),
-          });
-          if (!response.ok) {
-            throw new Error(`Server responded with status ${response.status}`);
-          }
-          const data = await response.json();
-          setOutput(data.output || "❌ No se recibió salida.");
-        } catch (error) {
-          console.error("Fetch error:", error);
-          setOutput(
-            "❌ Error: No se pudo conectar con el servidor. Asegúrate de que el servidor esté corriendo en http://localhost:5000."
-          );
-        }
-      }
-    } catch (error) {
-      setOutput(`❌ Error: ${error}`);
-    }
-  };
+};
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto", boxSizing: "border-box", width: "100%", minWidth: 0 }}>
