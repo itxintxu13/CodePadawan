@@ -19,6 +19,7 @@ export async function GET() {
       username: user.username,
       points: user.publicMetadata?.points || 0,
       retosResueltos: Number(user.publicMetadata?.retosResueltos ?? 0),
+      rol: user.publicMetadata?.rol || null,
     }));
 
     return NextResponse.json(userIds);

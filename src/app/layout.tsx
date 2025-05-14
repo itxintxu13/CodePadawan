@@ -1,15 +1,8 @@
-import { type Metadata } from "next";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import { ClerkProvider, SignedIn } from "@clerk/nextjs";
+import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/NavBar";
+import RolUpdater from "./components/Rol";
 import { shadesOfPurple } from "@clerk/themes";
 
 // LO QUE HAY AQUI SE APLICA A TODAS LAS PAGINAS
@@ -24,9 +17,9 @@ export default function RootLayout({
         <body className="antialiased flex flex-col">
           <SignedIn>
             <Navbar />
+            <RolUpdater />
           </SignedIn>
 
-          {/* Asegurar que main solo ocupe el espacio necesario */}
           <main className="bg-gray-900 text-white flex-1 flex flex-col justify-center">
             {children}
           </main>
@@ -39,3 +32,5 @@ export default function RootLayout({
     </ClerkProvider>
   );
 }
+
+

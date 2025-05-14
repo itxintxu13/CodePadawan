@@ -1,18 +1,22 @@
 import React from "react";
 
 interface ProgressChartProps {
-  value: number;
-  max: number;
+  value?: number;
+  max?: number;
   label: string;
   color?: string;
 }
+
+const DEFAULT_MAX = 100;
 
 export default function ProgressChart({ value, max, label, color = "#6366f1" }: ProgressChartProps) {
   const radius = 48;
   const stroke = 10;
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
-  const progress = Math.min(value / max, 1);
+  const safeValue = value || 0;
+const safeMax = max && max !== 0 ? max : DEFAULT_MAX;
+const progress = Math.min(safeValue / safeMax, 1);
   const strokeDashoffset = circumference - progress * circumference;
 
   return (
