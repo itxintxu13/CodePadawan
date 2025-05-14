@@ -16,41 +16,37 @@ const CodeEditorHtml: React.FC<CodeEditorProps> = ({ codigo, setCodigo }) => {
   const editorInstance = useRef<EditorView | null>(null);
   const [output, setOutput] = useState<string>("");
 
-  useEffect(() => {
-    if (!editorRef.current) return;
+useEffect(() => {
+  if (!editorRef.current || editorInstance.current) return;
 
-    const state = EditorState.create({
-      doc: codigo,
-      extensions: [
-        basicSetup,
-        html(),
-        oneDark,
-        keymap.of(defaultKeymap),
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged) {
-            setCodigo(update.state.doc.toString());
-          }
-        }),
-      ],
-    });
+  const state = EditorState.create({
+    doc: codigo,
+    extensions: [
+      basicSetup,
+      html(),
+      oneDark,
+      keymap.of(defaultKeymap),
+      EditorView.updateListener.of((update) => {
+        if (update.docChanged) {
+          setCodigo(update.state.doc.toString());
+        }
+      }),
+    ],
+  });
 
+  editorInstance.current = new EditorView({
+    state,
+    parent: editorRef.current,
+  });
+
+  return () => {
     if (editorInstance.current) {
       editorInstance.current.destroy();
       editorInstance.current = null;
     }
+  };
+}, []);
 
-    editorInstance.current = new EditorView({
-      state,
-      parent: editorRef.current,
-    });
-
-    return () => {
-      if (editorInstance.current) {
-        editorInstance.current.destroy();
-        editorInstance.current = null;
-      }
-    };
-  }, [codigo]);
 
   const ejecutarCodigo = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
