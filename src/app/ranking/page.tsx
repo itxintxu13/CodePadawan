@@ -35,7 +35,7 @@ export default function RankingPage() {
     nombre: user.username || "Usuario",
     puntos: typeof user.points === "number" ? user.points : 0,
     retosResueltos: retosResueltos, // ✅ Ahora reflejamos el número correcto
-    logros: logros
+    logros: getLogros(retosResueltos),
   };
 });
   
