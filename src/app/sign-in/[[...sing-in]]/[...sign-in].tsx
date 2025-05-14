@@ -2,5 +2,14 @@
 import { SignIn } from "@clerk/nextjs";
 
 export default function SignInPage() {
-  return <SignIn routing="path" path="/sign-in" />;
+  return (
+    <SignIn
+      path="/sign-in"
+      routing="path"
+      forceRedirectUrl="/dashboard"
+    />
+  );
 }
+
+
+
