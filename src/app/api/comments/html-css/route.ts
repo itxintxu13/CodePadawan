@@ -1,95 +1,129 @@
-import fs from "fs";
-import path from "path";
-import { NextResponse } from "next/server";
+import { clerkClient } from "@clerk/clerk-sdk-node";
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 
-const filePath = path.join(process.cwd(), "src/app/blog/html-css/comments.json");
-const uploadDir = path.join(process.cwd(), "public/uploads");
-
-// 🔹 Asegurar que las carpetas necesarias existen
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Utilidad para leer FormData (si quieres soportar archivos en el futuro)
+async function parseFormData(req: NextRequest) {
+  const formData = await req.formData();
+  return {
+    content: formData.get("content") as string,
+    parentId: formData.get("parentId") as string,
+    // file: formData.get("file") as File | null, // Si quieres manejar archivos
+    // fileUrl: ... // Aquí puedes poner la URL si subes el archivo
+  };
 }
 
-if (!fs.existsSync(filePath)) {
-  fs.writeFileSync(filePath, JSON.stringify({ comments: [] }, null, 2));
+function addUserToReplies(replies: any[], username: string): any[] {
+  return (replies || []).map(reply => ({
+    ...reply,
+    user: reply.user ?? username,
+    replies: addUserToReplies(reply.replies, username)
+  }));
 }
 
-// ✅ Obtener comentarios (GET)
 export async function GET() {
   try {
-    const data = fs.readFileSync(filePath, "utf-8");
-    const comments = JSON.parse(data);
-    console.log("📤 Comentarios cargados:", comments);
-
-    return NextResponse.json(comments);
+    const users = await clerkClient.users.getUserList();
+    const baseUser = users[0];
+    const comments = baseUser?.publicMetadata?.commentsHtmlCss || [];
+    return NextResponse.json({ comments });
   } catch (error) {
-    console.error("❌ Error al leer los comentarios:", error);
-    return NextResponse.json({ error: "Error al leer los comentarios" }, { status: 500 });
+    console.error("Error fetching comments:", error);
+    return NextResponse.json({ error: "Failed to fetch comments" }, { status: 500 });
   }
 }
 
-// ✅ Guardar comentario con posible archivo adjunto (POST)
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    let parentId, user, content, file;
-    
-    if (req.headers.get("content-type")?.includes("multipart/form-data")) {
-      const formData = await req.formData();
-      parentId = formData.get("parentId") as string;
-      user = formData.get("user") as string;
-      content = formData.get("content") as string;
-      file = formData.get("file") as File;
-    } else {
-      const jsonData = await req.json();
-      parentId = jsonData.parentId;
-      user = jsonData.user;
-      content = jsonData.content;
-      file = jsonData.image;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("📝 Comentario recibido:", { parentId, user, content, file });
+    // Lee los datos del FormData
+    const { content, parentId } = await parseFormData(req);
 
-    const data = fs.readFileSync(filePath, "utf-8");
-    const comments = JSON.parse(data);
-
-    let fileUrl = null;
-    if (file && file instanceof File) {
-      const fileName = `${Date.now()}-${file.name.replace(/\s+/g, "_")}`;
-      const filePathToSave = path.join(uploadDir, fileName);
-      const buffer = Buffer.from(await file.arrayBuffer());
-
-      fs.writeFileSync(filePathToSave, buffer);
-      fileUrl = `/uploads/${fileName}`;
-      console.log("✅ Archivo guardado en:", fileUrl);
+    if (!content) {
+      return NextResponse.json({ error: "Content is required" }, { status: 400 });
     }
 
-    const newComment = {
-      id: Date.now().toString(),
-      user,
-      content,
-      fileUrl,
-      replies: [],
-      timestamp: new Date().toISOString(),
-    };
+    // Obtén todos los usuarios
+    const allUsers = await clerkClient.users.getUserList();
+
+    // Usa los comentarios del primer usuario como base (o crea un array vacío si no hay)
+    const baseUser = allUsers[0];
+    const comments = (baseUser?.publicMetadata?.comments || []) as any[];
+
+    let updatedComments: any[];
 
     if (parentId) {
-      const parentComment = comments.comments.find((c: any) => c.id === parentId);
-      if (!parentComment) {
-        console.error("❌ Comentario original no encontrado:", parentId);
-        return NextResponse.json({ error: "Comentario original no encontrado" }, { status: 404 });
-      }
-      parentComment.replies.push(newComment);
+      // Es una respuesta a un comentario existente
+      updatedComments = comments.map((comment: any) => {
+        if (comment.id === parentId) {
+          return {
+            ...comment,
+            replies: [
+              ...(comment.replies || []),
+              {
+                id: Date.now().toString(),
+                content,
+                fileUrl: null,
+                replies: [],
+                createdAt: new Date().toISOString(),
+                user: baseUser.username ?? baseUser.id ?? "Unknown"
+              }
+            ]
+          };
+        }
+        return comment;
+      });
     } else {
-      comments.comments.push(newComment);
+      // Es un comentario nuevo
+      const newComment = {
+        id: Date.now().toString(),
+        content,
+        fileUrl: null,
+        replies: [],
+        createdAt: new Date().toISOString(),
+        user: baseUser.username ?? baseUser.id ?? "Unknown"
+      };
+      updatedComments = [...comments, newComment];
     }
 
-    console.log("📂 Guardando en JSON:", JSON.stringify(comments, null, 2));
-    fs.writeFileSync(filePath, JSON.stringify(comments, null, 2));
-    console.log("✅ Escritura en JSON completada");
+    // Guarda los comentarios en TODOS los usuarios
+    for (const u of allUsers) {
+      await clerkClient.users.updateUser(u.id, {
+        publicMetadata: {
+          points: u.publicMetadata?.points ?? 0,
+          retosResueltos: u.publicMetadata?.retosResueltos ?? 0,
+          commentsHtmlCss: updatedComments
+        }
+      });
+    }
 
-    return NextResponse.json({ message: "Comentario guardado", comment: newComment });
+    return NextResponse.json({ comment: updatedComments[updatedComments.length - 1] });
   } catch (error) {
-    console.error("❌ Error al guardar el comentario:", error);
-    return NextResponse.json({ error: "Error interno al guardar el comentario" }, { status: 500 });
+    console.error("Error saving comment:", error);
+    return NextResponse.json({ error: "Failed to save comment" }, { status: 500 });
+  }
+}
+export async function DELETE() {
+  try {
+    const allUsers = await clerkClient.users.getUserList();
+
+    for (const u of allUsers) {
+      await clerkClient.users.updateUser(u.id, {
+        publicMetadata: {
+          points: u.publicMetadata?.points ?? 0,
+          retosResueltos: u.publicMetadata?.retosResueltos ?? 0,
+          commentsHtmlCss: [] // Borra todos los comentarios
+        }
+      });
+    }
+
+    return NextResponse.json({ success: true, message: "Comentarios borrados en todos los usuarios" });
+  } catch (error) {
+    console.error("Error borrando comentarios:", error);
+    return NextResponse.json({ error: "Error borrando comentarios" }, { status: 500 });
   }
 }

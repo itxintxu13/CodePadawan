@@ -36,20 +36,28 @@ export async function POST(req: NextRequest) {
 
     // Obtener el usuario actual
     const user = await clerkClient.users.getUser(userId);
-   // ✅ Asegurar que `points` y `retosResueltos` sean valores numéricos correctos
-    const puntosActuales = Number(user.publicMetadata?.points ?? 0); // 🔥 Convertimos a número
-    const retosResueltosActuales = Number(user.publicMetadata.retosResueltos ?? 0 )
 
+    // Recuperar los comentarios existentes
+    const comentariosActuales = user.publicMetadata?.comments ?? [];
 
-    // Actualizar los puntos en Clerk
+    // Asegurar que points y retosResueltos sean valores numéricos correctos
+    const puntosActuales = Number(user.publicMetadata?.points ?? 0);
+    const retosResueltosActuales = Number(user.publicMetadata?.retosResueltos ?? 0);
+
+    // Actualizar los puntos en Clerk, manteniendo los comentarios
     await clerkClient.users.updateUser(userId, {
       publicMetadata: {
         points: puntosActuales + points,
-        retosResueltos: retosResueltosActuales + 1, // 🔥 Ahora estamos sumando retos completados
+        retosResueltos: retosResueltosActuales + 1,
+        comments: comentariosActuales, // 👈 Mantén los comentarios existentes
       },
     });
 
-    return NextResponse.json({ success: true, points: puntosActuales + points, retosResueltos: retosResueltosActuales + 1});
+    return NextResponse.json({
+      success: true,
+      points: puntosActuales + points,
+      retosResueltos: retosResueltosActuales + 1,
+    });
   } catch (error) {
     console.error("Error actualizando puntos:", error);
     return NextResponse.json({ error: "Error actualizando puntos" }, { status: 500 });

@@ -9,41 +9,21 @@ interface Comment {
   replies: Comment[];
 }
 
-export default function JavascriptBlogPage() {
+export default function JavaBlogPage() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
+  // Función para cargar comentarios
+  const fetchComments = async () => {
+    const res = await fetch("/api/comments/javascript");
+    const data = await res.json();
+    setComments(data.comments || []);
+  };
 
   useEffect(() => {
-   const fetchComments = async () => {
-  try {
-    const res = await fetch("/api/comments/javascript");
-
-    if (!res.ok) {
-      throw new Error(`Error en la respuesta del servidor: ${res.status}`);
-    }
-
-    const rawText = await res.text(); // Verificar contenido
-    console.log("🔍 Respuesta cruda del servidor:", rawText);
-
-    if (!rawText.trim()) {
-      throw new Error("La respuesta está vacía o malformada.");
-    }
-
-    const data = JSON.parse(rawText); // Convertir manualmente a JSON
-    console.log("Comentarios cargados:", data);
-
-    setComments(data.comments || []);
-  } catch (error) {
-    console.error("❌ Error al procesar JSON:", error);
-    setComments([]);
-  }
-};
-
-fetchComments();
-
+    fetchComments();
   }, []);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
@@ -56,80 +36,56 @@ fetchComments();
     formData.append("content", newComment);
     if (image) formData.append("file", image);
 
-    try {
-      const res = await fetch("/api/comments/javascript", {
-        method: "POST",
-        body: formData,
-      });
+    await fetch("/api/comments/javascript", {
+      method: "POST",
+      body: formData,
+    });
 
-      if (!res.ok) {
-        throw new Error(`Error al guardar el comentario: ${res.status}`);
-      }
+    // Recarga los comentarios después de publicar
+    await fetchComments();
 
-      const rawText = await res.text();
-      console.log("🔍 Respuesta del POST:", rawText);
-
-      if (!rawText.trim()) {
-        throw new Error("La respuesta al guardar el comentario está vacía.");
-      }
-
-      const data = JSON.parse(rawText);
-
-      setComments((prevComments) => {
-        if (replyTo) {
-          return prevComments.map((comment) =>
-            comment.id === replyTo ? { ...comment, replies: [...comment.replies, data.comment] } : comment
-          );
-        }
-        return [...prevComments, data.comment];
-      });
-
-      setNewComment("");
-      setImage(null);
-      setReplyTo(null);
-    } catch (error) {
-      console.error("❌ Error al enviar el comentario:", error);
-    }
+    setNewComment("");
+    setImage(null);
+    setReplyTo(null);
   };
 
   return (
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-3xl font-bold text-center mb-6">Blog de Javascript</h1>
-      <p className="text-center text-gray-600 mb-8">Bienvenido al blog de JavaScript. Publica tus dudas y participa en la comunidad.</p>
+      <p className="text-center text-gray-600 mb-8">Bienvenido al blog de Javascript. Publica tus dudas y participa en la comunidad.</p>
 
-      {/* Sección de comentarios */}
       <div className="space-y-6 mt-6">
-        {comments.map((comment) => (
-          <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
-            <p className="font-semibold">{comment.user}</p>
-            <p className="text-gray-600">{comment.content}</p>
-
-            {comment.fileUrl && (
-              <a href={comment.fileUrl} download className="text-blue-500 mt-2">
-                Descargar archivo
-              </a>
-            )}
-
-            <button onClick={() => setReplyTo(comment.id)} className="text-blue-500 mt-2">Responder</button>
-
-            {comment.replies.length > 0 && (
-              <div className="ml-6 border-l pl-4 mt-4">
-                {comment.replies.map((reply) => (
-                  <div key={reply.id} className="p-3 bg-gray-100 rounded-lg mt-2">
-                    <p className="font-semibold">{reply.user}</p>
-                    <p className="text-gray-600">{reply.content}</p>
-
-                    {reply.fileUrl && (
-                      <a href={reply.fileUrl} download className="text-blue-500 mt-2">
-                        Descargar archivo
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+        {comments
+          .filter((comment) => comment && comment.user && comment.content)
+          .map((comment) => (
+            <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
+              <p className="font-semibold">{comment.user}</p>
+              <p className="text-gray-600">{comment.content}</p>
+              {comment.fileUrl && (
+                <a href={comment.fileUrl} download className="text-blue-500 mt-2">
+                  Descargar archivo
+                </a>
+              )}
+              <button onClick={() => setReplyTo(comment.id)} className="text-blue-500 mt-2">Responder</button>
+              {comment.replies.length > 0 && (
+                <div className="ml-6 border-l pl-4 mt-4">
+                  {comment.replies
+                    .filter((reply) => reply && reply.user && reply.content)
+                    .map((reply) => (
+                      <div key={reply.id} className="p-3 bg-gray-100 rounded-lg mt-2">
+                        <p className="font-semibold">{reply.user}</p>
+                        <p className="text-gray-600">{reply.content}</p>
+                        {reply.fileUrl && (
+                          <a href={reply.fileUrl} download className="text-blue-500 mt-2">
+                            Descargar archivo
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          ))}
       </div>
 
       {/* Barra para añadir un comentario */}
