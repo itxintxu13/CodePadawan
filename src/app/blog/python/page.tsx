@@ -88,27 +88,38 @@ export default function PyhtonBlogPage() {
           ))}
       </div>
 
-      {/* Barra para añadir un comentario */}
-      <div className="mt-6 flex items-center gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
-        <input
-          type="text"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Escribe tu comentario..."
-          className="flex-1 p-2 border rounded-lg text-black"
-        />
-        <input
-          type="file"
-          onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-          className="text-black"
-        />
-        <button
-          onClick={handleCommentSubmit}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-          {replyTo ? "Responder" : "Publicar"}
-        </button>
-      </div>
+     {/* Barra para añadir un comentario o responder */}
+    <div className="mt-6 flex flex-col gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
+      {replyTo && (
+        <div className="text-sm text-gray-500">
+          Respondiendo a un comentario.{" "}
+          <button
+            onClick={() => setReplyTo(null)} // Permite cancelar la respuesta
+            className="text-blue-500"
+          >
+            Cancelar
+          </button>
+        </div>
+      )}
+      <input
+        type="text"
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+        placeholder="Escribe tu comentario..."
+        className="flex-1 p-2 border rounded-lg text-black"
+      />
+      <input
+        type="file"
+        onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+        className="text-black"
+      />
+      <button
+        onClick={handleCommentSubmit}
+        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+      >
+        {replyTo ? "Responder" : "Publicar"}
+      </button>
     </div>
-  );
+  </div>
+);
 }
