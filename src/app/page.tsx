@@ -7,6 +7,9 @@ import {
 } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import * as Clerk from "@clerk/nextjs";
+console.log(Clerk);
+
 
 export default function Home() {
   const { isSignedIn, user } = useUser();
@@ -130,3 +133,4 @@ export default function Home() {
       </div>
     </> 
   );
+}
