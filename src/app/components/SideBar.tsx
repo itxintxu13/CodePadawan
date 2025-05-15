@@ -13,17 +13,6 @@ export default function Sidebar() {
       </div>
       <nav className="flex flex-col gap-4">
         <a
-          href="/dashboard"
-          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
-        >
-          <span className="mr-3 text-blue-400 group-hover:text-blue-300 transition-colors duration-200">
-            🏠
-          </span>
-          <span className="group-hover:text-blue-100 transition-colors duration-200">
-            Dashboard
-          </span>
-        </a>
-        <a
           href="/retos"
           className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
         >
@@ -46,14 +35,14 @@ export default function Sidebar() {
           </span>
         </a>
         <a
-          href="/user-profile"
+          href="/user-profile?tab=playground"
           className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
         >
           <span className="mr-3 text-white-400 group-hover:text-purple-300 transition-colors duration-200">
-            👤
+            🎮
           </span>
           <span className="group-hover:text-blue-100 transition-colors duration-200">
-            Mi Perfil
+            Playground
           </span>
         </a>
         <div className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group cursor-pointer">
