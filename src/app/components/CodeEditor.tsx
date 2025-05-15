@@ -179,7 +179,7 @@ const CodeEditor: React.FC = () => {
 
     try {
       if (language === "javascript") {
-        const worker = new Worker(new URL("../app/workers/worker.js", import.meta.url));
+        const worker = new Worker(new URL("../../app/workers/worker.js", import.meta.url));
     
     let timeout = setTimeout(() => {
       worker.terminate();
@@ -255,16 +255,7 @@ public class Main {
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1
-        style={{
-          marginBottom: "10px",
-          display: "flex",
-          justifyContent: "center",
-          fontSize: "40px",
-        }}
-      >
-        👨‍💻 CodePadawan 💫
-      </h1>
+     
       <div
         style={{
           display: "flex",
@@ -356,15 +347,21 @@ public class Main {
       </div>
 
       <div
-        ref={editorRef}
-        style={{
-          border: "1px solid #ccc",
-          minHeight: "200px",
-          borderRadius: "8px",
-          overflow: "hidden",
-          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-        }}
-      />
+  ref={editorRef}
+  style={{
+    border: "1px solid #ccc",
+    minHeight: "240px",
+    borderRadius: "8px",
+    overflow: "hidden",
+    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+    fontFamily: "monospace",
+    fontSize: "14px",
+    padding: "10px",
+    backgroundColor: "#1e1e1e",
+    color: "#fff",
+    whiteSpace: "pre-wrap",
+  }}
+/>
       <button
         onClick={ejecutarCodigo}
         disabled={!isPyodideReady && language === "python"}
@@ -403,13 +400,36 @@ public class Main {
         }}
       >
         {language === "html" ? (
-          <div dangerouslySetInnerHTML={{ __html: output }} />
-        ) : (
-          <>
-            <strong>Salida:</strong>
-            <pre>{output || "Aquí se mostrará la salida..."}</pre>
-          </>
-        )}
+  <div 
+    style={{
+      backgroundColor: "#000", // Fondo negro
+      color: "#fff", // Texto blanco
+      padding: "10px",
+      borderRadius: "5px",
+      border: "1px solid #444",
+      minHeight: "120px",
+      whiteSpace: "pre-wrap"
+    }} 
+    dangerouslySetInnerHTML={{ __html: output }} 
+  />
+) : (
+  <>
+    <strong>Salida:</strong>
+    <pre 
+      style={{
+        backgroundColor: "#000", // Fondo negro
+        color: "#fff", // Texto blanco
+        padding: "10px",
+        borderRadius: "5px",
+        border: "1px solid #444",
+        minHeight: "120px",
+        whiteSpace: "pre-wrap"
+      }}
+    >
+      {output || "Aquí se mostrará la salida..."}
+    </pre>
+  </>
+)}
       </div>
     </div>
   );

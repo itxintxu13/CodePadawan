@@ -4,28 +4,51 @@ import { UserProfile, useUser } from '@clerk/nextjs';
 import Sidebar from "@/app/components/SideBar";
 import { motion, AnimatePresence } from "framer-motion";
 import Estadisticas from '@/app/components/Estadisticas';
-
-interface RetoCompletado {
-  id: number;
-  titulo: string;
-  puntos: number;
-  fechaEntrega: string;
-}
+import { useSearchParams } from "next/navigation";
+import CodeEditor from '@/app/components/CodeEditor';
 
 export default function UserProfilePage() {
   const { isLoaded, user } = useUser();
-  const [showConfetti, setShowConfetti] = useState(false);
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
 
   useEffect(() => {
     if (!isLoaded || !user) return;
-    // Mostrar confetti al cargar el perfil
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 3000);
   }, [isLoaded, user]);
 
   if (!isLoaded) {
     return <div className="container mx-auto p-8 text-center">Cargando...</div>;
   }
+
+  // Si el tab es 'playground', mostramos el editor de código
+  if (tab === 'playground') {
+    return (
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <main className="flex-1 p-4 md:p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white">
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-yellow-400">
+              🛸 Bienvenido al Playground Jedi 🛸
+            </h1>
+            <p className="text-indigo-300 italic">
+              "Hazlo o no lo hagas, pero no lo intentes" - Yoda
+            </p>
+          </div>
+
+          <div className="flex justify-center mb-4">
+            <p className="text-green-400 text-lg font-semibold">
+              💻 Usa la Fuerza... y codea padawan 💻
+            </p>
+          </div>
+
+          <CodeEditor />
+
+        </main>
+      </div>
+    );
+  }
+
+
 
   return (
     <div className="flex min-h-screen">
@@ -70,19 +93,6 @@ export default function UserProfilePage() {
         />
       </div>
 
-      {/* Confetti animación */}
-      <AnimatePresence>
-        {showConfetti && (
-          <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            className="fixed inset-0 z-50 pointer-events-none flex justify-center items-start"
-          >
-            <img src="https://cdn.jsdelivr.net/gh/stevensegallery/confetti/confetti.gif" alt="Confetti" className="w-full max-w-2xl mx-auto" />
-          </motion.div>
-        )}
-      </AnimatePresence>
       </main>
     </div>
   );
