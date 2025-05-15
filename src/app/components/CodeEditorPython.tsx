@@ -207,6 +207,12 @@ sys.stdout.getvalue()`;
           border: "none",
           cursor: "pointer",
           color: "#fff",
+          width: "100%",
+          maxWidth: "300px",
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto",
+          fontSize: "clamp(1rem, 4vw, 1.1rem)",
         }}
       >
         {isPyodideReady ? "Ejecutar Código" : "Cargando Pyodide..."}

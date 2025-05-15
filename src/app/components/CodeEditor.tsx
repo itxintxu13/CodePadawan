@@ -179,7 +179,7 @@ const CodeEditor: React.FC = () => {
 
     try {
       if (language === "javascript") {
-        const worker = new Worker(new URL("../workers/worker.js", import.meta.url));
+        const worker = new Worker(new URL("../app/workers/worker.js", import.meta.url));
     
     let timeout = setTimeout(() => {
       worker.terminate();

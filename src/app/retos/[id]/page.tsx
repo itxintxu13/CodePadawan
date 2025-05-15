@@ -308,23 +308,32 @@ export default function RetoPage() {
             <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
           </div>
           <div className="flex items-center gap-4 mb-4">
-            {reto.lenguajes.length > 1 ? (
-              <select
-                value={lenguaje}
-                onChange={(e) => cambiarLenguaje(e.target.value)}
-                className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
-              >
-                {reto.lenguajes.map((lang) => (
-                  <option key={lang} value={lang}>
-                    {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <span className="bg-gray-700 text-white px-4 py-2 rounded">
-                {reto.lenguajes[0].charAt(0).toUpperCase() + reto.lenguajes[0].slice(1)}
-              </span>
-            )}
+            <div className="flex gap-2">
+              {reto.lenguajes.includes('javascript') && (
+                <button
+                  onClick={() => cambiarLenguaje('javascript')}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'javascript' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                >
+                  JavaScript
+                </button>
+              )}
+              {reto.lenguajes.includes('python') && (
+                <button
+                  onClick={() => cambiarLenguaje('python')}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'python' ? 'bg-blue-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                >
+                  Python
+                </button>
+              )}
+              {reto.lenguajes.includes('java') && (
+                <button
+                  onClick={() => cambiarLenguaje('java')}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'java' ? 'bg-red-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                >
+                  Java
+                </button>
+              )}
+            </div>
           </div>
           <p className="text-gray-300 mb-6">{reto.descripcion}</p>
         </div>

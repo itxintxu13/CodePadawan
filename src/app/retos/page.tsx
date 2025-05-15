@@ -3,9 +3,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
-import CodeEditorJava from "../components/CodeEditorJava";
-import CodeEditorJavaScript from "../components/CodeEditorJavaScript";
-import CodeEditorPython from "../components/CodeEditorPython";
 
 interface Reto {
   id: number;
