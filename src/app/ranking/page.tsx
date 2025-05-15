@@ -27,7 +27,7 @@ export default function RankingPage() {
   
         // 🔥 Corrección: Cambiar "usuario" por "user"
        const usuariosClerk = data.map((user: any) => {
-       const retosResueltos = typeof user.retosResueltos === "number" ? user.retosResueltos : 0; // Ahora asignamos correctamente el número de retos
+       const retosResueltos = Array.isArray(user.retosResueltos) ? user.retosResueltos : []; // Ahora asignamos correctamente el número de retos
        const logros = getLogros(retosResueltos); // Simular un array con retos para la función de logros
 
   return {
@@ -70,7 +70,8 @@ export default function RankingPage() {
   };
 
   // Función para determinar los logros del usuario
-const getLogros = (numRetosResueltos: number) => {
+const getLogros = (retosResueltos: number[]) => {
+  const numRetosResueltos = retosResueltos?.length || 0;
   const logros = [];
 
   console.log("Número de retos resueltos en getLogros:", numRetosResueltos);
@@ -121,7 +122,7 @@ return (
             </thead>
             <tbody>
             {usuarios.map((usuario, index) => (
-              <tr key={usuario.id} 
+              <tr key={usuario.id}
                   className={`border-t border-gray-700 ${user && usuario.id === user.id ? 'bg-blue-900 bg-opacity-30' : ''}`}
               >
                 <td className="py-3 px-4">
