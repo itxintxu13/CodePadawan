@@ -4,17 +4,16 @@ import { SignOutButton } from "@clerk/nextjs";
 
 export default function Sidebar() {
   return (
-    <div className="h-screen w-68 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col p-4 shadow-lg">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-          CodePadawan
-        </h2>
-        <p className="text-sm text-gray-400">Tu camino hacia la maestría</p>
+<div className="h-screen w-1/5 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col p-4 shadow-lg overflow-y-auto">      <div className="mb-6">
+{/* <p className="text-lg font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 text-transparent bg-clip-text tracking-wider text-center mt-2 pb-2 px-4 py-2 border border-gray-600 rounded-md shadow-lg">
+  Que el código te acompañe.
+</p> */}
       </div>
-      <nav className="flex flex-col gap-4">
+
+      <nav className="flex flex-col gap-4 flex-grow">
         <a
           href="/retos"
-          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
+          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group "
         >
           <span className="mr-3 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-200">
             🏆
@@ -45,6 +44,24 @@ export default function Sidebar() {
             Playground
           </span>
         </a>
+      <div className="pb-4">
+       <a
+          href="/user-profile?tab=about"
+          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
+        >
+          <span className="mr-3 text-blue-400 group-hover:text-blue-300 transition-colors duration-200">
+            ℹ️
+          </span>
+          <span className="group-hover:text-blue-100 transition-colors duration-200">
+            Acerca de nosotros
+          </span>
+        </a>
+
+      </div>
+      </nav>
+      
+
+      <div className="mt-auto pt-4 border-t border-gray-700">
         <div className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group cursor-pointer">
           <SignOutButton>
             <button className="flex items-center w-full text-left">
@@ -57,14 +74,6 @@ export default function Sidebar() {
             </button>
           </SignOutButton>
         </div>
-      </nav>
-      <div className="mt-auto pt-4 border-t border-gray-700">
-        <a
-          href="/"
-          className="text-sm text-gray-400 hover:text-white flex items-center p-2 rounded hover:bg-gray-700 transition-colors duration-200"
-        >
-          <span className="mr-2">ℹ️</span> Acerca de nosotros
-        </a>
       </div>
     </div>
   );
