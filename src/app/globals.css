@@ -1,8 +1,66 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f7fa;
+  --foreground: #232323;
+  --accent: #7c3aed;
+  --accent-light: #a78bfa;
+  --primary-font: 'Geist', 'Inter', Arial, Helvetica, sans-serif;
+  --mono-font: 'Geist Mono', 'Fira Code', monospace;
+}
+
+body {
+  background: linear-gradient(135deg, #f7f7fa 0%, #e6e6ef 100%);
+  color: var(--foreground);
+  font-family: var(--primary-font);
+  font-size: 18px;
+  letter-spacing: 0.01em;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--primary-font);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+}
+
+a {
+  color: var(--accent);
+  transition: color 0.2s;
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent-light);
+  text-decoration: underline;
+}
+
+pre, code {
+  font-family: var(--mono-font);
+  background: #f0f0f5;
+  color: #232323;
+  border-radius: 8px;
+  padding: 0.2em 0.5em;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #e6e6ef;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --accent: #7c3aed;
+    --accent-light: #a78bfa;
+  }
 }
 
 @theme inline {
@@ -10,13 +68,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

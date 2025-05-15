@@ -1,3 +1,4 @@
+// Archivo corregido sin la declaración redundante
 self.onmessage = function (e) {
   const { codigo } = e.data;
   try {

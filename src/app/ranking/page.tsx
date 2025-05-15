@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 
 interface Usuario {
   id: string;
@@ -13,50 +13,52 @@ export default function RankingPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [cargando, setCargando] = useState(true);
   const { user } = useUser();
-  const { users } = useClerk();
+  const [resultado, setResultado] = useState<{ success: boolean; message: string } | null>(null);
+
 
   useEffect(() => {
     const cargarUsuarios = async () => {
       try {
-        // En un entorno real, esto se conectaría con Clerk para obtener todos los usuarios
-        // Como ejemplo, creamos algunos usuarios ficticios y añadimos al usuario actual si existe
-        const usuariosFicticios: Usuario[] = [
-          { id: '1', nombre: 'Usuario1', puntos: 120, retosResueltos: [1, 2, 3] },
-          { id: '2', nombre: 'Usuario2', puntos: 90, retosResueltos: [1, 2] },
-          { id: '3', nombre: 'Usuario3', puntos: 50, retosResueltos: [1] },
-        ];
-        
-        // Añadir al usuario actual si existe
-        if (user) {
-          const usuarioActual: Usuario = {
-            id: user.id,
-            nombre: user.firstName || user.username || 'Usuario',
-            puntos: (user.publicMetadata.puntos as number) || 0,
-            retosResueltos: (user.publicMetadata.retosResueltos as number[]) || [],
-          };
-          
-          // Verificar si el usuario ya está en la lista
-          const usuarioExistente = usuariosFicticios.findIndex(u => u.id === user.id);
-          if (usuarioExistente >= 0) {
-            usuariosFicticios[usuarioExistente] = usuarioActual;
-          } else {
-            usuariosFicticios.push(usuarioActual);
-          }
-        }
-        
-        // Ordenar por puntos (de mayor a menor)
-        const usuariosOrdenados = usuariosFicticios.sort((a, b) => b.puntos - a.puntos);
+        const response = await fetch("/api/updatePoints");
+        if (!response.ok) throw new Error("Error en la respuesta de la API");
+  
+        const data = await response.json();
+        console.log("Datos recibidos de la API:", JSON.stringify(data, null, 2));
+  
+        // 🔥 Corrección: Cambiar "usuario" por "user"
+       const usuariosClerk = data.map((user: any) => {
+       const retosResueltos = typeof user.retosResueltos === "number" ? user.retosResueltos : 0; // Ahora asignamos correctamente el número de retos
+       const logros = getLogros(retosResueltos); // Simular un array con retos para la función de logros
+
+  return {
+    id: user.id,
+    nombre: user.username || "Usuario",
+    puntos: typeof user.points === "number" ? user.points : 0,
+    retosResueltos: retosResueltos, // ✅ Ahora reflejamos el número correcto
+    logros: getLogros(retosResueltos),
+  };
+});
+  
+        console.log("Usuarios después del mapeo:", JSON.stringify(usuariosClerk, null, 2));
+  
+        // Ordenar usuarios por puntos de mayor a menor
+        const usuariosOrdenados = [...usuariosClerk].sort(
+          (a: Usuario, b: Usuario) => (b.puntos ?? 0) - (a.puntos ?? 0)
+        );
+  
+        console.log("Usuarios después de ordenar:", JSON.stringify(usuariosOrdenados, null, 2));
+  
         setUsuarios(usuariosOrdenados);
       } catch (error) {
-        console.error('Error al cargar usuarios:', error);
+        console.error("Error al obtener usuarios:", error);
       } finally {
         setCargando(false);
       }
     };
-
+  
     cargarUsuarios();
-  }, [user]);
-
+  }, [user, resultado]); // ✅ Se ejecuta cuando `user` cambia Y también cuando se entrega una solución
+  
   // Función para determinar el emoji de la posición
   const getPositionEmoji = (index: number) => {
     switch (index) {
@@ -68,21 +70,39 @@ export default function RankingPage() {
   };
 
   // Función para determinar los logros del usuario
-  const getLogros = (retosResueltos: number[]) => {
-    const logros = [];
-    
-    if (retosResueltos.length >= 1) logros.push('🌱 Principiante');
-    if (retosResueltos.length >= 3) logros.push('🚀 Explorador');
-    if (retosResueltos.length >= 5) logros.push('⭐ Experto');
-    if (retosResueltos.length >= 10) logros.push('🏆 Maestro');
-    
-    return logros;
-  };
+const getLogros = (numRetosResueltos: number) => {
+  const logros = [];
 
-  return (
-    <div className="container mx-auto p-8">
+  console.log("Número de retos resueltos en getLogros:", numRetosResueltos);
+
+  if (numRetosResueltos >= 1) {
+    logros.push('🌱 Principiante');
+    console.log("Asignado logro: Principiante");
+  }
+  if (numRetosResueltos >= 3) {
+    logros.push('🚀 Explorador');
+    console.log("Asignado logro: Explorador");
+  }
+  if (numRetosResueltos >= 5) {
+    logros.push('⭐ Experto');
+    console.log("Asignado logro: Experto");
+  }
+  if (numRetosResueltos >= 10) {
+    logros.push('🏆 Maestro');
+    console.log("Asignado logro: Maestro");
+  }
+
+  console.log("Logros generados:", logros);
+
+  return logros;
+};
+
+
+  console.log("Usuarios en el render:", usuarios); // ✅ Fuera del return
+return (
+    <main className="container mx-auto p-8 bg-gray-900 text-white">
       <h1 className="text-4xl font-bold text-center mb-8">Ranking de Usuarios 🏆</h1>
-      
+  
       {cargando ? (
         <div className="text-center">
           <p>Cargando ranking...</p>
@@ -100,61 +120,38 @@ export default function RankingPage() {
               </tr>
             </thead>
             <tbody>
-              {usuarios.map((usuario, index) => (
-                <tr 
-                  key={usuario.id} 
+            {usuarios.map((usuario, index) => (
+              <tr key={usuario.id} 
                   className={`border-t border-gray-700 ${user && usuario.id === user.id ? 'bg-blue-900 bg-opacity-30' : ''}`}
-                >
-                  <td className="py-3 px-4">
-                    <span className="text-xl">{getPositionEmoji(index)}</span>
-                  </td>
-                  <td className="py-3 px-4">
-                    {usuario.nombre}
-                    {user && usuario.id === user.id && (
-                      <span className="ml-2 text-xs bg-blue-600 px-2 py-1 rounded">Tú</span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="font-bold text-yellow-400">{usuario.puntos}</span>
-                  </td>
-                  <td className="py-3 px-4">{usuario.retosResueltos.length}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex flex-wrap gap-2">
-                      {getLogros(usuario.retosResueltos).map((logro, i) => (
-                        <span key={i} className="bg-gray-700 px-2 py-1 rounded text-xs">
-                          {logro}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              >
+                <td className="py-3 px-4">
+                  <span className="text-xl">{getPositionEmoji(index)}</span>
+                </td>
+                <td className="py-3 px-4">
+                  {usuario.nombre}
+                  {user && usuario.id === user.id && (
+                    <span className="ml-2 text-xs bg-blue-600 px-2 py-1 rounded">Tú</span>
+                  )}
+                </td>
+                <td className="py-3 px-4">
+                  <span className="font-bold text-yellow-400">{usuario.puntos}</span>
+                </td>
+                <td className="py-3 px-4">{usuario.retosResueltos ?? 0}</td>
+                <td className="py-3 px-4">
+                  <div className="flex flex-wrap gap-2">
+                    {getLogros(usuario.retosResueltos).map((logro, i) => (
+                      <span key={i} className="bg-green-700 px-2 py-1 rounded text-xs">
+                        {logro}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
             </tbody>
           </table>
         </div>
       )}
-      
-      <div className="mt-8 bg-gray-800 rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-4">Logros Disponibles</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-gray-700 p-4 rounded-lg">
-            <p className="text-xl mb-2">🌱 Principiante</p>
-            <p className="text-gray-300">Resuelve tu primer reto</p>
-          </div>
-          <div className="bg-gray-700 p-4 rounded-lg">
-            <p className="text-xl mb-2">🚀 Explorador</p>
-            <p className="text-gray-300">Resuelve 3 retos</p>
-          </div>
-          <div className="bg-gray-700 p-4 rounded-lg">
-            <p className="text-xl mb-2">⭐ Experto</p>
-            <p className="text-gray-300">Resuelve 5 retos</p>
-          </div>
-          <div className="bg-gray-700 p-4 rounded-lg">
-            <p className="text-xl mb-2">🏆 Maestro</p>
-            <p className="text-gray-300">Resuelve 10 retos</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 }
