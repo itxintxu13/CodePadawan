@@ -71,14 +71,20 @@ export default function HtmlCssBlogPage() {
     .filter((comment) => comment && comment.user && comment.content)
     .map((comment) => (
       <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
-        <p className="font-semibold">{comment.user}</p> {/* Muestra solo el username */}
+        <p className="font-semibold">{comment.user}</p>
         <p className="text-gray-600">{comment.content}</p>
         {comment.fileUrl && <img src={comment.fileUrl} alt="Attachment" />}
+        <button
+          onClick={() => setReplyTo(comment.id)} // Establece el comentario al que se responde
+          className="text-blue-500 text-sm mt-2"
+        >
+          Responder
+        </button>
         {comment.replies.length > 0 && (
           <div className="ml-4">
             {comment.replies.map((reply) => (
               <div key={reply.id} className="p-2 border rounded-lg bg-gray-100">
-                <p className="font-semibold">{reply.user}</p> {/* Muestra solo el username de la respuesta */}
+                <p className="font-semibold">{reply.user}</p>
                 <p className="text-gray-600">{reply.content}</p>
               </div>
             ))}
@@ -88,27 +94,37 @@ export default function HtmlCssBlogPage() {
     ))}
 </div>
 
-      {/* Barra para añadir un comentario */}
-      <div className="mt-6 flex items-center gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
-        <input
-          type="text"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Escribe tu comentario..."
-          className="flex-1 p-2 border rounded-lg text-black"
-        />
-        <input
-          type="file"
-          onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-          className="text-black"
-        />
-        <button
-          onClick={handleCommentSubmit}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-          {replyTo ? "Responder" : "Publicar"}
-        </button>
-      </div>
+<div className="mt-6 flex flex-col gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
+  {replyTo && (
+    <div className="text-sm text-gray-500">
+      Respondiendo a un comentario.{" "}
+      <button
+        onClick={() => setReplyTo(null)} // Permite cancelar la respuesta
+        className="text-blue-500"
+      >
+        Cancelar
+      </button>
+    </div>
+  )}
+  <input
+    type="text"
+    value={newComment}
+    onChange={(e) => setNewComment(e.target.value)}
+    placeholder="Escribe tu comentario..."
+    className="flex-1 p-2 border rounded-lg text-black"
+  />
+  <input
+    type="file"
+    onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+    className="text-black"
+  />
+  <button
+    onClick={handleCommentSubmit}
+    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+  >
+    {replyTo ? "Responder" : "Publicar"}
+  </button>
+</div>
     </div>
   );
 }

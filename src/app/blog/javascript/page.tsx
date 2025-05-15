@@ -71,14 +71,20 @@ export default function JavaScriptBlogPage() {
           .filter((comment) => comment && comment.user && comment.content)
           .map((comment) => (
             <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
-              <p className="font-semibold">{comment.user}</p> {/* Muestra solo el username */}
+              <p className="font-semibold">{comment.user}</p>
               <p className="text-gray-600">{comment.content}</p>
               {comment.fileUrl && <img src={comment.fileUrl} alt="Attachment" />}
+              <button
+                onClick={() => setReplyTo(comment.id)} // Establece el comentario al que se responde
+                className="text-blue-500 text-sm mt-2"
+              >
+                Responder
+              </button>
               {comment.replies.length > 0 && (
                 <div className="ml-4">
                   {comment.replies.map((reply) => (
                     <div key={reply.id} className="p-2 border rounded-lg bg-gray-100">
-                      <p className="font-semibold">{reply.user}</p> {/* Muestra solo el username de la respuesta */}
+                      <p className="font-semibold">{reply.user}</p>
                       <p className="text-gray-600">{reply.content}</p>
                     </div>
                   ))}
@@ -88,8 +94,19 @@ export default function JavaScriptBlogPage() {
           ))}
       </div>
 
-      {/* Barra para añadir un comentario */}
-      <div className="mt-6 flex items-center gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
+      {/* Barra para añadir un comentario o responder */}
+      <div className="mt-6 flex flex-col gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
+        {replyTo && (
+          <div className="text-sm text-gray-500">
+            Respondiendo a un comentario.{" "}
+            <button
+              onClick={() => setReplyTo(null)} // Permite cancelar la respuesta
+              className="text-blue-500"
+            >
+              Cancelar
+            </button>
+          </div>
+        )}
         <input
           type="text"
           value={newComment}
