@@ -57,12 +57,24 @@ export default function RetoPage() {
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [editorInstance, setEditorInstance] = useState<EditorView | null>(null);
   const [mostrarSolucion, setMostrarSolucion] = useState(false);
+  const [puntosUsuario, setPuntosUsuario] = useState(0);
+  const [accesoPermitido, setAccesoPermitido] = useState(true);
 
   useEffect(() => {
     if (!isSignedIn) {
       router.push('/');
       return;
     }
+
+    const cargarPuntosUsuario = async () => {
+      if (user?.id) {
+        const puntos = Number(user.publicMetadata?.points) || 0;
+        setPuntosUsuario(puntos);
+      }
+    };
+  
+    cargarPuntosUsuario();
+  }, [isSignedIn, router, user]);
 
     const cargarReto = async () => {
       try {
@@ -72,10 +84,19 @@ export default function RetoPage() {
         }
         const retos = await response.json();
         const retoActual = retos.find((r: Reto) => r.id.toString() === params.id);
-
+    
         if (retoActual) {
+          // Verificar si el usuario tiene suficientes puntos
+          const puntosNecesarios = retoActual.puntos || 0;
+          const puntosUsuarioActual = Number(user?.publicMetadata?.points) || 0;
+          
+          if (puntosUsuarioActual + 10 < puntosNecesarios) {
+            setAccesoPermitido(false);
+            setCargando(false);
+            return;
+          }
+    
           setReto(retoActual);
-          // Establecer el lenguaje predeterminado al primer lenguaje disponible
           if (retoActual.lenguajes.length > 0) {
             setLenguaje(retoActual.lenguajes[0]);
             setCodigo(retoActual.plantilla[retoActual.lenguajes[0]]);
@@ -89,9 +110,6 @@ export default function RetoPage() {
         setCargando(false);
       }
     };
-
-    cargarReto();
-  }, [isSignedIn, params.id, router]);
 
   useEffect(() => {
     if (!reto || !lenguaje) return;
@@ -271,6 +289,29 @@ export default function RetoPage() {
     );
   }
 
+  if (!accesoPermitido) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Acceso restringido</h1>
+          <p className="mb-4">
+            No tienes suficientes puntos para acceder a este reto.
+          </p>
+          <p className="mb-6">
+            Necesitas al menos <span className="font-bold">{reto?.puntos || 0} puntos</span>.
+            Actualmente tienes: <span className="font-bold">{puntosUsuario} puntos</span>.
+          </p>
+          <button
+            onClick={() => router.push('/retos')}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          >
+            Volver a los retos disponibles
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!reto) {
     return (
       <div className="container mx-auto p-8 text-center">
@@ -308,23 +349,32 @@ export default function RetoPage() {
             <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
           </div>
           <div className="flex items-center gap-4 mb-4">
-            {reto.lenguajes.length > 1 ? (
-              <select
-                value={lenguaje}
-                onChange={(e) => cambiarLenguaje(e.target.value)}
-                className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
-              >
-                {reto.lenguajes.map((lang) => (
-                  <option key={lang} value={lang}>
-                    {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <span className="bg-gray-700 text-white px-4 py-2 rounded">
-                {reto.lenguajes[0].charAt(0).toUpperCase() + reto.lenguajes[0].slice(1)}
-              </span>
-            )}
+            <div className="flex gap-2">
+              {reto.lenguajes.includes('javascript') && (
+                <button
+                  onClick={() => cambiarLenguaje('javascript')}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'javascript' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                >
+                  JavaScript
+                </button>
+              )}
+              {reto.lenguajes.includes('python') && (
+                <button
+                  onClick={() => cambiarLenguaje('python')}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'python' ? 'bg-blue-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                >
+                  Python
+                </button>
+              )}
+              {reto.lenguajes.includes('java') && (
+                <button
+                  onClick={() => cambiarLenguaje('java')}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'java' ? 'bg-red-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                >
+                  Java
+                </button>
+              )}
+            </div>
           </div>
           <p className="text-gray-300 mb-6">{reto.descripcion}</p>
         </div>
