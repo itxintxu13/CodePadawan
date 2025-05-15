@@ -1,6 +1,7 @@
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { v4 as uuidv4 } from "uuid";
 
 // Utilidad para leer FormData (si quieres soportar archivos en el futuro)
 async function parseFormData(req: NextRequest) {
@@ -25,7 +26,7 @@ export async function GET() {
   try {
     const users = await clerkClient.users.getUserList();
     const baseUser = users[0];
-    const comments = baseUser?.publicMetadata?.commentsPhyton || [];
+    const comments = baseUser?.publicMetadata?.commentsPython || [];
     return NextResponse.json({ comments });
   } catch (error) {
     console.error("Error fetching comments:", error);
@@ -50,58 +51,48 @@ export async function POST(req: NextRequest) {
     // Obtén todos los usuarios
     const allUsers = await clerkClient.users.getUserList();
 
-    // Usa los comentarios del primer usuario como base (o crea un array vacío si no hay)
-    const baseUser = allUsers[0];
-    const comments = (baseUser?.publicMetadata?.comments || []) as any[];
+    // Crea un nuevo comentario
+    const newComment = {
+      id: Date.now().toString(),
+      content,
+      fileUrl: null,
+      replies: [],
+      createdAt: new Date().toISOString(),
+      user: userId, // Puedes usar el nombre de usuario si está disponible
+    };
 
-    let updatedComments: any[];
-
-    if (parentId) {
-      // Es una respuesta a un comentario existente
-      updatedComments = comments.map((comment: any) => {
-        if (comment.id === parentId) {
-          return {
-            ...comment,
-            replies: [
-              ...(comment.replies || []),
-              {
-                id: Date.now().toString(),
-                content,
-                fileUrl: null,
-                replies: [],
-                createdAt: new Date().toISOString(),
-                user: baseUser.username ?? baseUser.id ?? "Unknown"
-              }
-            ]
-          };
-        }
-        return comment;
-      });
-    } else {
-      // Es un comentario nuevo
-      const newComment = {
-        id: Date.now().toString(),
-        content,
-        fileUrl: null,
-        replies: [],
-        createdAt: new Date().toISOString(),
-        user: baseUser.username ?? baseUser.id ?? "Unknown"
-      };
-      updatedComments = [...comments, newComment];
-    }
-
-    // Guarda los comentarios en TODOS los usuarios
+    // Actualiza los comentarios en todos los usuarios
     for (const u of allUsers) {
+      const existingComments = (u.publicMetadata?.commentsPython || []) as any[];
+
+      let updatedComments: any[];
+
+      if (parentId) {
+        // Es una respuesta a un comentario existente
+        updatedComments = existingComments.map((comment: any) => {
+          if (comment.id === parentId) {
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), newComment],
+            };
+          }
+          return comment;
+        });
+      } else {
+        // Es un comentario nuevo
+        updatedComments = [...existingComments, newComment];
+      }
+
+      // Actualiza el `publicMetadata` del usuario
       await clerkClient.users.updateUser(u.id, {
         publicMetadata: {
-          points: u.publicMetadata?.points ?? 0,
-          retosResueltos: u.publicMetadata?.retosResueltos ?? 0,
-          commentsPhyton: updatedComments
-        }
+          ...u.publicMetadata,
+          commentsPython: updatedComments,
+        },
       });
     }
 
-    return NextResponse.json({ comment: updatedComments[updatedComments.length - 1] });
+    return NextResponse.json({ comment: newComment });
   } catch (error) {
     console.error("Error saving comment:", error);
     return NextResponse.json({ error: "Failed to save comment" }, { status: 500 });
@@ -116,7 +107,7 @@ export async function DELETE() {
         publicMetadata: {
           points: u.publicMetadata?.points ?? 0,
           retosResueltos: u.publicMetadata?.retosResueltos ?? 0,
-          commentsPhyton: [] // Borra todos los comentarios
+          commentsPython: [] // Borra todos los comentarios
         }
       });
     }
