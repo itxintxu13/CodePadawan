@@ -31,20 +31,20 @@ export default function JavaBlogPage() {
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newComment.trim() === "") return;
-
+  
     const formData = new FormData();
     formData.append("content", newComment);
     formData.append("user", user?.fullName || user?.username || "Usuario Anónimo"); // Agregar el nombre del usuario
     if (replyTo) formData.append("parentId", replyTo);
-
+  
     await fetch("/api/comments/java", {
       method: "POST",
       body: formData,
     });
-
+  
     setNewComment("");
     setReplyTo(null);
-    fetchComments(); // Recargar comentarios
+    await fetchComments(); // Recargar comentarios desde el servidor
   };
 
   return (
@@ -55,30 +55,30 @@ export default function JavaBlogPage() {
       </p>
 
       <div className="space-y-6 mt-6">
-        {Array.isArray(comments) &&
-          comments.map((comment) => (
-            <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
-              <p className="font-semibold">{comment.user}</p>
-              <p className="text-gray-600">{comment.content}</p>
-              <button
-                onClick={() => setReplyTo(comment.id)}
-                className="text-blue-500 text-sm mt-2"
-              >
-                Responder
-              </button>
-              {Array.isArray(comment.replies) && comment.replies.length > 0 && (
-                <div className="ml-4">
-                  {comment.replies.map((reply) => (
-                    <div key={reply.id} className="p-2 border rounded-lg bg-gray-100">
-                      <p className="font-semibold">{reply.user}</p>
-                      <p className="text-gray-600">{reply.content}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+  {Array.isArray(comments) &&
+    comments.map((comment) => (
+      <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
+        <p className="font-bold text-black">{comment.user}</p>
+        <p className="text-gray-600">{comment.content}</p>
+        <button
+          onClick={() => setReplyTo(comment.id)}
+          className="text-blue-500 text-sm mt-2"
+        >
+          Responder
+        </button>
+        {Array.isArray(comment.replies) && comment.replies.length > 0 && (
+          <div className="ml-4">
+            {comment.replies.map((reply) => (
+              <div key={reply.id} className="p-2 border rounded-lg bg-gray-100">
+                <p className="font-bold text-black">{reply.user}</p>
+                <p className="text-gray-600">{reply.content}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+    ))}
+</div>
 
       <div className="mt-6 flex flex-col gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
         {replyTo && (

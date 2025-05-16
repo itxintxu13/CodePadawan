@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const content = formData.get("content") as string;
-    const user = formData.get("user") as string || "Usuario Anónimo"; // Obtener el usuario del formulario
+    const user = formData.get("user") as string || "Usuario Anónimo";
     const parentId = formData.get("parentId") as string | null;
 
     if (!content) {
@@ -53,9 +53,8 @@ export async function POST(req: NextRequest) {
     }
 
     const newComment = {
-      id: Date.now().toString(), // ID único basado en timestamp
       content,
-      user, // Guardar el usuario
+      user,
       replies: [],
       createdAt: new Date().toISOString(),
     };
@@ -67,35 +66,38 @@ export async function POST(req: NextRequest) {
       const snapshot = await get(commentsRef);
       const data = snapshot.val() || {};
 
-      // Convertir los datos en un array si es necesario
-      const comments = Object.entries(data).map(([key, value]: [string, any]) => ({
-        id: key,
-        ...value,
-      }));
+      // Buscar el comentario padre
+      const parentCommentKey = Object.keys(data).find(
+        (key) => data[key].id === parentId
+      );
 
-      const updatedComments = comments.map((comment: any) => {
-        if (comment.id === parentId) {
-          return {
-            ...comment,
-            replies: [...(comment.replies || []), newComment],
-          };
-        }
-        return comment;
+      if (!parentCommentKey) {
+        return NextResponse.json({ error: "Parent comment not found" }, { status: 404 });
+      }
+
+      const parentComment = data[parentCommentKey];
+      const existingReplies = parentComment.replies || [];
+
+      // Agregar la nueva respuesta
+      const replyId = push(ref(database)).key; // Generar un ID único para la respuesta
+      const updatedReplies = [...existingReplies, { id: replyId, ...newComment }];
+
+      // Actualizar el comentario padre con las nuevas respuestas
+      await update(ref(database, `blogs/java/comments/${parentCommentKey}`), {
+        ...parentComment,
+        replies: updatedReplies,
       });
-
-      // Actualizar los comentarios en Firebase
-      const updates: any = {};
-      updatedComments.forEach((comment) => {
-        updates[comment.id] = comment;
-      });
-
-      await update(commentsRef, updates);
     } else {
-      // Si es un comentario nuevo, simplemente agrégalo
-      await push(commentsRef, newComment);
+      // Si es un comentario nuevo, utiliza el ID generado por Firebase
+      const newCommentRef = push(commentsRef); // Generar una nueva referencia
+      const newCommentId = newCommentRef.key; // Obtener el ID generado
+      await update(ref(database, `blogs/java/comments/${newCommentId}`), {
+        id: newCommentId,
+        ...newComment,
+      });
     }
 
-    return NextResponse.json({ comment: newComment });
+    return NextResponse.json({ message: "Comment added successfully" });
   } catch (error) {
     console.error("Error saving comment:", error);
     return NextResponse.json({ error: "Failed to save comment" }, { status: 500 });
