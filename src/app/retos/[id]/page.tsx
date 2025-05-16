@@ -61,55 +61,62 @@ export default function RetoPage() {
   const [accesoPermitido, setAccesoPermitido] = useState(true);
 
   useEffect(() => {
-    if (!isSignedIn) {
-      router.push('/');
-      return;
-    }
 
     const cargarPuntosUsuario = async () => {
       if (user?.id) {
         const puntos = Number(user.publicMetadata?.points) || 0;
         setPuntosUsuario(puntos);
+        console.log("Puntos del usuario:", puntos);
       }
     };
-  
-    cargarPuntosUsuario();
-  }, [isSignedIn, router, user]);
 
-    const cargarReto = async () => {
-      try {
-        const response = await fetch('/api/retos');
-        if (!response.ok) {
-          throw new Error('Error al cargar los retos');
-        }
-        const retos = await response.json();
-        const retoActual = retos.find((r: Reto) => r.id.toString() === params.id);
-    
-        if (retoActual) {
-          // Verificar si el usuario tiene suficientes puntos
-          const puntosNecesarios = retoActual.puntos || 0;
-          const puntosUsuarioActual = Number(user?.publicMetadata?.points) || 0;
-          
-          if (puntosUsuarioActual + 10 < puntosNecesarios) {
-            setAccesoPermitido(false);
-            setCargando(false);
-            return;
-          }
-    
-          setReto(retoActual);
-          if (retoActual.lenguajes.length > 0) {
-            setLenguaje(retoActual.lenguajes[0]);
-            setCodigo(retoActual.plantilla[retoActual.lenguajes[0]]);
-          }
-        } else {
-          router.push('/retos');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setCargando(false);
+    cargarPuntosUsuario();
+  }, [isSignedIn, user]);
+
+
+// Este codigo es porque a mi (ale) me pilla como que no estoy logueada
+// useEffect(() => {
+//   if (user === undefined) return; // Evita redirección prematura
+
+//   if (!isSignedIn) {
+//     console.warn("Usuario no está autenticado, redirigiendo...");
+//     router.replace("/login");
+//   }
+// }, [isSignedIn]);
+
+   useEffect(() => {
+  if (!params?.id) {
+    console.error("ID de reto no encontrado, redirigiendo...");
+    return;
+  }
+
+  const cargarReto = async () => {
+    setCargando(true);
+    try {
+      const response = await fetch(`/api/retos`);
+      if (!response.ok) throw new Error("Error al cargar los retos");
+
+      const retos = await response.json();
+      const retoActual = retos.find((r: Reto) => r.id.toString() === String(params.id)); 
+
+      if (retoActual) {
+        setReto(retoActual);
+        setLenguaje(retoActual.lenguajes[0]);
+        setCodigo(retoActual.plantilla[retoActual.lenguajes[0]]);
+      } else {
+        console.warn("Reto no encontrado, redirigiendo...");
+        setTimeout(() => router.replace("/retos"), 1000);
       }
-    };
+    } catch (error) {
+      console.error("Error al cargar retos:", error);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  cargarReto();
+}, [params?.id]);
+
 
   useEffect(() => {
     if (!reto || !lenguaje) return;
