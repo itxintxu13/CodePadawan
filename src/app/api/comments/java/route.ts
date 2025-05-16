@@ -89,7 +89,6 @@ export async function POST(req: NextRequest) {
         updates[comment.id] = comment;
       });
 
-      // Usar la función 'update' para actualizar los datos
       await update(commentsRef, updates);
     } else {
       // Si es un comentario nuevo, simplemente agrégalo

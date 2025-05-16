@@ -34,7 +34,7 @@ export default function JavaBlogPage() {
 
     const formData = new FormData();
     formData.append("content", newComment);
-    formData.append("user", user?.fullName || "Usuario Anónimo"); // Agregar el nombre del usuario
+    formData.append("user", user?.fullName || user?.username || "Usuario Anónimo"); // Agregar el nombre del usuario
     if (replyTo) formData.append("parentId", replyTo);
 
     await fetch("/api/comments/java", {
