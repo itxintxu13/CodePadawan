@@ -41,49 +41,49 @@ export default function Estadisticas({
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const cargarDatos = async () => {
-      if (!isLoaded || !user) {
+  const cargarDatos = async () => {
+    if (!isLoaded || !user) {
+      setCargando(false);
+      return;
+    }
+
+    try {
+      const usuarios = await obtenerUsuarios();
+      console.log("📌 Usuarios obtenidos desde Firebase:", usuarios);
+
+      if (!usuarios || usuarios.length === 0) {
+        console.warn("🚨 No se encontraron usuarios.");
         setCargando(false);
         return;
       }
 
-      try {
-        const usuarios = await obtenerUsuarios();
-        console.log("📌 Usuarios obtenidos:", usuarios);
+      const datosUsuario = usuarios.find((u) => u.id === user.id);
+      console.log("📌 Datos del usuario:", datosUsuario);
 
-        if (!usuarios || usuarios.length === 0) {
-          console.warn("🚨 No se encontraron usuarios.");
-          setCargando(false);
-          return;
+      if (datosUsuario) {
+        switch (tipoDato) {
+          case "puntos":
+            setValor(datosUsuario.puntos || 0);
+            break;
+          case "retos":
+            setValor(datosUsuario.retosResueltos || 0);
+            break;
+          case "logros":
+            setValor(calcularLogros(datosUsuario.retosResueltos || 0).length);
+            break;
+          default:
+            console.warn("🚨 Tipo de dato desconocido:", tipoDato);
         }
-
-        const datosUsuario = usuarios.find((u) => u.id === user.id);
-        console.log("📌 Datos del usuario:", datosUsuario);
-
-        if (datosUsuario) {
-          switch (tipoDato) {
-            case "puntos":
-              setValor(datosUsuario.puntos || 0);
-              break;
-            case "retos":
-              setValor(datosUsuario.retosResueltos || 0);
-              break;
-            case "logros":
-              setValor(calcularLogros(datosUsuario.retosResueltos || 0).length);
-              break;
-            default:
-              console.warn("🚨 Tipo de dato desconocido:", tipoDato);
-          }
-        }
-      } catch (error) {
-        console.error("🚨 Error al cargar datos:", error);
-      } finally {
-        setCargando(false);
       }
-    };
+    } catch (error) {
+      console.error("🚨 Error al cargar datos:", error);
+    } finally {
+      setCargando(false);
+    }
+  };
 
-    cargarDatos();
-  }, [isLoaded, user, tipoDato]);
+  cargarDatos();
+}, [isLoaded, user, tipoDato]);
 
   return (
     <div className={`bg-gray-800 rounded-2xl p-8 shadow-2xl text-center transform hover:scale-105 transition-transform duration-300 animate-card-fade-in ${tamano}`}>

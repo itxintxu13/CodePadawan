@@ -54,6 +54,44 @@ export default function RankingPage() {
     cargarUsuarios();
   }, []);
 
+   // Función para determinar el emoji de la posición
+  const getPositionEmoji = (index: number) => {
+    switch (index) {
+      case 0: return '🥇';
+      case 1: return '🥈';
+      case 2: return '🥉';
+      default: return `${index + 1}`;
+    }
+  };
+
+  // Función para determinar los logros del usuario
+const getLogros = (numRetosResueltos: number) => {
+  const logros = [];
+
+  console.log("Número de retos resueltos en getLogros:", numRetosResueltos);
+
+  if (numRetosResueltos >= 1) {
+    logros.push('🌱 Principiante');
+    console.log("Asignado logro: Principiante");
+  }
+  if (numRetosResueltos >= 3) {
+    logros.push('🚀 Explorador');
+    console.log("Asignado logro: Explorador");
+  }
+  if (numRetosResueltos >= 5) {
+    logros.push('⭐ Experto');
+    console.log("Asignado logro: Experto");
+  }
+  if (numRetosResueltos >= 10) {
+    logros.push('🏆 Maestro');
+    console.log("Asignado logro: Maestro");
+  }
+
+  console.log("Logros generados:", logros);
+
+  return logros;
+};
+
   return (
     <main className="container mx-auto p-8 bg-gray-900 text-white">
       <h1 className="text-4xl font-bold text-center mb-8">Ranking de Usuarios 🏆</h1>
@@ -71,18 +109,37 @@ export default function RankingPage() {
                 <th className="py-3 px-4 text-left">Usuario</th>
                 <th className="py-3 px-4 text-left">Puntos</th>
                 <th className="py-3 px-4 text-left">Retos Resueltos</th>
+                <th className="py-3 px-4 text-left">Logros</th>
               </tr>
             </thead>
             <tbody>
               {usuarios.map((usuario, index) => (
-                <tr key={usuario.id} className={`border-t border-gray-700 ${user && usuario.id === user.id ? 'bg-blue-900 bg-opacity-30' : ''}`}>
-                  <td className="py-3 px-4">
-                    <span className="text-xl">{index + 1}</span>
-                  </td>
-                  <td className="py-3 px-4">{usuario.nombre}</td>
-                  <td className="py-3 px-4 font-bold text-yellow-400">{usuario.puntos}</td>
-                  <td className="py-3 px-4">{usuario.retosResueltos}</td>
-                </tr>
+                <tr key={usuario.id} 
+                  className={`border-t border-gray-700 ${user && usuario.id === user.id ? 'bg-blue-900 bg-opacity-30' : ''}`}
+              >
+                <td className="py-3 px-4">
+                  <span className="text-xl">{getPositionEmoji(index)}</span>
+                </td>
+                <td className="py-3 px-4">
+                  {usuario.nombre}
+                  {user && usuario.id === user.id && (
+                    <span className="ml-2 text-xs bg-blue-600 px-2 py-1 rounded">Tú</span>
+                  )}
+                </td>
+                <td className="py-3 px-4">
+                  <span className="font-bold text-yellow-400">{usuario.puntos}</span>
+                </td>
+                <td className="py-3 px-4">{usuario.retosResueltos ?? 0}</td>
+                <td className="py-3 px-4">
+                  <div className="flex flex-wrap gap-2">
+                    {getLogros(usuario.retosResueltos).map((logro, i) => (
+                      <span key={i} className="bg-green-700 px-2 py-1 rounded text-xs">
+                        {logro}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
               ))}
             </tbody>
           </table>

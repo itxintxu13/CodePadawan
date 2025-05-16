@@ -12,7 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider appearance={{ baseTheme: shadesOfPurple }}>
+    <ClerkProvider
+      appearance={{ baseTheme: shadesOfPurple }}
+    >
       <html lang="es">
         <body className="antialiased flex flex-col">
           <SignedIn>
