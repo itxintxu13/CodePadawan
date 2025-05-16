@@ -1,108 +1,90 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs"; // Importar Clerk para obtener el usuario
 
 interface Comment {
   id: string;
   user: string;
-  userId: string;
   content: string;
-  fileUrl?: string;
   replies: Comment[];
+  createdAt: string;
 }
 
 export default function JavaScriptBlogPage() {
+  const { user } = useUser(); // Obtener el usuario autenticado
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
-  const [image, setImage] = useState<File | null>(null);
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
-  // Función para cargar comentarios
+  // Cargar comentarios desde Firebase
   const fetchComments = async () => {
     const res = await fetch("/api/comments/javascript");
     const data = await res.json();
-
-    // Asegúrate de tipar los comentarios como Comment[]
-    const commentsData: Comment[] = data.comments;
-
-    // Elimina duplicados antes de actualizar el estado
-    const uniqueComments = Array.from(
-      new Map(commentsData.map((comment) => [comment.id, comment])).values()
-    );
-
-    setComments(uniqueComments || []);
+    setComments(data.comments || []); // Asegurarse de que siempre sea un array
   };
 
   useEffect(() => {
     fetchComments();
   }, []);
 
+  // Publicar un comentario
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newComment.trim() === "") return;
-
+  
     const formData = new FormData();
-    formData.append("parentId", replyTo || "");
-    formData.append("user", "Usuario");
     formData.append("content", newComment);
-    if (image) formData.append("file", image);
-
+    formData.append("user", user?.fullName || user?.username || "Usuario Anónimo"); // Agregar el nombre del usuario
+    if (replyTo) formData.append("parentId", replyTo);
+  
     await fetch("/api/comments/javascript", {
       method: "POST",
       body: formData,
     });
-
-    // Recarga los comentarios después de publicar
-    await fetchComments();
-
+  
     setNewComment("");
-    setImage(null);
     setReplyTo(null);
+    await fetchComments(); // Recargar comentarios desde el servidor
   };
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold text-center mb-6">Blog de JavaScript</h1>
+      <h1 className="text-3xl font-bold text-center mb-6">Blog de Javascript</h1>
       <p className="text-center text-gray-600 mb-8">
         Bienvenido al blog de JavaScript. Publica tus dudas y participa en la comunidad.
       </p>
 
       <div className="space-y-6 mt-6">
-        {comments
-          .filter((comment) => comment && comment.user && comment.content)
-          .map((comment) => (
-            <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
-              <p className="font-semibold">{comment.user}</p>
-              <p className="text-gray-600">{comment.content}</p>
-              {comment.fileUrl && <img src={comment.fileUrl} alt="Attachment" />}
-              <button
-                onClick={() => setReplyTo(comment.id)} // Establece el comentario al que se responde
-                className="text-blue-500 text-sm mt-2"
-              >
-                Responder
-              </button>
-              {comment.replies.length > 0 && (
-                <div className="ml-4">
-                  {comment.replies.map((reply) => (
-                    <div key={reply.id} className="p-2 border rounded-lg bg-gray-100">
-                      <p className="font-semibold">{reply.user}</p>
-                      <p className="text-gray-600">{reply.content}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+  {Array.isArray(comments) &&
+    comments.map((comment) => (
+      <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
+        <p className="font-bold text-black">{comment.user}</p>
+        <p className="text-gray-600">{comment.content}</p>
+        <button
+          onClick={() => setReplyTo(comment.id)}
+          className="text-blue-500 text-sm mt-2"
+        >
+          Responder
+        </button>
+        {Array.isArray(comment.replies) && comment.replies.length > 0 && (
+          <div className="ml-4">
+            {comment.replies.map((reply) => (
+              <div key={reply.id} className="p-2 border rounded-lg bg-gray-100">
+                <p className="font-bold text-black">{reply.user}</p>
+                <p className="text-gray-600">{reply.content}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+    ))}
+</div>
 
-      {/* Barra para añadir un comentario o responder */}
       <div className="mt-6 flex flex-col gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
         {replyTo && (
           <div className="text-sm text-gray-500">
             Respondiendo a un comentario.{" "}
-            <button
-              onClick={() => setReplyTo(null)} // Permite cancelar la respuesta
-              className="text-blue-500"
-            >
+            <button onClick={() => setReplyTo(null)} className="text-blue-500">
               Cancelar
             </button>
           </div>
@@ -113,11 +95,6 @@ export default function JavaScriptBlogPage() {
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Escribe tu comentario..."
           className="flex-1 p-2 border rounded-lg text-black"
-        />
-        <input
-          type="file"
-          onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-          className="text-black"
         />
         <button
           onClick={handleCommentSubmit}
