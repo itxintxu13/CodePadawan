@@ -16,6 +16,8 @@ import CodeEditorJavaScript from "../../components/CodeEditorJavaScript";
 import CodeEditorPython from "../../components/CodeEditorPython";
 import CodeEditorHtml from "../../components/CodeEditorHtml";
 import confetti from "canvas-confetti";
+import { app, database } from "@/lib/firebase/config";
+import { ref, get, update } from "firebase/database";
 
 const lanzarConfeti = () => {
   confetti({
@@ -50,102 +52,91 @@ export default function RetoPage() {
   const [reto, setReto] = useState<Reto | null>(null);
   const [cargando, setCargando] = useState(true);
   const [lenguaje, setLenguaje] = useState<string>("");
-  const [codigo, setCodigo] = useState<string>('');
-  const [output, setOutput] = useState<string>('');
+  const [codigo, setCodigo] = useState<string>("");
+  const [output, setOutput] = useState<string>("");
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ success: boolean; message: string } | null>(null);
-  const [usuarios, setUsuarios] = useState<any[]>([]);
-  const [editorInstance, setEditorInstance] = useState<EditorView | null>(null);
-  const [mostrarSolucion, setMostrarSolucion] = useState(false);
   const [puntosUsuario, setPuntosUsuario] = useState(0);
   const [accesoPermitido, setAccesoPermitido] = useState(true);
+  const [editorInstance, setEditorInstance] = useState<EditorView | null>(null);
+  const [mostrarSolucion, setMostrarSolucion] = useState(false);
 
   useEffect(() => {
-
-    const cargarPuntosUsuario = async () => {
-      if (user?.id) {
-        const puntos = Number(user.publicMetadata?.points) || 0;
-        setPuntosUsuario(puntos);
-        console.log("Puntos del usuario:", puntos);
+  const cargarPuntosDesdeFirebase = async () => {
+    if (user?.id) {
+      try {
+        const userRef = ref(database, `users/${user.id}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const datos = snapshot.val();
+          const puntosFirebase = datos.puntos || 0;
+          setPuntosUsuario(puntosFirebase);
+          console.log("Puntos cargados desde Firebase:", puntosFirebase);
+        } else {
+          setPuntosUsuario(0);
+          console.log("No hay datos en Firebase para este usuario.");
+        }
+      } catch (error) {
+        console.error("Error cargando puntos desde Firebase:", error);
       }
-    };
-
-    cargarPuntosUsuario();
-  }, [isSignedIn, user]);
-
-
-// Este codigo es porque a mi (ale) me pilla como que no estoy logueada
-// useEffect(() => {
-//   if (user === undefined) return; // Evita redirección prematura
-
-//   if (!isSignedIn) {
-//     console.warn("Usuario no está autenticado, redirigiendo...");
-//     router.replace("/login");
-//   }
-// }, [isSignedIn]);
-
-   useEffect(() => {
-  if (!params?.id) {
-    console.error("ID de reto no encontrado, redirigiendo...");
-    return;
-  }
-
-  const cargarReto = async () => {
-    setCargando(true);
-    try {
-      const response = await fetch(`/api/retos`);
-      if (!response.ok) throw new Error("Error al cargar los retos");
-
-      const retos = await response.json();
-      const retoActual = retos.find((r: Reto) => r.id.toString() === String(params.id)); 
-
-      if (retoActual) {
-        setReto(retoActual);
-        setLenguaje(retoActual.lenguajes[0]);
-        setCodigo(retoActual.plantilla[retoActual.lenguajes[0]]);
-      } else {
-        console.warn("Reto no encontrado, redirigiendo...");
-        setTimeout(() => router.replace("/retos"), 1000);
-      }
-    } catch (error) {
-      console.error("Error al cargar retos:", error);
-    } finally {
-      setCargando(false);
     }
   };
 
-  cargarReto();
-}, [params?.id]);
+  cargarPuntosDesdeFirebase();
+}, [user?.id]);
 
+  useEffect(() => {
+    if (!params?.id) {
+      console.error("ID de reto no encontrado, redirigiendo...");
+      return;
+    }
+
+    const cargarReto = async () => {
+      setCargando(true);
+      try {
+        const response = await fetch(`/api/retos`);
+        if (!response.ok) throw new Error("Error al cargar los retos");
+
+        const retos = await response.json();
+        const retoActual = retos.find((r: Reto) => r.id.toString() === String(params.id));
+
+        if (retoActual) {
+          setReto(retoActual);
+          setLenguaje(retoActual.lenguajes[0]);
+          setCodigo(retoActual.plantilla[retoActual.lenguajes[0]]);
+        } else {
+          console.warn("Reto no encontrado, redirigiendo...");
+          setTimeout(() => router.replace("/retos"), 1000);
+        }
+      } catch (error) {
+        console.error("Error al cargar retos:", error);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarReto();
+  }, [params?.id]);
 
   useEffect(() => {
     if (!reto || !lenguaje) return;
-
-    // Actualizar el código cuando cambia el lenguaje
-    setCodigo(reto.plantilla[lenguaje] || '');
+    setCodigo(reto.plantilla[lenguaje] || "");
   }, [reto, lenguaje]);
 
   useEffect(() => {
     if (!codigo || !lenguaje) return;
 
-    const editorContainer = document.getElementById('editor-container');
+    const editorContainer = document.getElementById("editor-container");
     if (!editorContainer) return;
 
-    // Limpiar el editor anterior si existe
-    editorContainer.innerHTML = '';
+    editorContainer.innerHTML = "";
     if (editorInstance) {
       editorInstance.destroy();
     }
 
-    // Configurar el lenguaje para el editor
     const languageExtension =
-      lenguaje === "javascript"
-        ? javascript()
-        : lenguaje === "python"
-          ? python()
-          : java();
+      lenguaje === "javascript" ? javascript() : lenguaje === "python" ? python() : java();
 
-    // Crear el estado del editor
     const state = EditorState.create({
       doc: codigo,
       extensions: [
@@ -162,7 +153,6 @@ export default function RetoPage() {
       ],
     });
 
-    // Crear la vista del editor
     const view = new EditorView({
       state,
       parent: editorContainer,
@@ -175,6 +165,24 @@ export default function RetoPage() {
     };
   }, [codigo, lenguaje]);
 
+
+const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) => {
+  try {
+    // Usa la instancia database importada
+    const userRef = ref(database, `users/${userId}`);
+
+    const snapshot = await get(userRef);
+    const puntosActuales = snapshot.exists() ? snapshot.val().puntos || 0 : 0;
+
+    await update(userRef, { puntos: puntosActuales + puntosNuevos });
+
+    console.log("Puntos actualizados en Realtime Database:", puntosActuales + puntosNuevos);
+  } catch (error) {
+    console.error("Error actualizando puntos en Realtime Database:", error);
+  }
+};
+
+
   const entregarSolucion = async () => {
     if (!codigo || !reto || !user) {
       setResultado({
@@ -184,8 +192,12 @@ export default function RetoPage() {
       return;
     }
 
-    const solucionCorrecta = reto.solucion[lenguaje].toLowerCase().replace(/'/g, '"').replace(/\s+/g, '').normalize("NFC");
-    const codigoUsuario = codigo.toLowerCase().replace(/'/g, '"').replace(/\s+/g, '').normalize("NFC");
+    const solucionCorrecta = reto.solucion[lenguaje]
+      .toLowerCase()
+      .replace(/'/g, '"')
+      .replace(/\s+/g, "")
+      .normalize("NFC");
+    const codigoUsuario = codigo.toLowerCase().replace(/'/g, '"').replace(/\s+/g, "").normalize("NFC");
 
     if (codigoUsuario !== solucionCorrecta) {
       setResultado({
@@ -215,15 +227,14 @@ export default function RetoPage() {
         throw new Error("Error al entregar la solución");
       }
 
-      const data = await response.json();
       setResultado({
         success: true,
         message: `🎉 ¡Solución correcta! Has ganado ${reto.puntos} puntos! 🎉`,
       });
 
-      lanzarConfeti(); // 🚀 🎊 Lanza el confeti cuando la solución es correcta
+      lanzarConfeti();
 
-      await actualizarPuntosUsuario(reto.puntos, reto.id);
+      await actualizarPuntosRealtime(user.id, reto.puntos); 
     } catch (error) {
       console.error("Error:", error);
       setResultado({
@@ -235,51 +246,10 @@ export default function RetoPage() {
     }
   };
 
-
-
-  useEffect(() => {
-    const obtenerUsuarios = async () => {
-      const response = await fetch("/api/updatePoints");
-      const data = await response.json();
-      setUsuarios(data); // 🔥 Actualiza el estado con los datos nuevos
-    };
-
-    obtenerUsuarios();
-  }, [resultado]); // ✅ Ahora se recarga cuando el resultado cambia
-
-  const actualizarPuntosUsuario = async (puntos: number, retoId: number) => {
-    if (!user) return;
-
-    try {
-      // ✅ Convertir publicMetadata.puntos a número de forma segura
-      const puntosActuales = Number(user.publicMetadata?.puntos ?? 0);
-      const retosResueltosActuales = Number(user.publicMetadata?.retosResueltos ?? 0);
-
-      const response = await fetch("/api/updatePoints", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          points: puntosActuales + puntos, // ✅ Ahora sí estamos sumando dos números correctamente
-          retosResuletos: retosResueltosActuales + 1, //Incrementando cada vez que se complete uno
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al actualizar los puntos del usuario");
-      }
-
-      console.log("Puntos actualizados correctamente en Clerk.");
-    } catch (error) {
-      console.error("Error al actualizar los puntos del usuario:", error);
-    }
-  };
-
-
   const cambiarLenguaje = (nuevoLenguaje: string) => {
     if (reto?.lenguajes.includes(nuevoLenguaje)) {
       setLenguaje(nuevoLenguaje);
-      setOutput('');
+      setOutput("");
       setResultado(null);
     }
   };
@@ -296,6 +266,7 @@ export default function RetoPage() {
     );
   }
 
+  // Creo que ya no es necesario
   if (!accesoPermitido) {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
@@ -349,7 +320,7 @@ export default function RetoPage() {
           <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
           <div className="flex items-center gap-4 mb-4">
             <span className={`px-3 py-1 rounded-full text-sm ${reto.dificultad === 'Fácil' ? 'bg-green-600' :
-              reto.dificultad === 'Media' ? 'bg-yellow-600' : 'bg-red-600'
+              reto.dificultad === 'Medio' ? 'bg-yellow-600' : 'bg-red-600'
               }`}>
               {reto.dificultad}
             </span>

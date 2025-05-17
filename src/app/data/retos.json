@@ -5,11 +5,7 @@
     "descripcion": "Escribe un programa que muestre 'Hola Mundo' en la consola.",
     "dificultad": "Fácil",
     "puntos": 10,
-    "lenguajes": [
-      "javascript",
-      "python",
-      "java"
-    ],
+    "lenguajes": ["javascript", "python", "java"],
     "plantilla": {
       "javascript": "// Escribe tu código aquí\n\n",
       "python": "# Escribe tu código aquí\n\n",
@@ -32,11 +28,7 @@
     "descripcion": "Crea una función que sume dos números y devuelva el resultado.",
     "dificultad": "Fácil",
     "puntos": 20,
-    "lenguajes": [
-      "javascript",
-      "python",
-      "java"
-    ],
+    "lenguajes": ["javascript", "python", "java"],
     "plantilla": {
       "javascript": "// Completa la función suma\nfunction suma(a, b) {\n  // Tu código aquí\n}\n\nconsole.log(suma(5, 3)); // Debería mostrar 8",
       "python": "# Completa la función suma\ndef suma(a, b):\n    # Tu código aquí\n    pass\n\nprint(suma(5, 3))  # Debería mostrar 8",
@@ -57,13 +49,9 @@
     "id": 3,
     "titulo": "Factorial",
     "descripcion": "Implementa una función que calcule el factorial de un número.",
-    "dificultad": "Media",
+    "dificultad": "Medio",
     "puntos": 30,
-    "lenguajes": [
-      "javascript",
-      "python",
-      "java"
-    ],
+    "lenguajes": ["javascript", "python", "java"],
     "plantilla": {
       "javascript": "// Implementa la función factorial\nfunction factorial(n) {\n  // Tu código aquí\n}\n\nconsole.log(factorial(5)) // Debería mostrar 120",
       "python": "# Implementa la función factorial\ndef factorial(n):\n    # Tu código aquí\n    pass\n\nprint(factorial(5)) # Debería mostrar 120",
@@ -86,9 +74,7 @@
     "descripcion": "Crea una página HTML que muestre un encabezado <h1> con el texto 'Bienvenido a HTML'.",
     "dificultad": "Fácil",
     "puntos": 10,
-    "lenguajes": [
-      "html"
-    ],
+    "lenguajes": ["html"],
     "plantilla": {
       "html": "<!-- Escribe tu código HTML aquí -->\n"
     },
@@ -105,9 +91,7 @@
     "descripcion": "Crea una lista HTML (<ul>) con tres elementos: 'Manzana', 'Banana' y 'Cereza'.",
     "dificultad": "Fácil",
     "puntos": 15,
-    "lenguajes": [
-      "html"
-    ],
+    "lenguajes": ["html"],
     "plantilla": {
       "html": "<!-- Escribe tu código HTML aquí -->\n"
     },
@@ -124,9 +108,7 @@
     "descripcion": "Crea una página HTML que muestre una imagen usando la etiqueta <img> y la URL 'https://via.placeholder.com/150'.",
     "dificultad": "Fácil",
     "puntos": 15,
-    "lenguajes": [
-      "html"
-    ],
+    "lenguajes": ["html"],
     "plantilla": {
       "html": "<!-- Escribe tu código HTML aquí -->\n"
     },
@@ -141,11 +123,9 @@
     "id": 7,
     "titulo": "Tabla de Contactos",
     "descripcion": "Crea una tabla HTML con dos columnas: 'Nombre' y 'Teléfono', y agrega dos filas de ejemplo.",
-    "dificultad": "Media",
+    "dificultad": "Medio",
     "puntos": 30,
-    "lenguajes": [
-      "html"
-    ],
+    "lenguajes": ["html"],
     "plantilla": {
       "html": "<!-- Escribe tu código HTML aquí -->\n"
     },
@@ -162,9 +142,7 @@
     "descripcion": "Crea un formulario HTML que solicite nombre, correo electrónico y contraseña, y tenga un botón para enviar.",
     "dificultad": "Difícil",
     "puntos": 50,
-    "lenguajes": [
-      "html"
-    ],
+    "lenguajes": ["html"],
     "plantilla": {
       "html": "<!-- Escribe tu código HTML aquí -->\n"
     },
@@ -181,11 +159,7 @@
     "descripcion": "Crea una función que determine si una cadena es un palíndromo (se lee igual al derecho y al revés).",
     "dificultad": "Difícil",
     "puntos": 50,
-    "lenguajes": [
-      "javascript",
-      "python",
-      "java"
-    ],
+    "lenguajes": ["javascript", "python", "java"],
     "plantilla": {
       "javascript": "// Completa la función esPalindromo\nfunction esPalindromo(str) {\n  // Tu código aquí\n}\n\nconsole.log(esPalindromo('reconocer')) // Debería mostrar true\nconsole.log(esPalindromo('hola')) // Debería mostrar false",
       "python": "# Completa la función es_palindromo\ndef es_palindromo(cadena):\n    # Tu código aquí\n  \nprint(es_palindromo('reconocer'))  # Debería mostrar True\nprint(es_palindromo('hola'))  # Debería mostrar False",
@@ -201,5 +175,23 @@
       "python": "output.includes('True') && output.includes('False')",
       "java": "output.includes('true') && output.includes('false')"
     }
-}
+  },
+  {
+    "id": 10,
+    "titulo": "Entrena con el Maestro Yoda",
+    "descripcion": "Crea una función que devuelva: 'La Fuerza es poderosa en ti, <nombre>'. El nombre se recibe como parámetro",
+    "dificultad": "Difícil",
+    "puntos": 50,
+    "lenguajes": ["javascript", "python", "java"],
+    "plantilla": {
+      "javascript": "// Completa la función esPalindromo\nfunction esPalindromo(str) {\n  // Tu código aquí\n}\n\nconsole.log(esPalindromo('reconocer')) // Debería mostrar true\nconsole.log(esPalindromo('hola')) // Debería mostrar false",
+      "python": "# Completa la función es_palindromo\ndef es_palindromo(cadena):\n    # Tu código aquí\n  \nprint(es_palindromo('reconocer'))  # Debería mostrar True\nprint(es_palindromo('hola'))  # Debería mostrar False",
+      "java": "public class Main {\n  public static void main(String[] args) {\n    // Completa la función esPalindromo\n    System.out.println(esPalindromo(\"reconocer\")); // Debería mostrar true\n    System.out.println(esPalindromo(\"hola\")); // Debería mostrar false\n  }\n\n  public static boolean esPalindromo(String str) {\n    // Tu código aquí\n    return false;\n  }\n}"
+    },
+    "solucion": {
+      "javascript": "// Completa la función esPalindromo\nfunction esPalindromo(str) {\n  return str === str.split('').reverse().join('')\n}\n\nconsole.log(esPalindromo('reconocer')) // Debería mostrar true\nconsole.log(esPalindromo('hola')) // Debería mostrar false",
+      "python": "# Completa la función es_palindromo\ndef es_palindromo(cadena):\n    return cadena == cadena[::-1]\n\nprint(es_palindromo('reconocer'))  # Debería mostrar True\nprint(es_palindromo('hola'))  # Debería mostrar False",
+      "java": "public class Main {\n  public static void main(String[] args) {\n  // Completa la función esPalindromo\n  System.out.println(esPalindromo(\"reconocer\")); // Debería mostrar true\n    System.out.println(esPalindromo(\"hola\")); // Debería mostrar false\n  }\n\n  public static boolean esPalindromo(String str) {\n    return str.equals(new StringBuilder(str).reverse().toString());\n  }\n}"
+    }
+  }
 ]

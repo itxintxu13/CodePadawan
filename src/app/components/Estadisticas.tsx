@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import ProgressChart from "./ProgressChart";
 import { obtenerUsuarios } from "../services/dataservices";
-import { database } from "../firebase/page";
+import { database } from "@/lib/firebase/config";
 import { ref, get } from "firebase/database";
 
 interface EstadisticasProps {

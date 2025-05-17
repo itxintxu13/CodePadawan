@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { database } from "../firebase/page";
+import { database } from "@/lib/firebase/config"; 
 import { ref, get } from "firebase/database";
 
 interface Usuario {

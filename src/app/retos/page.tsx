@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { database } from "@/lib/firebase/config";
+import { get, ref } from "firebase/database";
 
 interface Reto {
   id: number;
@@ -54,13 +56,29 @@ export default function RetosPage() {
   const { isSignedIn, user } = useUser();
   const [puntosUsuario, setPuntosUsuario] = useState(0);
 
-  // Cargar los puntos del usuario
   useEffect(() => {
-    if (user?.id) {
-      const puntos = Number(user.publicMetadata?.points) || 0;
-      setPuntosUsuario(puntos);
-    }
-  }, [user]);
+    const cargarPuntosDesdeFirebase = async () => {
+      if (user?.id) {
+        try {
+          const userRef = ref(database, `users/${user.id}`);
+          const snapshot = await get(userRef);
+          if (snapshot.exists()) {
+            const datos = snapshot.val();
+            const puntosFirebase = datos.puntos || 0;
+            setPuntosUsuario(puntosFirebase);
+            console.log("Puntos cargados desde Firebase:", puntosFirebase);
+          } else {
+            setPuntosUsuario(0);
+            console.log("No hay datos en Firebase para este usuario.");
+          }
+        } catch (error) {
+          console.error("Error cargando puntos desde Firebase:", error);
+        }
+      }
+    };
+
+    cargarPuntosDesdeFirebase();
+  }, [user?.id]);
 
   // Filtrar retos disponibles según los puntos del usuario
   const retosDisponibles = retos.filter((reto) => {
@@ -93,26 +111,10 @@ export default function RetosPage() {
     cargarRetos();
   }, []);
 
-const seleccionarReto = (reto: Reto) => {
-  const retoString = encodeURIComponent(JSON.stringify(reto)); // Codificamos el objeto
-  router.push(`/retos/${reto.id}?reto=${retoString}`);
-};
-
-
-  if (!isSignedIn) {
-    return (
-      <div className="container mx-auto p-8 text-center">
-        <h1 className="text-3xl font-bold mb-4">Acceso Restringido</h1>
-        <p className="mb-4">Debes iniciar sesión para acceder a los retos.</p>
-        <Link
-          href="/"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Volver al inicio
-        </Link>
-      </div>
-    );
-  }
+  const seleccionarReto = (reto: Reto) => {
+    const retoString = encodeURIComponent(JSON.stringify(reto)); // Codificamos el objeto
+    router.push(`/retos/${reto.id}?reto=${retoString}`);
+  };
 
   return (
     <main className="container mx-auto p-8 bg-gray-900 text-white">
@@ -186,8 +188,8 @@ const seleccionarReto = (reto: Reto) => {
               >
                 <option value="">Todas las dificultades</option>
                 <option value="Fácil">Fácil</option>
-                <option value="Intermedio">Intermedio</option>
-                <option value="Avanzado">Avanzado</option>
+                <option value="Medio">Medio</option>
+                <option value="Difícil">Difícil</option>
               </select>
             </div>
             <div>
@@ -250,13 +252,11 @@ const seleccionarReto = (reto: Reto) => {
                               backgroundColor:
                                 reto.dificultad === "Fácil"
                                   ? "#4CAF50"
-                                  : reto.dificultad === "Intermedio"
+                                  : reto.dificultad === "Medio"
                                   ? "#FFC107"
                                   : "#F44336",
                               color:
-                                reto.dificultad === "Intermedio"
-                                  ? "#000"
-                                  : "#fff",
+                                reto.dificultad === "Medio" ? "#000" : "#fff",
                             }}
                           >
                             {reto.dificultad}
