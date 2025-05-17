@@ -96,16 +96,6 @@ ${codigoActual}
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1
-        style={{
-          marginBottom: "10px",
-          display: "flex",
-          justifyContent: "center",
-          fontSize: "40px",
-        }}
-      >
-        Editor de Código HTML
-      </h1>
 
       <div
         style={{
@@ -118,7 +108,7 @@ ${codigoActual}
           borderRadius: "10px",
           overflow: "hidden",
           padding: "12px",
-          width: "120px",
+          width: "150px",
           color: "#FF9800",
           fontWeight: "bold",
           textAlign: "center",

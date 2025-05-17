@@ -199,21 +199,8 @@ sys.stdout.getvalue()`;
       />
       <button
         onClick={ejecutarCodigo}
-        style={{
-          marginTop: "10px",
-          padding: "8px 16px",
-          borderRadius: "5px",
-          background: "#007BFF",
-          border: "none",
-          cursor: "pointer",
-          color: "#fff",
-          width: "100%",
-          maxWidth: "300px",
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-          fontSize: "clamp(1rem, 4vw, 1.1rem)",
-        }}
+               className="mt-2 px-4 py-2 rounded bg-[#007BFF] text-black w-50 max-w-[300px] block mx-auto text-[clamp(1rem,4vw,1.1rem)] hover:bg-yellow-400 cursor-pointer"
+
       >
         {isPyodideReady ? "Ejecutar Código" : "Cargando Pyodide..."}
       </button>
