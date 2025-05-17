@@ -1,10 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
-
-// Importa el editor de forma dinámica para evitar problemas de SSR
-const CodeEditor = dynamic(() => import("../../components/CodeEditorJavaScript"), { ssr: false });
+import CodeEditorJavaScript from "../../components/CodeEditorJavaScript";
 
 interface Comment {
   id: string;
@@ -15,15 +12,30 @@ interface Comment {
   codeId?: string;
 }
 
+function ShowCode({ codeId }: { codeId: string }) {
+  const [code, setCode] = useState<string>("");
+  useEffect(() => {
+    fetch(`/api/codes/javascript?id=${codeId}`)
+      .then(res => res.json())
+      .then(data => setCode(data.code || ""));
+  }, [codeId]);
+  if (!code) return null;
+  return (
+    <pre className="bg-gray-900 text-green-200 rounded p-2 mt-2 overflow-x-auto text-xs">
+      {code}
+    </pre>
+  );
+}
+
 export default function JavaScriptBlogPage() {
   const { user } = useUser();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
-  const [codigo, setCodigo] = useState("// Escribe tu código aquí");
+  const [codigo, setCodigo] = useState("// Escribe tu código JavaScript aquí");
   const [savedCodeId, setSavedCodeId] = useState<string | null>(null);
 
-  // Cargar comentarios
+  // Cargar comentarios desde Firebase
   const fetchComments = async () => {
     const res = await fetch("/api/comments/javascript");
     const data = await res.json();
@@ -47,7 +59,7 @@ export default function JavaScriptBlogPage() {
     alert("Código guardado y pegado en el comentario. Ahora puedes publicarlo o editarlo.");
   };
 
-  // Publicar comentario (con código opcional)
+  // Publicar un comentario (con código opcional)
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newComment.trim() === "") return;
@@ -69,25 +81,14 @@ export default function JavaScriptBlogPage() {
     await fetchComments();
   };
 
-  // Copiar código del comentario al editor
-  const handleCopyCodeToEditor = async (codeId: string) => {
-    const res = await fetch(`/api/codes/javascript?id=${codeId}`);
-    const data = await res.json();
-    setCodigo(data.code || "// Código no encontrado");
-  };
-
-  // Encuentra el comentario o respuesta al que se está respondiendo
-  const getReplyingComment = () => {
-    if (!replyTo) return null;
-    let comment = comments.find(c => c.id === replyTo);
-    if (comment) return comment;
-    for (const c of comments) {
-      if (Array.isArray(c.replies)) {
-        const reply = c.replies.find(r => r.id === replyTo);
-        if (reply) return reply;
-      }
+  // Copiar código del comentario al editor al responder
+  const handleReply = async (comment: Comment) => {
+    setReplyTo(comment.id);
+    if (comment.codeId) {
+      const res = await fetch(`/api/codes/javascript?id=${comment.codeId}`);
+      const data = await res.json();
+      setCodigo(data.code || "// Código no encontrado");
     }
-    return null;
   };
 
   return (
@@ -96,31 +97,18 @@ export default function JavaScriptBlogPage() {
       <div style={{ flex: 1, minWidth: 0 }}>
         <h1 className="text-3xl font-bold text-center mb-6">Blog de Javascript</h1>
         <p className="text-center text-gray-600 mb-8">
-          Bienvenido al blog de JavaScript. Publica tus dudas y participa en la comunidad.
+          Bienvenido al blog de Javascript. Publica tus dudas y participa en la comunidad.
         </p>
         <div className="space-y-6 mt-6">
           {Array.isArray(comments) &&
             comments.map((comment) => (
               <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-white">
                 <p className="font-bold text-black">{comment.user}</p>
-                <p className="text-gray-600 whitespace-pre-wrap">{comment.content}</p>
-                {/* Mostrar botón para copiar código si existe */}
-                {comment.codeId && (
-                  <button
-                    onClick={() => handleCopyCodeToEditor(comment.codeId!)}
-                    className="text-green-600 text-sm mt-2"
-                  >
-                    Copiar código a la consola
-                  </button>
-                )}
+                <p className="text-gray-600">{comment.content}</p>
+                {comment.codeId && <ShowCode codeId={comment.codeId} />}
                 <button
-                  onClick={() => {
-                    setReplyTo(comment.id);
-                    if (comment.codeId) {
-                      handleCopyCodeToEditor(comment.codeId);
-                    }
-                  }}
-                  className="text-blue-500 text-sm mt-2 ml-2"
+                  onClick={() => handleReply(comment)}
+                  className="text-blue-500 text-sm mt-2"
                 >
                   Responder
                 </button>
@@ -129,22 +117,10 @@ export default function JavaScriptBlogPage() {
                     {comment.replies.map((reply) => (
                       <div key={reply.id} className="p-2 border rounded-lg bg-gray-100">
                         <p className="font-bold text-black">{reply.user}</p>
-                        <p className="text-gray-600 whitespace-pre-wrap">{reply.content}</p>
-                        {reply.codeId && (
-                          <button
-                            onClick={() => handleCopyCodeToEditor(reply.codeId!)}
-                            className="text-green-600 text-xs mt-1"
-                          >
-                            Copiar código a la consola
-                          </button>
-                        )}
+                        <p className="text-gray-600">{reply.content}</p>
+                        {reply.codeId && <ShowCode codeId={reply.codeId} />}
                         <button
-                          onClick={() => {
-                            setReplyTo(reply.id);
-                            if (reply.codeId) {
-                              handleCopyCodeToEditor(reply.codeId);
-                            }
-                          }}
+                          onClick={() => handleReply(reply)}
                           className="text-blue-500 text-xs mt-1 ml-2"
                         >
                           Responder
@@ -156,10 +132,9 @@ export default function JavaScriptBlogPage() {
               </div>
             ))}
         </div>
-        {/* Formulario de comentario */}
         <div className="mt-6 flex flex-col gap-4 border p-4 rounded-lg shadow-sm bg-gray-100">
           {replyTo && (
-            <div className="text-sm text-gray-500 flex items-center gap-2">
+            <div className="text-sm text-gray-500">
               Respondiendo a un comentario.{" "}
               <button onClick={() => setReplyTo(null)} className="text-blue-500">
                 Cancelar
@@ -169,11 +144,10 @@ export default function JavaScriptBlogPage() {
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Escribe tu comentario o pega tu código aquí..."
+            placeholder="Escribe tu comentario o código aquí..."
             className="flex-1 p-2 border rounded-lg text-black"
             rows={6}
           />
-          {/* Si hay código guardado, muestra un aviso */}
           {savedCodeId && (
             <div className="text-xs text-green-600">
               Código adjuntado al comentario.
@@ -187,9 +161,9 @@ export default function JavaScriptBlogPage() {
           </button>
         </div>
       </div>
-      {/* Editor a la derecha */}
+      {/* Editor/compilador Javascript a la derecha */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <CodeEditor codigo={codigo} setCodigo={setCodigo} />
+        <CodeEditorJavaScript codigo={codigo} setCodigo={setCodigo} />
         <button
           onClick={handleSaveCode}
           style={{

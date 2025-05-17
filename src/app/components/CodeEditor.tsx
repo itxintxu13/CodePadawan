@@ -140,7 +140,7 @@ const CodeEditor: React.FC = () => {
         languageExtension,
         oneDark,
         customTheme,
-        autocompletion({ override: language === "java" ? [javaCompletions] : undefined, }),
+        autocompletion({ override: language === "java" ? [javaCompletions] : language === "javascript" ? [jsCompletions] : undefined }),
         keymap.of(defaultKeymap),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
@@ -181,18 +181,18 @@ const CodeEditor: React.FC = () => {
       if (language === "javascript") {
         const worker = new Worker(new URL("../../app/workers/worker.js", import.meta.url));
     
-    let timeout = setTimeout(() => {
-      worker.terminate();
-      setOutput("❌ Error: Se ha detenido la ejecución por posible bucle infinito.");
-    }, 3000); // Limita ejecución a 3 segundos
+        let timeout = setTimeout(() => {
+          worker.terminate();
+          setOutput("❌ Error: Se ha detenido la ejecución por posible bucle infinito.");
+        }, 3000); // Limita ejecución a 3 segundos
 
-    worker.onmessage = (e) => {
-      clearTimeout(timeout);
-      setOutput(e.data);
-      worker.terminate();
-    };
+        worker.onmessage = (e) => {
+          clearTimeout(timeout);
+          setOutput(e.data);
+          worker.terminate();
+        };
 
-    worker.postMessage({ codigo });
+        worker.postMessage({ codigo });
       } else if (language === "python") {
         if (!pyodideInstance) {
           setOutput("❌ Pyodide aún no está listo, intenta nuevamente...");
@@ -231,7 +231,8 @@ public class Main {
   }
 }`;
         try {
-          const response = await fetch("http://localhost:5000/run", {
+          // Cambia aquí: usa la API interna de Next.js
+          const response = await fetch("/api/java-run", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code: wrappedCode }),
@@ -244,7 +245,7 @@ public class Main {
         } catch (error) {
           console.error("Fetch error:", error);
           setOutput(
-            "❌ Error: No se pudo conectar con el servidor. Asegúrate de que el servidor esté corriendo en http://localhost:5000."
+            "❌ Error: No se pudo conectar con el servidor. Asegúrate de que Next.js esté corriendo."
           );
         }
       }
@@ -255,7 +256,6 @@ public class Main {
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-     
       <div
         style={{
           display: "flex",
@@ -343,25 +343,24 @@ public class Main {
         >
           HTML
         </button>
-        
       </div>
 
       <div
-  ref={editorRef}
-  style={{
-    border: "1px solid #ccc",
-    minHeight: "240px",
-    borderRadius: "8px",
-    overflow: "hidden",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-    fontFamily: "monospace",
-    fontSize: "14px",
-    padding: "10px",
-    backgroundColor: "#1e1e1e",
-    color: "#fff",
-    whiteSpace: "pre-wrap",
-  }}
-/>
+        ref={editorRef}
+        style={{
+          border: "1px solid #ccc",
+          minHeight: "240px",
+          borderRadius: "8px",
+          overflow: "hidden",
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+          fontFamily: "monospace",
+          fontSize: "14px",
+          padding: "10px",
+          backgroundColor: "#1e1e1e",
+          color: "#fff",
+          whiteSpace: "pre-wrap",
+        }}
+      />
       <button
         onClick={ejecutarCodigo}
         disabled={!isPyodideReady && language === "python"}
@@ -400,36 +399,36 @@ public class Main {
         }}
       >
         {language === "html" ? (
-  <div 
-    style={{
-      backgroundColor: "#000", // Fondo negro
-      color: "#fff", // Texto blanco
-      padding: "10px",
-      borderRadius: "5px",
-      border: "1px solid #444",
-      minHeight: "120px",
-      whiteSpace: "pre-wrap"
-    }} 
-    dangerouslySetInnerHTML={{ __html: output }} 
-  />
-) : (
-  <>
-    <strong>Salida:</strong>
-    <pre 
-      style={{
-        backgroundColor: "#000", // Fondo negro
-        color: "#fff", // Texto blanco
-        padding: "10px",
-        borderRadius: "5px",
-        border: "1px solid #444",
-        minHeight: "120px",
-        whiteSpace: "pre-wrap"
-      }}
-    >
-      {output || "Aquí se mostrará la salida..."}
-    </pre>
-  </>
-)}
+          <div
+            style={{
+              backgroundColor: "#000",
+              color: "#fff",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #444",
+              minHeight: "120px",
+              whiteSpace: "pre-wrap",
+            }}
+            dangerouslySetInnerHTML={{ __html: output }}
+          />
+        ) : (
+          <>
+            <strong>Salida:</strong>
+            <pre
+              style={{
+                backgroundColor: "#000",
+                color: "#fff",
+                padding: "10px",
+                borderRadius: "5px",
+                border: "1px solid #444",
+                minHeight: "120px",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {output || "Aquí se mostrará la salida..."}
+            </pre>
+          </>
+        )}
       </div>
     </div>
   );

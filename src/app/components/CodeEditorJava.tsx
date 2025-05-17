@@ -30,9 +30,7 @@ interface CodeEditorJavaProps {
 const CodeEditor: React.FC<CodeEditorJavaProps> = ({ codigo, setCodigo }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
-  const [code, setCode] = useState<string>("");
   const [output, setOutput] = useState<string>("");
-  const [language, setLanguage] = useState<"java">("java");
 
   const customTheme = EditorView.theme({
     "& .cm-content": {
@@ -77,13 +75,13 @@ const CodeEditor: React.FC<CodeEditorJavaProps> = ({ codigo, setCodigo }) => {
       state,
       parent: editorRef.current,
     });
-    console.log(`Editor initialized for ${language}`);
     return () => {
       if (editorInstance.current) {
         editorInstance.current.destroy();
         editorInstance.current = null;
       }
     };
+    // eslint-disable-next-line
   }, []);
 
   // Sincroniza el contenido externo sin recrear el editor
@@ -103,30 +101,30 @@ const CodeEditor: React.FC<CodeEditorJavaProps> = ({ codigo, setCodigo }) => {
   }, [codigo]);
 
   const ejecutarCodigo = async () => {
-  const codigoUsuario = editorInstance.current?.state.doc.toString();
-  if (!codigoUsuario) {
-    setOutput("❌ No hay código para ejecutar.");
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:5000/run", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: codigoUsuario }), // 🚀 Envía el código tal cual
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server responded with status ${response.status}`);
+    const codigoUsuario = editorInstance.current?.state.doc.toString();
+    if (!codigoUsuario) {
+      setOutput("❌ No hay código para ejecutar.");
+      return;
     }
 
-    const data = await response.json();
-    setOutput(data.output || "❌ No se recibió salida.");
-  } catch (error) {
-    console.error("Fetch error:", error);
-    setOutput("❌ Error: No se pudo conectar con el servidor.");
-  }
-};
+    try {
+      const response = await fetch("/api/java-run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: codigoUsuario }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      setOutput(data.output || "❌ No se recibió salida.");
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setOutput("❌ Error: No se pudo conectar con el servidor.");
+    }
+  };
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto", boxSizing: "border-box", width: "100%", minWidth: 0 }}>

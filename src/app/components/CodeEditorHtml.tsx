@@ -16,44 +16,59 @@ const CodeEditorHtml: React.FC<CodeEditorProps> = ({ codigo, setCodigo }) => {
   const editorInstance = useRef<EditorView | null>(null);
   const [output, setOutput] = useState<string>("");
 
-useEffect(() => {
-  if (!editorRef.current || editorInstance.current) return;
+  useEffect(() => {
+    if (!editorRef.current || editorInstance.current) return;
 
-  const state = EditorState.create({
-    doc: codigo,
-    extensions: [
-      basicSetup,
-      html(),
-      oneDark,
-      keymap.of(defaultKeymap),
-      EditorView.updateListener.of((update) => {
-        if (update.docChanged) {
-          setCodigo(update.state.doc.toString());
-        }
-      }),
-    ],
-  });
+    const state = EditorState.create({
+      doc: codigo,
+      extensions: [
+        basicSetup,
+        html(),
+        oneDark,
+        keymap.of(defaultKeymap),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            setCodigo(update.state.doc.toString());
+          }
+        }),
+      ],
+    });
 
-  editorInstance.current = new EditorView({
-    state,
-    parent: editorRef.current,
-  });
+    editorInstance.current = new EditorView({
+      state,
+      parent: editorRef.current,
+    });
 
-  return () => {
-    if (editorInstance.current) {
-      editorInstance.current.destroy();
-      editorInstance.current = null;
+    return () => {
+      if (editorInstance.current) {
+        editorInstance.current.destroy();
+        editorInstance.current = null;
+      }
+    };
+  }, []);
+
+  // --- SINCRONIZACIÓN CON LA PROP 'codigo' ---
+  useEffect(() => {
+    if (
+      editorInstance.current &&
+      editorInstance.current.state.doc.toString() !== codigo
+    ) {
+      editorInstance.current.dispatch({
+        changes: {
+          from: 0,
+          to: editorInstance.current.state.doc.length,
+          insert: codigo,
+        },
+      });
     }
-  };
-}, []);
-
+  }, [codigo]);
 
   const ejecutarCodigo = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const codigo = editorInstance.current?.state.doc.toString();
-    if (!codigo) {
+    const codigoActual = editorInstance.current?.state.doc.toString();
+    if (!codigoActual) {
       setOutput("❌ No hay código para ejecutar.");
       return;
     }
@@ -69,7 +84,7 @@ useEffect(() => {
   </style>
 </head>
 <body>
-${codigo}
+${codigoActual}
 </body>
 </html>`;
 

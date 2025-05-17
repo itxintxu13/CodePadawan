@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
     const content = formData.get("content") as string;
     const user = formData.get("user") as string || "Usuario Anónimo";
     const parentId = formData.get("parentId") as string | null;
+    const codeId = formData.get("codeId") as string | null; // <-- Añadido para asociar código
 
     if (!content) {
       return NextResponse.json({ error: "Content is required" }, { status: 400 });
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
       user,
       replies: [],
       createdAt: new Date().toISOString(),
+      ...(codeId ? { codeId } : {}), // <-- Añade codeId si existe
     };
 
     const commentsRef = ref(database, "blogs/html-css/comments");
