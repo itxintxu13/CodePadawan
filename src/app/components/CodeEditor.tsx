@@ -71,11 +71,14 @@ const jsCompletions = (context: CompletionContext) => {
 const CodeEditor: React.FC = () => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
+  const outputIframeRef = useRef<HTMLIFrameElement>(null);
   const [code, setCode] = useState<string>("");
   const [output, setOutput] = useState<string>("");
+  const [htmlOutput, setHtmlOutput] = useState<string>("");
   const [language, setLanguage] = useState<
     "javascript" | "python" | "html" | "java"
   >("javascript");
+  const [outputIframeHeight, setOutputIframeHeight] = useState(200);
   const [pyodideInstance, setPyodideInstance] =
     useState<PyodideInterface | null>(null);
   const [isPyodideReady, setIsPyodideReady] = useState<boolean>(false);
@@ -170,10 +173,56 @@ const CodeEditor: React.FC = () => {
     };
   }, [language]);
 
+  useEffect(() => {
+    if (outputIframeRef.current) {
+      const handleMessage = (event: MessageEvent) => {
+        if (event.data && event.data.iframeHeight) {
+          setOutputIframeHeight(event.data.iframeHeight);
+        }
+      };
+      window.addEventListener('message', handleMessage);
+      return () => window.removeEventListener('message', handleMessage);
+    }
+  }, [outputIframeRef]);
+
+  useEffect(() => {
+    if (outputIframeRef.current) {
+      const iframe = outputIframeRef.current;
+      const updateHeight = () => {
+        const doc = iframe.contentDocument;
+        if (doc) {
+          const height = doc.body.scrollHeight;
+          setOutputIframeHeight(height);
+        }
+      };
+      updateHeight();
+      const observer = new MutationObserver(updateHeight);
+      observer.observe(iframe.contentDocument?.body || iframe, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+      return () => observer.disconnect();
+    }
+  }, [htmlOutput]);
+
+  useEffect(() => {
+    if (language === "html" && htmlOutput) {
+      const iframe = outputIframeRef.current;
+      if (iframe) {
+        const doc = iframe.contentDocument;
+        if (doc) {
+          const height = doc.body.scrollHeight;
+          setOutputIframeHeight(height);
+        }
+      }
+    }
+  }, [language, htmlOutput]);
+
   const ejecutarCodigo = async () => {
     const codigo = editorInstance.current?.state.doc.toString();
     if (!codigo) {
-      setOutput("❌ No hay código para ejecutar.");
+      setOutput(" No hay código para ejecutar.");
       return;
     }
 
@@ -183,7 +232,7 @@ const CodeEditor: React.FC = () => {
     
         let timeout = setTimeout(() => {
           worker.terminate();
-          setOutput("❌ Error: Se ha detenido la ejecución por posible bucle infinito.");
+          setOutput(" Error: Se ha detenido la ejecución por posible bucle infinito.");
         }, 3000); // Limita ejecución a 3 segundos
 
         worker.onmessage = (e) => {
@@ -195,7 +244,7 @@ const CodeEditor: React.FC = () => {
         worker.postMessage({ codigo });
       } else if (language === "python") {
         if (!pyodideInstance) {
-          setOutput("❌ Pyodide aún no está listo, intenta nuevamente...");
+          setOutput(" Pyodide aún no está listo, intenta nuevamente...");
           return;
         }
         const wrappedCode = `
@@ -205,7 +254,7 @@ sys.stdout = io.StringIO()
 ${codigo.trim()}
 sys.stdout.getvalue()`;
         const output = await pyodideInstance.runPythonAsync(wrappedCode);
-        setOutput(output || "❌ No se recibió salida.");
+        setOutput(output || " No se recibió salida.");
       } else if (language === "html") {
         const wrappedHtml = `
 <!DOCTYPE html>
@@ -222,7 +271,8 @@ sys.stdout.getvalue()`;
 ${codigo}
 </body>
 </html>`;
-        setOutput(wrappedHtml);
+        setHtmlOutput(wrappedHtml);
+        setOutput(""); // Limpiar el output normal
       } else if (language === "java") {
         const wrappedCode = `
 public class Main {
@@ -399,17 +449,30 @@ public class Main {
         }}
       >
         {language === "html" ? (
-          <div
+          <iframe
+            ref={outputIframeRef}
+            srcDoc={htmlOutput}
+            scrolling="no"
+            onLoad={() => {
+              const iframe = outputIframeRef.current;
+              if (iframe) {
+                const doc = iframe.contentDocument;
+                if (doc) {
+                  const height = doc.body.scrollHeight;
+                  setOutputIframeHeight(height + 20); // Add padding
+                }
+              }
+            }}
             style={{
+              display: "block",
+              width: "100%",
+              border: "1px solid #444",
               backgroundColor: "#000",
               color: "#fff",
               padding: "10px",
               borderRadius: "5px",
-              border: "1px solid #444",
-              minHeight: "120px",
-              whiteSpace: "pre-wrap",
+              overflow: "hidden"
             }}
-            dangerouslySetInnerHTML={{ __html: output }}
           />
         ) : (
           <>
@@ -421,7 +484,6 @@ public class Main {
                 padding: "10px",
                 borderRadius: "5px",
                 border: "1px solid #444",
-                minHeight: "120px",
                 whiteSpace: "pre-wrap",
               }}
             >
