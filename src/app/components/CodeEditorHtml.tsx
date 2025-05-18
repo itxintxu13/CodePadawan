@@ -14,8 +14,11 @@ interface CodeEditorProps {
 const CodeEditorHtml: React.FC<CodeEditorProps> = ({ codigo, setCodigo }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [output, setOutput] = useState<string>("");
+  const [iframeHeight, setIframeHeight] = useState<number>(100);
 
+  // Inicializar CodeMirror
   useEffect(() => {
     if (!editorRef.current || editorInstance.current) return;
 
@@ -40,14 +43,12 @@ const CodeEditorHtml: React.FC<CodeEditorProps> = ({ codigo, setCodigo }) => {
     });
 
     return () => {
-      if (editorInstance.current) {
-        editorInstance.current.destroy();
-        editorInstance.current = null;
-      }
+      editorInstance.current?.destroy();
+      editorInstance.current = null;
     };
   }, []);
 
-  // --- SINCRONIZACIÓN CON LA PROP 'codigo' ---
+  // Sincronizar cambios externos
   useEffect(() => {
     if (
       editorInstance.current &&
@@ -63,6 +64,20 @@ const CodeEditorHtml: React.FC<CodeEditorProps> = ({ codigo, setCodigo }) => {
     }
   }, [codigo]);
 
+  // Escuchar mensajes del iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.iframeHeight) {
+        setIframeHeight(event.data.iframeHeight);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
   const ejecutarCodigo = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -73,8 +88,8 @@ const CodeEditorHtml: React.FC<CodeEditorProps> = ({ codigo, setCodigo }) => {
       return;
     }
 
-    try {
-      const wrappedHtml = `
+    // Inyectar script para comunicar altura al padre
+    const wrappedHtml = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -84,19 +99,27 @@ const CodeEditorHtml: React.FC<CodeEditorProps> = ({ codigo, setCodigo }) => {
   </style>
 </head>
 <body>
-${codigoActual}
-</body>
-</html>`;
+  ${codigoActual}
 
-      setOutput(wrappedHtml);
-    } catch (error) {
-      setOutput(`❌ Error: ${error}`);
+  <script>
+    function sendHeight() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({ iframeHeight: height }, '*');
     }
+    window.addEventListener('load', sendHeight);
+    window.addEventListener('resize', sendHeight);
+    const observer = new MutationObserver(sendHeight);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  </script>
+</body>
+</html>
+`;
+
+    setOutput(wrappedHtml);
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto", width: "100%" }}>
       <div
         style={{
           display: "flex",
@@ -163,23 +186,22 @@ ${codigoActual}
           background: "#1e1e1e",
           color: "#fff",
           borderRadius: "5px",
-          textAlign: "left",
           border: "1px solid #ddd",
           wordBreak: "break-word",
-          fontSize: "clamp(0.9rem, 3vw, 1.05rem)",
           width: "100%",
-          maxWidth: "100%",
         }}
       >
         <iframe
+          ref={iframeRef}
           srcDoc={output}
           style={{
             display: "block",
             width: "100%",
-            minHeight: "200px",
+            height: iframeHeight,
             border: "none",
             overflow: "hidden",
           }}
+          sandbox="allow-scripts"
         />
       </div>
     </div>

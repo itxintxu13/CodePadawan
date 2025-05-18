@@ -95,9 +95,9 @@ const handleReply = async (comment: Comment) => {
 };
 
  return (
-  <div className="min-h-screen text-white px-8 py-10">
+  <div>
     {/* Título centrado */}
-    <div className="text-center mb-10">
+    <div className="text-center mb-10 mt-10">
       <h1 className="text-4xl font-bold mb-4">Blog de Html y Css</h1>
       <p className="text-lg text-gray-300">
         Bienvenido al blog de Html y Css. Publica tus dudas y participa en la comunidad.
@@ -105,9 +105,9 @@ const handleReply = async (comment: Comment) => {
     </div>
 
     {/* Contenido dividido: blog y editor */}
-    <div className="flex gap-8">
+    <div className="flex gap-4 mr-20 ml-20 mb-20">
       {/* Blog a la izquierda */}
-      <div className="flex-1 space-y-6">
+      <div className="flex-1 min-w-0">
         {Array.isArray(comments) &&
           comments.map((comment) => (
             <div key={comment.id} className="p-4 border rounded-lg shadow-sm bg-[#1a1a2e]">
@@ -171,11 +171,11 @@ const handleReply = async (comment: Comment) => {
       </div>
 
       {/* Editor a la derecha */}
-      <div className="flex-1 flex flex-col items-center">
+      <div className="flex-1 min-w-0 flex flex-col items-center p-6 rounded-lg shadow-md">
         <CodeEditorHtml codigo={codigo} setCodigo={setCodigo} />
         <button
           onClick={handleSaveCode}
-          className="mt-4 w-1/2 mx-auto bg-green-600 text-white py-2 px-4 rounded-md font-bold hover:bg-green-700 block"
+          className="w-full max-w-[320px] bg-green-600 text-white px-4 py-2 rounded-md font-bold hover:bg-green-700 cursor-pointer mt-4"
         >
           Guardar código para pregunta
         </button>
