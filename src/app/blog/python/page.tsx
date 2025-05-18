@@ -43,35 +43,30 @@ export default function PythonBlogPage() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
-  const [codigo, setCodigo] = useState("// Escribe tu código Python aquí");
+  const [codigo, setCodigo] = useState("// Escribe tu código python aquí");
   const [savedCodeId, setSavedCodeId] = useState<string | null>(null);
 
-  // Función para cargar comentarios desde la API
+  // Cargar comentarios desde Firebase
   const fetchComments = async () => {
     const res = await fetch("/api/comments/python");
     const data = await res.json();
     setComments(data.comments || []);
   };
 
-  // Carga inicial de comentarios cuando el componente se monta
   useEffect(() => {
     fetchComments();
   }, []);
 
-  // Función para guardar código y adjuntarlo al comentario
+  // Guardar código en Firebase y pegarlo en el comentario
   const handleSaveCode = async () => {
-    // Guarda el código en la API
     const res = await fetch("/api/codes/python", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: codigo }),
     });
     const data = await res.json();
-    // Actualiza el estado con el ID del código guardado
     setSavedCodeId(data.id);
-    // Copia el código al campo de comentario
     setNewComment(codigo);
-    // Muestra mensaje de éxito
     alert(
       "Código guardado y pegado en el comentario. Ahora puedes publicarlo o editarlo."
     );
@@ -195,23 +190,44 @@ export default function PythonBlogPage() {
                 </button>
               </div>
             )}
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Escribe tu comentario o código aquí..."
-              className="flex-1 p-2 border rounded-lg bg-[#2a2a40] text-white"
-              rows={6}
-            />
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">Mensaje:</label>
+                <textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Escribe tu mensaje aquí..."
+                  className="w-full p-2 border rounded-lg bg-[#2a2a40] text-white"
+                  rows={4}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">Código adjunto:</label>
+                <textarea
+                  value={codigo}
+                  onChange={(e) => setCodigo(e.target.value)}
+                  placeholder="El código se mostrará en el editor de Python a la derecha"
+                  className="w-full p-2 border rounded-lg bg-[#2a2a40] text-white"
+                  rows={4}
+                />
+              </div>
+            </div>
             {savedCodeId && (
               <div className="text-xs text-green-400">
                 Código adjuntado al comentario.
               </div>
             )}
             <button
-              onClick={handleCommentSubmit}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              onClick={handleSaveCode}
+              className="w-full max-w-[320px] bg-green-600 text-white px-4 py-2 rounded-md font-bold hover:bg-green-700 cursor-pointer mt-4"
             >
-              {replyTo ? "Responder" : "Publicar"}
+              Guardar código para pregunta
+            </button>
+            <button
+              onClick={handleCommentSubmit}
+              className="w-full max-w-[320px] bg-blue-600 text-white px-4 py-2 rounded-md font-bold hover:bg-blue-700 cursor-pointer mt-4"
+            >
+              Publicar comentario
             </button>
           </div>
         </div>
@@ -222,12 +238,6 @@ export default function PythonBlogPage() {
           className="p-6 rounded-lg shadow-md"
         >
           <CodeEditorPython codigo={codigo} setCodigo={setCodigo} />
-          <button
-            onClick={handleSaveCode}
-            className="mt-3 w-1/2 mx-auto bg-green-600 text-white py-2 px-4 rounded-md font-bold hover:bg-green-700 block"
-          >
-            Guardar código para pregunta
-          </button>
         </div>
       </div>
     </div>
