@@ -31,7 +31,7 @@ export default function Navbar() {
       <div className="flex items-center gap-8">
         <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'ring-2 ring-blue-400 ring-offset-2' } }} />
         <Link href="/user-profile" className="hover:text-gray-300 font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60">
-          Perfil
+          Área personal
         </Link>
       </div>
     </nav>

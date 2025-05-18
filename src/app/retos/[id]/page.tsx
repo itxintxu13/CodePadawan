@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { EditorView, basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
 import { javascript } from "@codemirror/lang-javascript";
@@ -43,7 +43,19 @@ interface Reto {
   tests: {
     [key: string]: string;
   };
+  logro_completado?: string; 
 }
+
+// Función para registrar logros en Firebase Realtime Database
+const registrarLogro = async (userId: string, logroId: string) => {
+  try {
+    const logroRef = ref(database, `users/${userId}/logros/${logroId}`);
+    await update(logroRef, { completado: true });
+    console.log(`Logro registrado: ${logroId}`);
+  } catch (error) {
+    console.error("Error registrando logro en Firebase:", error);
+  }
+};
 
 export default function RetoPage() {
   const params = useParams();
@@ -55,35 +67,38 @@ export default function RetoPage() {
   const [codigo, setCodigo] = useState<string>("");
   const [output, setOutput] = useState<string>("");
   const [enviando, setEnviando] = useState(false);
-  const [resultado, setResultado] = useState<{ success: boolean; message: string } | null>(null);
+  const [resultado, setResultado] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
   const [puntosUsuario, setPuntosUsuario] = useState(0);
   const [accesoPermitido, setAccesoPermitido] = useState(true);
   const [editorInstance, setEditorInstance] = useState<EditorView | null>(null);
   const [mostrarSolucion, setMostrarSolucion] = useState(false);
 
   useEffect(() => {
-  const cargarPuntosDesdeFirebase = async () => {
-    if (user?.id) {
-      try {
-        const userRef = ref(database, `users/${user.id}`);
-        const snapshot = await get(userRef);
-        if (snapshot.exists()) {
-          const datos = snapshot.val();
-          const puntosFirebase = datos.puntos || 0;
-          setPuntosUsuario(puntosFirebase);
-          console.log("Puntos cargados desde Firebase:", puntosFirebase);
-        } else {
-          setPuntosUsuario(0);
-          console.log("No hay datos en Firebase para este usuario.");
+    const cargarPuntosDesdeFirebase = async () => {
+      if (user?.id) {
+        try {
+          const userRef = ref(database, `users/${user.id}`);
+          const snapshot = await get(userRef);
+          if (snapshot.exists()) {
+            const datos = snapshot.val();
+            const puntosFirebase = datos.puntos || 0;
+            setPuntosUsuario(puntosFirebase);
+            console.log("Puntos cargados desde Firebase:", puntosFirebase);
+          } else {
+            setPuntosUsuario(0);
+            console.log("No hay datos en Firebase para este usuario.");
+          }
+        } catch (error) {
+          console.error("Error cargando puntos desde Firebase:", error);
         }
-      } catch (error) {
-        console.error("Error cargando puntos desde Firebase:", error);
       }
-    }
-  };
+    };
 
-  cargarPuntosDesdeFirebase();
-}, [user?.id]);
+    cargarPuntosDesdeFirebase();
+  }, [user?.id]);
 
   useEffect(() => {
     if (!params?.id) {
@@ -98,7 +113,9 @@ export default function RetoPage() {
         if (!response.ok) throw new Error("Error al cargar los retos");
 
         const retos = await response.json();
-        const retoActual = retos.find((r: Reto) => r.id.toString() === String(params.id));
+        const retoActual = retos.find(
+          (r: Reto) => r.id.toString() === String(params.id)
+        );
 
         if (retoActual) {
           setReto(retoActual);
@@ -135,7 +152,11 @@ export default function RetoPage() {
     }
 
     const languageExtension =
-      lenguaje === "javascript" ? javascript() : lenguaje === "python" ? python() : java();
+      lenguaje === "javascript"
+        ? javascript()
+        : lenguaje === "python"
+        ? python()
+        : java();
 
     const state = EditorState.create({
       doc: codigo,
@@ -165,31 +186,31 @@ export default function RetoPage() {
     };
   }, [codigo, lenguaje]);
 
+  const actualizarPuntosRealtime = async (
+    userId: string,
+    puntosNuevos: number
+  ) => {
+    try {
+      const userRef = ref(database, `users/${userId}`);
+      const snapshot = await get(userRef);
 
-const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) => {
-  try {
-    const userRef = ref(database, `users/${userId}`);
-    const snapshot = await get(userRef);
+      const datosUsuario = snapshot.exists() ? snapshot.val() : {};
+      const puntosActuales = datosUsuario.puntos || 0;
+      const retosActuales = datosUsuario.retos_completados || 0;
 
-    const datosUsuario = snapshot.exists() ? snapshot.val() : {};
-    const puntosActuales = datosUsuario.puntos || 0;
-    const retosActuales = datosUsuario.retos_completados || 0;
+      await update(userRef, {
+        puntos: puntosActuales + puntosNuevos,
+        retos_completados: retosActuales + 1,
+      });
 
-    await update(userRef, {
-      puntos: puntosActuales + puntosNuevos,
-      retos_completados: retosActuales + 1,
-    });
-
-    console.log("Puntos y retos_completados actualizados:", {
-      puntos: puntosActuales + puntosNuevos,
-      retos_completados: retosActuales + 1,
-    });
-  } catch (error) {
-    console.error("Error actualizando en Realtime Database:", error);
-  }
-};
-
-
+      console.log("Puntos y retos_completados actualizados:", {
+        puntos: puntosActuales + puntosNuevos,
+        retos_completados: retosActuales + 1,
+      });
+    } catch (error) {
+      console.error("Error actualizando en Realtime Database:", error);
+    }
+  };
 
   const entregarSolucion = async () => {
     if (!codigo || !reto || !user) {
@@ -205,7 +226,11 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
       .replace(/'/g, '"')
       .replace(/\s+/g, "")
       .normalize("NFC");
-    const codigoUsuario = codigo.toLowerCase().replace(/'/g, '"').replace(/\s+/g, "").normalize("NFC");
+    const codigoUsuario = codigo
+      .toLowerCase()
+      .replace(/'/g, '"')
+      .replace(/\s+/g, "")
+      .normalize("NFC");
 
     if (codigoUsuario !== solucionCorrecta) {
       setResultado({
@@ -242,7 +267,16 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
 
       lanzarConfeti();
 
-      await actualizarPuntosRealtime(user.id, reto.puntos); 
+      await actualizarPuntosRealtime(user.id, reto.puntos);
+
+      // Registrar logro si corresponde
+      if (reto.logro_completado) {
+        // Para evitar problemas con espacios o mayúsculas, mejor normalizar la clave
+        const logroId = reto.logro_completado
+          .toLowerCase()
+          .replace(/\s+/g, "_");
+        await registrarLogro(user.id, logroId);
+      }
     } catch (error) {
       console.error("Error:", error);
       setResultado({
@@ -274,21 +308,24 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
     );
   }
 
-  // Creo que ya no es necesario
   if (!accesoPermitido) {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Acceso restringido</h1>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">
+            Acceso restringido
+          </h1>
           <p className="mb-4">
             No tienes suficientes puntos para acceder a este reto.
           </p>
           <p className="mb-6">
-            Necesitas al menos <span className="font-bold">{reto?.puntos || 0} puntos</span>.
-            Actualmente tienes: <span className="font-bold">{puntosUsuario} puntos</span>.
+            Necesitas al menos{" "}
+            <span className="font-bold">{reto?.puntos || 0} puntos</span>.
+            Actualmente tienes:{" "}
+            <span className="font-bold">{puntosUsuario} puntos</span>.
           </p>
           <button
-            onClick={() => router.push('/retos')}
+            onClick={() => router.push("/retos")}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
           >
             Volver a los retos disponibles
@@ -303,7 +340,7 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
       <div className="container mx-auto p-8 text-center">
         <h1 className="text-3xl font-bold mb-4">Reto no encontrado</h1>
         <button
-          onClick={() => router.push('/retos')}
+          onClick={() => router.push("/retos")}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Volver a la lista de retos
@@ -317,7 +354,7 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
       <div className="container mx-auto p-4 max-w-6xl">
         <div className="mb-6">
           <button
-            onClick={() => router.push('/retos')}
+            onClick={() => router.push("/retos")}
             className="text-blue-500 hover:underline flex items-center"
           >
             ← Volver a la lista de retos
@@ -327,35 +364,55 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
         <div className="bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
           <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
           <div className="flex items-center gap-4 mb-4">
-            <span className={`px-3 py-1 rounded-full text-sm ${reto.dificultad === 'Fácil' ? 'bg-green-600' :
-              reto.dificultad === 'Medio' ? 'bg-yellow-600' : 'bg-red-600'
-              }`}>
+            <span
+              className={`px-3 py-1 rounded-full text-sm ${
+                reto.dificultad === "Fácil"
+                  ? "bg-green-600"
+                  : reto.dificultad === "Medio"
+                  ? "bg-yellow-600"
+                  : "bg-red-600"
+              }`}
+            >
               {reto.dificultad}
             </span>
-            <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
+            <span className="text-yellow-400 font-bold">
+              {reto.puntos} puntos
+            </span>
           </div>
           <div className="flex items-center gap-4 mb-4">
             <div className="flex gap-2">
-              {reto.lenguajes.includes('javascript') && (
+              {reto.lenguajes.includes("javascript") && (
                 <button
-                  onClick={() => cambiarLenguaje('javascript')}
-                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'javascript' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                  onClick={() => cambiarLenguaje("javascript")}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${
+                    lenguaje === "javascript"
+                      ? "bg-yellow-500 text-gray-900"
+                      : "bg-gray-700 text-white hover:bg-gray-600"
+                  }`}
                 >
                   JavaScript
                 </button>
               )}
-              {reto.lenguajes.includes('python') && (
+              {reto.lenguajes.includes("python") && (
                 <button
-                  onClick={() => cambiarLenguaje('python')}
-                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'python' ? 'bg-blue-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                  onClick={() => cambiarLenguaje("python")}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${
+                    lenguaje === "python"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-700 text-white hover:bg-gray-600"
+                  }`}
                 >
                   Python
                 </button>
               )}
-              {reto.lenguajes.includes('java') && (
+              {reto.lenguajes.includes("java") && (
                 <button
-                  onClick={() => cambiarLenguaje('java')}
-                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === 'java' ? 'bg-red-500 text-white' : 'bg-gray-700 text-white hover:bg-gray-600'}`}
+                  onClick={() => cambiarLenguaje("java")}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${
+                    lenguaje === "java"
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-700 text-white hover:bg-gray-600"
+                  }`}
                 >
                   Java
                 </button>
@@ -367,17 +424,17 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
 
         <div className="mb-4">
           {/* Renderizado del editor específico según el lenguaje, pasando props */}
-          {lenguaje === 'javascript' && (
+          {lenguaje === "javascript" && (
             <CodeEditorJavaScript codigo={codigo} setCodigo={setCodigo} />
           )}
-          {lenguaje === 'python' && (
+          {lenguaje === "python" && (
             <CodeEditorPython codigo={codigo} setCodigo={setCodigo} />
           )}
-          {lenguaje === 'java' && (
+          {lenguaje === "java" && (
             <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />
           )}
-          {lenguaje === 'html' && (
-            <CodeEditorHtml codigo={codigo} setCodigo={setCodigo}/>
+          {lenguaje === "html" && (
+            <CodeEditorHtml codigo={codigo} setCodigo={setCodigo} />
           )}
 
           {/* Botones y salida */}
@@ -387,7 +444,13 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
             </div>
           )}
           {resultado && (
-            <div className={`mt-4 p-4 rounded ${resultado.success ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'}`}>
+            <div
+              className={`mt-4 p-4 rounded ${
+                resultado.success
+                  ? "bg-green-800 text-green-200"
+                  : "bg-red-800 text-red-200"
+              }`}
+            >
               {resultado.message}
             </div>
           )}
@@ -406,12 +469,12 @@ const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) =>
             >
               {mostrarSolucion ? "Ocultar solución" : "Ver solución"}
             </button>
-
-
           </div>
           {mostrarSolucion && (
             <div className="mt-8 flex flex-col items-center">
-              <label className="text-white font-bold mb-2">Solución Correcta en {lenguaje}:</label>
+              <label className="text-white font-bold mb-2">
+                Solución Correcta en {lenguaje}:
+              </label>
               <textarea
                 readOnly
                 className="w-full max-w-lg p-4 bg-gray-900 text-yellow-400 rounded-lg border border-yellow-500"

@@ -44,6 +44,17 @@ export default function Sidebar() {
             Playground
           </span>
         </a>
+        <a
+          href="/user-profile?tab=logros"
+          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
+        >
+          <span className="mr-3 text-white-400 group-hover:text-purple-300 transition-colors duration-200">
+            🎯
+          </span>
+          <span className="group-hover:text-blue-100 transition-colors duration-200">
+            Mis logros
+          </span>
+        </a>
       <div className="pb-4">
        <a
           href="/user-profile?tab=about"

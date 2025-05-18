@@ -12,9 +12,7 @@
     "solucion": {
       "javascript": "// Escribe tu código aquí\nconsole.log('Hola Mundo');"
     },
-    "tests": {
-      "javascript": "output.includes('Hola Mundo')"
-    }
+    "logro_completado": "Hola Mundo JavaScript"
   },
   {
     "id": 2,
@@ -29,9 +27,7 @@
     "solucion": {
       "python": "# Escribe tu código aquí\nprint('Hola Mundo')"
     },
-    "tests": {
-      "python": "output.includes('Hola Mundo')"
-    }
+    "logro_completado": "Hola Mundo Python"
   },
   {
     "id": 3,
@@ -46,9 +42,7 @@
     "solucion": {
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Escribe tu código aquí\n    System.out.println(\"Hola Mundo\");\n  }\n}"
     },
-    "tests": {
-      "java": "output.includes('Hola Mundo')"
-    }
+    "logro_completado": "Hola Mundo Java"
   },
   {
     "id": 4,
@@ -116,7 +110,8 @@
     },
     "tests": {
       "html": "output.includes('<h1>Bienvenido a HTML</h1>')"
-    }
+    },
+    "logro_completado": "Hola Mundo HTML"
   },
   {
     "id": 8,
