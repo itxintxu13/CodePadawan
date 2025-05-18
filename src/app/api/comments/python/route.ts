@@ -15,18 +15,19 @@ const firebaseConfig = {
   measurementId: "G-EFRX0BPMG0"
 };
 
-// Inicializar Firebase
+// Inicialización de Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const database = getDatabase(app);
 
-// Obtener comentarios
+// Endpoint GET para obtener todos los comentarios
 export async function GET() {
   try {
+    // Referencia a la colección de comentarios en Firebase
     const commentsRef = ref(database, "blogs/python/comments");
     const snapshot = await get(commentsRef);
     const data = snapshot.val();
 
-    // Convertir los datos en un array
+    // Convierte los datos de Firebase en un array de objetos
     const comments = data
       ? Object.entries(data).map(([key, value]: [string, any]) => ({
           id: key,
@@ -34,23 +35,26 @@ export async function GET() {
         }))
       : [];
 
+    // Retorna la lista de comentarios
     return NextResponse.json({ comments });
   } catch (error) {
-    console.error("Error fetching comments:", error);
-    return NextResponse.json({ error: "Failed to fetch comments" }, { status: 500 });
+    console.error("Error obteniendo comentarios:", error);
+    return NextResponse.json({ error: "Error al obtener comentarios" }, { status: 500 });
   }
 }
 
+// Endpoint POST para crear un nuevo comentario
 export async function POST(req: NextRequest) {
   try {
+    // Obtiene los datos del formulario
     const formData = await req.formData();
     const content = formData.get("content") as string;
     const user = formData.get("user") as string || "Usuario Anónimo";
     const parentId = formData.get("parentId") as string | null;
-    const codeId = formData.get("codeId") as string | null; // <-- Añadido para asociar código
+    const codeId = formData.get("codeId") as string | null; 
 
     if (!content) {
-      return NextResponse.json({ error: "Content is required" }, { status: 400 });
+      return NextResponse.json({ error: "Contenido es requerido" }, { status: 400 });
     }
 
     const newComment = {
@@ -58,7 +62,7 @@ export async function POST(req: NextRequest) {
       user,
       replies: [],
       createdAt: new Date().toISOString(),
-      ...(codeId ? { codeId } : {}), // <-- Añade codeId si existe
+      ...(codeId ? { codeId } : {}), 
     };
 
     const commentsRef = ref(database, "blogs/python/comments");

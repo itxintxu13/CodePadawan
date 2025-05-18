@@ -15,18 +15,19 @@ const firebaseConfig = {
   measurementId: "G-EFRX0BPMG0"
 };
 
-// Inicializar Firebase
+// Inicialización de Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const database = getDatabase(app);
 
-// Obtener comentarios
+// Endpoint GET para obtener todos los comentarios
 export async function GET() {
   try {
+    // Referencia a la colección de comentarios en Firebase
     const commentsRef = ref(database, "blogs/html-css/comments");
     const snapshot = await get(commentsRef);
     const data = snapshot.val();
 
-    // Convertir los datos en un array
+    // Convierte los datos de Firebase en un array de objetos
     const comments = data
       ? Object.entries(data).map(([key, value]: [string, any]) => ({
           id: key,
@@ -34,74 +35,84 @@ export async function GET() {
         }))
       : [];
 
+    // Retorna la lista de comentarios
     return NextResponse.json({ comments });
   } catch (error) {
-    console.error("Error fetching comments:", error);
-    return NextResponse.json({ error: "Failed to fetch comments" }, { status: 500 });
+    console.error("Error obteniendo comentarios:", error);
+    return NextResponse.json({ error: "Error al obtener comentarios" }, { status: 500 });
   }
 }
 
+// Endpoint POST para crear un nuevo comentario
 export async function POST(req: NextRequest) {
   try {
+    // Obtiene los datos del formulario
     const formData = await req.formData();
     const content = formData.get("content") as string;
     const user = formData.get("user") as string || "Usuario Anónimo";
     const parentId = formData.get("parentId") as string | null;
-    const codeId = formData.get("codeId") as string | null; // <-- Añadido para asociar código
+    const codeId = formData.get("codeId") as string | null;
 
+    // Valida que haya contenido
     if (!content) {
-      return NextResponse.json({ error: "Content is required" }, { status: 400 });
+      return NextResponse.json({ error: "Contenido es requerido" }, { status: 400 });
     }
 
+    // Crea el nuevo comentario
     const newComment = {
       content,
       user,
       replies: [],
       createdAt: new Date().toISOString(),
-      ...(codeId ? { codeId } : {}), // <-- Añade codeId si existe
+      ...(codeId ? { codeId } : {}),
     };
 
+    // Referencia a la colección de comentarios
     const commentsRef = ref(database, "blogs/html-css/comments");
 
+    // Si es una respuesta a un comentario existente
     if (parentId) {
-      // Si es una respuesta, actualiza el comentario padre
+      // Obtiene los comentarios existentes
       const snapshot = await get(commentsRef);
       const data = snapshot.val() || {};
 
-      // Buscar el comentario padre
+      // Busca el comentario padre
       const parentCommentKey = Object.keys(data).find(
         (key) => data[key].id === parentId
       );
 
+      // Verifica que el comentario padre exista
       if (!parentCommentKey) {
-        return NextResponse.json({ error: "Parent comment not found" }, { status: 404 });
+        return NextResponse.json({ error: "Comentario padre no encontrado" }, { status: 404 });
       }
 
+      // Obtiene el comentario padre y sus respuestas existentes
       const parentComment = data[parentCommentKey];
       const existingReplies = parentComment.replies || [];
 
-      // Agregar la nueva respuesta
-      const replyId = push(ref(database)).key; // Generar un ID único para la respuesta
+      // Crea una nueva respuesta con ID único
+      const replyId = push(ref(database)).key;
       const updatedReplies = [...existingReplies, { id: replyId, ...newComment }];
 
-      // Actualizar el comentario padre con las nuevas respuestas
+      // Actualiza el comentario padre con la nueva respuesta
       await update(ref(database, `blogs/html-css/comments/${parentCommentKey}`), {
         ...parentComment,
         replies: updatedReplies,
       });
     } else {
-      // Si es un comentario nuevo, utiliza el ID generado por Firebase
-      const newCommentRef = push(commentsRef); // Generar una nueva referencia
-      const newCommentId = newCommentRef.key; // Obtener el ID generado
+      // Si es un comentario nuevo, usa el ID generado por Firebase
+      const newCommentRef = push(commentsRef);
+      const newCommentId = newCommentRef.key;
       await update(ref(database, `blogs/html-css/comments/${newCommentId}`), {
         id: newCommentId,
         ...newComment,
       });
     }
 
-    return NextResponse.json({ message: "Comment added successfully" });
+    // Retorna mensaje de éxito
+    return NextResponse.json({ message: "Comentario agregado exitosamente" });
   } catch (error) {
-    console.error("Error saving comment:", error);
-    return NextResponse.json({ error: "Failed to save comment" }, { status: 500 });
+    console.error("Error guardando comentario:", error);
+    return NextResponse.json({ error: "Error al guardar comentario" }, { status: 500 });
   }
 }

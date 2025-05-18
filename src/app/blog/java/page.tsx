@@ -13,6 +13,7 @@ interface Comment {
   codeId?: string;
 }
 
+// Componente que muestra el código asociado a un comentario
 function ShowCode({ codeId }: { codeId: string }) {
   const [code, setCode] = useState<string>("");
   useEffect(() => {
@@ -28,6 +29,7 @@ function ShowCode({ codeId }: { codeId: string }) {
   );
 }
 
+// Componente principal de la página del blog de Java
 export default function JavaBlogPage() {
   const { user } = useUser();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -36,60 +38,79 @@ export default function JavaBlogPage() {
   const [codigo, setCodigo] = useState("// Escribe tu código Java aquí");
   const [savedCodeId, setSavedCodeId] = useState<string | null>(null);
 
-  // Cargar comentarios desde Firebase
+  // Función para cargar comentarios desde la API
   const fetchComments = async () => {
     const res = await fetch("/api/comments/java");
     const data = await res.json();
     setComments(data.comments || []);
   };
 
+  // Carga inicial de comentarios cuando el componente se monta
   useEffect(() => {
     fetchComments();
   }, []);
 
-  // Guardar código en Firebase y pegarlo en el comentario
+  // Función para guardar código y adjuntarlo al comentario
   const handleSaveCode = async () => {
+    // Guarda el código en la API
     const res = await fetch("/api/codes/java", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: codigo }),
     });
     const data = await res.json();
+    // Actualiza el estado con el ID del código guardado
     setSavedCodeId(data.id);
+    // Copia el código al campo de comentario
     setNewComment(codigo);
+    // Muestra mensaje de éxito
     alert(
       "Código guardado y pegado en el comentario. Ahora puedes publicarlo o editarlo."
     );
   };
 
-  // Publicar un comentario (con código opcional)
+  // Función para publicar un nuevo comentario
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Valida que el comentario no esté vacío
     if (newComment.trim() === "") return;
 
+    // Prepara los datos del formulario
     const formData = new FormData();
     formData.append("content", newComment);
     formData.append(
       "user",
       user?.fullName || user?.username || "Usuario Anónimo"
     );
+    
+    // Agrega ID del comentario padre si es una respuesta
     if (replyTo) formData.append("parentId", replyTo);
+    
+    // Agrega ID del código si existe
     if (savedCodeId) formData.append("codeId", savedCodeId);
 
+    // Envía el comentario a la API
     await fetch("/api/comments/java", {
       method: "POST",
       body: formData,
     });
 
+    // Limpia los campos después de enviar
     setNewComment("");
     setReplyTo(null);
     setSavedCodeId(null);
+    
+    // Actualiza la lista de comentarios
     await fetchComments();
   };
 
-  // Copiar código del comentario al editor al responder
+  // Función para manejar respuestas a comentarios
   const handleReply = async (comment: Comment) => {
+    // Establece el ID del comentario al que se responde
     setReplyTo(comment.id);
+    
+    // Si el comentario tiene código asociado, lo carga
     if (comment.codeId) {
       const res = await fetch(`/api/codes/java?id=${comment.codeId}`);
       const data = await res.json();

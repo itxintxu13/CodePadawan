@@ -1,9 +1,11 @@
+// Componente cliente que maneja la página del blog de HTML/CSS
 "use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import CodeEditorHtml from "@/app/components/CodeEditorHtml";
 import BotonVolver from "@/app/components/BotonVolver";
 
+// Interface para definir la estructura de un comentario
 interface Comment {
   id: string;
   user: string;
@@ -13,6 +15,7 @@ interface Comment {
   codeId?: string;
 }
 
+// Componente que muestra el código asociado a un comentario
 function ShowCode({ codeId }: { codeId: string }) {
   const [code, setCode] = useState<string>("");
   useEffect(() => {
@@ -21,6 +24,8 @@ function ShowCode({ codeId }: { codeId: string }) {
       .then(data => setCode(data.code || ""));
   }, [codeId]);
   if (!code) return null;
+  
+  // Muestra el código en un bloque de código con estilo
   return (
     <pre className="bg-gray-900 text-green-200 rounded p-2 mt-2 overflow-x-auto text-xs">
       {code}
@@ -36,7 +41,7 @@ export default function HtmlCssBlogPage() {
   const [codigo, setCodigo] = useState("// Escribe tu código Html o Css aquí");
   const [savedCodeId, setSavedCodeId] = useState<string | null>(null);
 
-  // Cargar comentarios desde Firebase
+  // Función para cargar comentarios desde la API
   const fetchComments = async () => {
     const res = await fetch("/api/comments/html-css");
     const data = await res.json();
@@ -47,7 +52,7 @@ export default function HtmlCssBlogPage() {
     fetchComments();
   }, []);
 
-  // Guardar código en Firebase y pegarlo en el comentario
+  // Función para guardar código y adjuntarlo al comentario
   const handleSaveCode = async () => {
     const res = await fetch("/api/codes/html-css", {
       method: "POST",
@@ -60,7 +65,7 @@ export default function HtmlCssBlogPage() {
     alert("Código guardado y pegado en el comentario. Ahora puedes publicarlo o editarlo.");
   };
 
-  // Publicar un comentario (con código opcional)
+  // Función para publicar un nuevo comentario
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newComment.trim() === "") return;
@@ -76,26 +81,31 @@ export default function HtmlCssBlogPage() {
       body: formData,
     });
 
+    // Limpia los campos después de enviar
     setNewComment("");
     setReplyTo(null);
     setSavedCodeId(null);
+    
+    // Actualiza la lista de comentarios
     await fetchComments();
   };
 
-  // Copiar código del comentario al editor al responder
-const handleReply = async (comment: Comment) => {
-  setReplyTo(comment.id);
-  if (comment.codeId) {
-    const res = await fetch(`/api/codes/html-css?id=${comment.codeId}`);
-    const data = await res.json();
-    setCodigo(data.code || "// Código no encontrado");
-  } else {
-    // Si no hay codeId, copia el texto del comentario al editor
-    setCodigo(comment.content || "");
-  }
-};
+  // Función para manejar respuestas a comentarios
+  const handleReply = async (comment: Comment) => {
+    setReplyTo(comment.id);
+    
+    // Si el comentario tiene código asociado, lo carga
+    if (comment.codeId) {
+      const res = await fetch(`/api/codes/html-css?id=${comment.codeId}`);
+      const data = await res.json();
+      setCodigo(data.code || "// Código no encontrado");
+    } else {
+      // Si no hay código, copia el contenido del comentario al editor
+      setCodigo(comment.content || "");
+    }
+  };
 
- return (
+  return (
 
   
   <div>

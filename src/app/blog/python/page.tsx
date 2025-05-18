@@ -1,9 +1,11 @@
+// Componente cliente para la página del blog de Python
 "use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import CodeEditorPython from "@/app/components/CodeEditorPython"; // Componente específico para Python con Pyodide
 import BotonVolver from "@/app/components/BotonVolver";
 
+// Interface que define la estructura de un comentario
 interface Comment {
   id: string;
   user: string;
@@ -13,14 +15,21 @@ interface Comment {
   codeId?: string;
 }
 
+// Componente que muestra el código asociado a un comentario
 function ShowCode({ codeId }: { codeId: string }) {
   const [code, setCode] = useState<string>("");
+  
+  // Carga el código desde la API cuando el componente se monta
   useEffect(() => {
     fetch(`/api/codes/python?id=${codeId}`)
       .then((res) => res.json())
       .then((data) => setCode(data.code || ""));
   }, [codeId]);
+
+  // Solo muestra el código si existe
   if (!code) return null;
+  
+  // Muestra el código en un bloque de código con estilo
   return (
     <pre className="bg-gray-900 text-green-200 rounded p-2 mt-2 overflow-x-auto text-xs">
       {code}
@@ -28,6 +37,7 @@ function ShowCode({ codeId }: { codeId: string }) {
   );
 }
 
+// Componente principal de la página del blog de Python
 export default function PythonBlogPage() {
   const { user } = useUser();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -36,66 +46,85 @@ export default function PythonBlogPage() {
   const [codigo, setCodigo] = useState("// Escribe tu código Python aquí");
   const [savedCodeId, setSavedCodeId] = useState<string | null>(null);
 
-  // Cargar comentarios desde Firebase
+  // Función para cargar comentarios desde la API
   const fetchComments = async () => {
     const res = await fetch("/api/comments/python");
     const data = await res.json();
     setComments(data.comments || []);
   };
 
+  // Carga inicial de comentarios cuando el componente se monta
   useEffect(() => {
     fetchComments();
   }, []);
 
-  // Guardar código en Firebase y pegarlo en el comentario
+  // Función para guardar código y adjuntarlo al comentario
   const handleSaveCode = async () => {
+    // Guarda el código en la API
     const res = await fetch("/api/codes/python", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: codigo }),
     });
     const data = await res.json();
+    // Actualiza el estado con el ID del código guardado
     setSavedCodeId(data.id);
+    // Copia el código al campo de comentario
     setNewComment(codigo);
+    // Muestra mensaje de éxito
     alert(
       "Código guardado y pegado en el comentario. Ahora puedes publicarlo o editarlo."
     );
   };
 
-  // Publicar un comentario (con código opcional)
+  // Función para publicar un nuevo comentario
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Valida que el comentario no esté vacío
     if (newComment.trim() === "") return;
 
+    // Prepara los datos del formulario
     const formData = new FormData();
     formData.append("content", newComment);
     formData.append(
       "user",
       user?.fullName || user?.username || "Usuario Anónimo"
     );
+    
+    // Agrega ID del comentario padre si es una respuesta
     if (replyTo) formData.append("parentId", replyTo);
+    
+    // Agrega ID del código si existe
     if (savedCodeId) formData.append("codeId", savedCodeId);
 
+    // Envía el comentario a la API
     await fetch("/api/comments/python", {
       method: "POST",
       body: formData,
     });
 
+    // Limpia los campos después de enviar
     setNewComment("");
     setReplyTo(null);
     setSavedCodeId(null);
+    
+    // Actualiza la lista de comentarios
     await fetchComments();
   };
 
-  // Copiar código del comentario al editor al responder
+  // Función para manejar respuestas a comentarios
   const handleReply = async (comment: Comment) => {
+    // Establece el ID del comentario al que se responde
     setReplyTo(comment.id);
+    
+    // Si el comentario tiene código asociado, lo carga
     if (comment.codeId) {
       const res = await fetch(`/api/codes/python?id=${comment.codeId}`);
       const data = await res.json();
       setCodigo(data.code || "// Código no encontrado");
     } else {
-      // Si no hay codeId, copia el texto del comentario al editor
+      // Si no hay código, copia el contenido del comentario al editor
       setCodigo(comment.content || "");
     }
   };
