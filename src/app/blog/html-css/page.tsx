@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import CodeEditorHtml from "@/app/components/CodeEditorHtml";
+import BotonVolver from "@/app/components/BotonVolver";
 
 interface Comment {
   id: string;
@@ -95,6 +96,8 @@ const handleReply = async (comment: Comment) => {
 };
 
  return (
+
+  
   <div>
     {/* Título centrado */}
     <div className="text-center mb-10 mt-10">
@@ -103,6 +106,10 @@ const handleReply = async (comment: Comment) => {
         Bienvenido al blog de Html y Css. Publica tus dudas y participa en la comunidad.
       </p>
     </div>
+
+    <div className="flex justify-between items-center mb-6">
+  <BotonVolver />
+</div>
 
     {/* Contenido dividido: blog y editor */}
     <div className="flex gap-4 mr-20 ml-20 mb-20">

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import CodeEditorJava from "../../components/CodeEditorJava";
+import BotonVolver from "@/app/components/BotonVolver";
 
 interface Comment {
   id: string;
@@ -105,6 +106,10 @@ return (
         Bienvenido al blog de Java. Publica tus dudas y participa en la comunidad.
       </p>
     </div>
+
+    <div className="flex justify-between items-center mb-6">
+  <BotonVolver />
+</div>
 
     {/* Contenedor en dos columnas: blog + editor */}
     <div className="flex gap-6 mx-20 mb-20">
