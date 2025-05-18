@@ -9,7 +9,12 @@ import { java } from "@codemirror/lang-java";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { keymap } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
-import { autocompletion, completionKeymap, CompletionContext, Completion } from "@codemirror/autocomplete";
+import {
+  autocompletion,
+  completionKeymap,
+  CompletionContext,
+  Completion,
+} from "@codemirror/autocomplete";
 import { PyodideInterface } from "../types/pyodide";
 
 function javaCompletions(context: CompletionContext) {
@@ -21,8 +26,8 @@ function javaCompletions(context: CompletionContext) {
     options: [
       { label: "System.out.println", type: "function", detail: "Java" },
       { label: "public static void main", type: "function", detail: "Java" },
-      { label: "ArrayList", type: "class", detail: "Java" }
-    ]
+      { label: "ArrayList", type: "class", detail: "Java" },
+    ],
   };
 }
 
@@ -52,7 +57,7 @@ const loadPyodide = async (): Promise<PyodideInterface> => {
 // Fuente de autocompletado personalizada para JavaScript
 const jsCompletions = (context: CompletionContext) => {
   const word = context.matchBefore(/\w*/);
-  if (!word || word.from === word.to && !context.explicit) return null;
+  if (!word || (word.from === word.to && !context.explicit)) return null;
 
   const completions: Completion[] = [
     { label: "console.log", type: "function", detail: "Log to console" },
@@ -78,7 +83,7 @@ const CodeEditor: React.FC = () => {
   const [language, setLanguage] = useState<
     "javascript" | "python" | "html" | "java"
   >("javascript");
-  const [outputIframeHeight, setOutputIframeHeight] = useState(200);
+  const [outputIframeHeight, setOutputIframeHeight] = useState(100);
   const [pyodideInstance, setPyodideInstance] =
     useState<PyodideInterface | null>(null);
   const [isPyodideReady, setIsPyodideReady] = useState<boolean>(false);
@@ -143,7 +148,14 @@ const CodeEditor: React.FC = () => {
         languageExtension,
         oneDark,
         customTheme,
-        autocompletion({ override: language === "java" ? [javaCompletions] : language === "javascript" ? [jsCompletions] : undefined }),
+        autocompletion({
+          override:
+            language === "java"
+              ? [javaCompletions]
+              : language === "javascript"
+              ? [jsCompletions]
+              : undefined,
+        }),
         keymap.of(defaultKeymap),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
@@ -174,37 +186,17 @@ const CodeEditor: React.FC = () => {
   }, [language]);
 
   useEffect(() => {
-    if (outputIframeRef.current) {
-      const handleMessage = (event: MessageEvent) => {
-        if (event.data && event.data.iframeHeight) {
-          setOutputIframeHeight(event.data.iframeHeight);
-        }
-      };
-      window.addEventListener('message', handleMessage);
-      return () => window.removeEventListener('message', handleMessage);
-    }
-  }, [outputIframeRef]);
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.iframeHeight) {
+        setOutputIframeHeight(event.data.iframeHeight + 20); // Añade un pequeño margen si quieres
+      }
+    };
 
-  useEffect(() => {
-    if (outputIframeRef.current) {
-      const iframe = outputIframeRef.current;
-      const updateHeight = () => {
-        const doc = iframe.contentDocument;
-        if (doc) {
-          const height = doc.body.scrollHeight;
-          setOutputIframeHeight(height);
-        }
-      };
-      updateHeight();
-      const observer = new MutationObserver(updateHeight);
-      observer.observe(iframe.contentDocument?.body || iframe, {
-        childList: true,
-        subtree: true,
-        characterData: true
-      });
-      return () => observer.disconnect();
-    }
-  }, [htmlOutput]);
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
 
   useEffect(() => {
     if (language === "html" && htmlOutput) {
@@ -222,18 +214,22 @@ const CodeEditor: React.FC = () => {
   const ejecutarCodigo = async () => {
     const codigo = editorInstance.current?.state.doc.toString();
     if (!codigo) {
-      setOutput(" No hay código para ejecutar.");
+      setOutput("❌ No hay código para ejecutar.");
       return;
     }
 
     try {
       if (language === "javascript") {
-        const worker = new Worker(new URL("../../app/workers/worker.js", import.meta.url));
-    
-        let timeout = setTimeout(() => {
+        const worker = new Worker(
+          new URL("../../app/workers/worker.js", import.meta.url)
+        );
+
+        const timeout = setTimeout(() => {
           worker.terminate();
-          setOutput(" Error: Se ha detenido la ejecución por posible bucle infinito.");
-        }, 3000); // Limita ejecución a 3 segundos
+          setOutput(
+            "⚠️ Error: Se ha detenido la ejecución por posible bucle infinito."
+          );
+        }, 3000);
 
         worker.onmessage = (e) => {
           clearTimeout(timeout);
@@ -262,17 +258,35 @@ sys.stdout.getvalue()`;
 <head>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    h1 { font-size: 2em; font-weight: bold; margin-bottom: 0.5em; }
-    p { font-size: 1em; margin-bottom: 1em; }
-    div { font-size: 1em; }
+    html, body {
+      color: white;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    p, div, h1 {
+      font-size: 1em;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
-${codigo}
+  ${codigo}
+  <script>
+    function sendHeight() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({ iframeHeight: height }, '*');
+    }
+    window.addEventListener('load', sendHeight);
+    window.addEventListener('resize', sendHeight);
+    const observer = new MutationObserver(sendHeight);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  </script>
 </body>
 </html>`;
+
         setHtmlOutput(wrappedHtml);
-        setOutput(""); // Limpiar el output normal
+        setOutput(""); // Clear normal output
       } else if (language === "java") {
         const wrappedCode = `
 public class Main {
@@ -281,15 +295,16 @@ public class Main {
   }
 }`;
         try {
-          // Cambia aquí: usa la API interna de Next.js
           const response = await fetch("/api/java-run", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code: wrappedCode }),
           });
+
           if (!response.ok) {
             throw new Error(`Server responded with status ${response.status}`);
           }
+
           const data = await response.json();
           setOutput(data.output || "❌ No se recibió salida.");
         } catch (error) {
@@ -300,7 +315,7 @@ public class Main {
         }
       }
     } catch (error) {
-      setOutput(`❌ Error: ${error}`);
+      setOutput(`❌ Error inesperado: ${error}`);
     }
   };
 
@@ -453,25 +468,16 @@ public class Main {
             ref={outputIframeRef}
             srcDoc={htmlOutput}
             scrolling="no"
-            onLoad={() => {
-              const iframe = outputIframeRef.current;
-              if (iframe) {
-                const doc = iframe.contentDocument;
-                if (doc) {
-                  const height = doc.body.scrollHeight;
-                  setOutputIframeHeight(height + 20); // Add padding
-                }
-              }
-            }}
             style={{
               display: "block",
               width: "100%",
+              height: outputIframeHeight,
               border: "1px solid #444",
               backgroundColor: "#000",
               color: "#fff",
               padding: "10px",
               borderRadius: "5px",
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           />
         ) : (
