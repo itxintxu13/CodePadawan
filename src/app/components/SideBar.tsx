@@ -4,7 +4,7 @@ import { SignOutButton } from "@clerk/nextjs";
 
 export default function Sidebar() {
   return (
-<div className="h-screen w-1/5 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col p-4 shadow-lg overflow-y-auto">      <div className="mb-6">
+<div className="min-h-screen w-1/5 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col p-4 shadow-lg overflow-y-auto">      <div className="mb-6">
 {/* <p className="text-lg font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 text-transparent bg-clip-text tracking-wider text-center mt-2 pb-2 px-4 py-2 border border-gray-600 rounded-md shadow-lg">
   Que el código te acompañe.
 </p> */}
