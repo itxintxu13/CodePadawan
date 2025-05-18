@@ -26,7 +26,7 @@ const LENGUAJES = [
   {
     id: "python",
     nombre: "Python",
-    color: "#388E3C",
+    color: "#007BFF",
     icon: "/icons/python.svg",
     bg: "#E8F5E9",
   },
@@ -40,7 +40,7 @@ const LENGUAJES = [
   {
     id: "html",
     nombre: "HTML",
-    color: "#E44D26",
+    color: "#E54C21",
     icon: "/icons/html.svg",
     bg: "#FFF3E0",
   },
@@ -271,7 +271,7 @@ export default function RetosPage() {
                                 key={lang.id}
                                 className="px-2 py-1 rounded text-xs"
                                 style={{
-                                  backgroundColor: `${lang.bg}33`,
+                                  backgroundColor: `transparent`,
                                   color: lang.color,
                                   border: `1px solid ${lang.color}`,
                                 }}
