@@ -168,19 +168,27 @@ export default function RetoPage() {
 
 const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) => {
   try {
-    // Usa la instancia database importada
     const userRef = ref(database, `users/${userId}`);
-
     const snapshot = await get(userRef);
-    const puntosActuales = snapshot.exists() ? snapshot.val().puntos || 0 : 0;
 
-    await update(userRef, { puntos: puntosActuales + puntosNuevos });
+    const datosUsuario = snapshot.exists() ? snapshot.val() : {};
+    const puntosActuales = datosUsuario.puntos || 0;
+    const retosActuales = datosUsuario.retos_completados || 0;
 
-    console.log("Puntos actualizados en Realtime Database:", puntosActuales + puntosNuevos);
+    await update(userRef, {
+      puntos: puntosActuales + puntosNuevos,
+      retos_completados: retosActuales + 1,
+    });
+
+    console.log("Puntos y retos_completados actualizados:", {
+      puntos: puntosActuales + puntosNuevos,
+      retos_completados: retosActuales + 1,
+    });
   } catch (error) {
-    console.error("Error actualizando puntos en Realtime Database:", error);
+    console.error("Error actualizando en Realtime Database:", error);
   }
 };
+
 
 
   const entregarSolucion = async () => {

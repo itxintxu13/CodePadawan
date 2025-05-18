@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { database } from "@/lib/firebase/config"; 
+import { database } from "@/lib/firebase/config";
 import { ref, get } from "firebase/database";
 
 interface Usuario {
@@ -42,7 +42,9 @@ export default function RankingPage() {
           })
         );
 
-        const usuariosOrdenados = usuariosClerk.sort((a, b) => b.puntos - a.puntos);
+        const usuariosOrdenados = usuariosClerk.sort(
+          (a, b) => b.puntos - a.puntos
+        );
         setUsuarios(usuariosOrdenados);
       } catch (error) {
         console.error("Error al obtener usuarios:", error);
@@ -54,47 +56,57 @@ export default function RankingPage() {
     cargarUsuarios();
   }, []);
 
-   // Función para determinar el emoji de la posición
+  // Función para determinar el emoji de la posición
   const getPositionEmoji = (index: number) => {
     switch (index) {
-      case 0: return '🥇';
-      case 1: return '🥈';
-      case 2: return '🥉';
-      default: return `${index + 1}`;
+      case 0:
+        return "🥇";
+      case 1:
+        return "🥈";
+      case 2:
+        return "🥉";
+      default:
+        return `${index + 1}`;
     }
   };
 
   // Función para determinar los logros del usuario
-const getLogros = (numRetosResueltos: number) => {
-  const logros = [];
+  const getLogros = (numRetosResueltos: number) => {
+    const logros = [];
 
-  console.log("Número de retos resueltos en getLogros:", numRetosResueltos);
+    console.log("Número de retos resueltos en getLogros:", numRetosResueltos);
 
-  if (numRetosResueltos >= 1) {
-    logros.push('🌱 Principiante');
-    console.log("Asignado logro: Principiante");
-  }
-  if (numRetosResueltos >= 3) {
-    logros.push('🚀 Explorador');
-    console.log("Asignado logro: Explorador");
-  }
-  if (numRetosResueltos >= 5) {
-    logros.push('⭐ Experto');
-    console.log("Asignado logro: Experto");
-  }
-  if (numRetosResueltos >= 10) {
-    logros.push('🏆 Maestro');
-    console.log("Asignado logro: Maestro");
-  }
+    if (numRetosResueltos >= 1) {
+      logros.push("🌱 Padawan");
+      console.log("Asignado logro: Padawan");
+    }
+    if (numRetosResueltos >= 3) {
+      logros.push("🚀 Rebelde");
+      console.log("Asignado logro: Rebelde");
+    }
+    if (numRetosResueltos >= 5) {
+      logros.push("⭐ Caballero Jedi");
+      console.log("Asignado logro: Caballero Jedi");
+    }
+    if (numRetosResueltos >= 10) {
+      logros.push("🏆 Maestro Jedi");
+      console.log("Asignado logro: Maestro Jedi");
+    }
+    if (numRetosResueltos >= 20) {
+      logros.push("🌌 Jedi Legendario");
+      console.log("Asignado logro: Jedi Legendario");
+    }
 
-  console.log("Logros generados:", logros);
+    console.log("Logros generados:", logros);
 
-  return logros;
-};
+    return logros;
+  };
 
   return (
     <main className="container mx-auto p-8 bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold text-center mb-8">Ranking de Usuarios 🏆</h1>
+      <h1 className="text-4xl font-bold text-center mb-8">
+        Ranking de Usuarios 🏆
+      </h1>
 
       {cargando ? (
         <div className="text-center">
@@ -114,32 +126,44 @@ const getLogros = (numRetosResueltos: number) => {
             </thead>
             <tbody>
               {usuarios.map((usuario, index) => (
-                <tr key={usuario.id} 
-                  className={`border-t border-gray-700 ${user && usuario.id === user.id ? 'bg-blue-900 bg-opacity-30' : ''}`}
-              >
-                <td className="py-3 px-4">
-                  <span className="text-xl">{getPositionEmoji(index)}</span>
-                </td>
-                <td className="py-3 px-4">
-                  {usuario.nombre}
-                  {user && usuario.id === user.id && (
-                    <span className="ml-2 text-xs bg-blue-600 px-2 py-1 rounded">Tú</span>
-                  )}
-                </td>
-                <td className="py-3 px-4">
-                  <span className="font-bold text-yellow-400">{usuario.puntos}</span>
-                </td>
-                <td className="py-3 px-4">{usuario.retosResueltos ?? 0}</td>
-                <td className="py-3 px-4">
-                  <div className="flex flex-wrap gap-2">
-                    {getLogros(usuario.retosResueltos).map((logro, i) => (
-                      <span key={i} className="bg-green-700 px-2 py-1 rounded text-xs">
-                        {logro}
+                <tr
+                  key={usuario.id}
+                  className={`border-t border-gray-700 ${
+                    user && usuario.id === user.id
+                      ? "bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-950 bg-opacity-70"
+                      : ""
+                  }`}
+                >
+                  <td className="py-3 px-4">
+                    <span className="text-xl">{getPositionEmoji(index)}</span>
+                  </td>
+                  <td className="py-3 px-4">
+                    {usuario.nombre}
+                    {user && usuario.id === user.id && (
+                      <span className="ml-2 text-xs bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 px-2 py-1 rounded text-gray-900 font-semibold shadow-sm">
+                        Tú
                       </span>
-                    ))}
-                  </div>
-                </td>
-              </tr>
+                    )}
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className="font-bold text-yellow-400">
+                      {usuario.puntos}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">{usuario.retosResueltos ?? 0}</td>
+                  <td className="py-3 px-4">
+                    <div className="flex flex-wrap gap-2">
+                      {getLogros(usuario.retosResueltos).map((logro, i) => (
+                        <span
+                          key={i}
+                          className="bg-indigo-900 px-2 py-1 rounded text-xs text-yellow-300 font-semibold shadow-sm"
+                        >
+                          {logro}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
