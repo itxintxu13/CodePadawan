@@ -1,17 +1,17 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { UserProfile, useUser } from '@clerk/nextjs';
+import { useState, useEffect } from "react";
+import { UserProfile, useUser } from "@clerk/nextjs";
 import Sidebar from "@/app/components/SideBar";
 import { motion, AnimatePresence } from "framer-motion";
-import Estadisticas from '@/app/components/Estadisticas';
+import Estadisticas from "@/app/components/Estadisticas";
 import { useSearchParams } from "next/navigation";
-import CodeEditor from '@/app/components/CodeEditor';
-import { FaGithub } from 'react-icons/fa';
+import CodeEditor from "@/app/components/CodeEditor";
+import { FaGithub } from "react-icons/fa";
 
 export default function UserProfilePage() {
   const { isLoaded, user } = useUser();
   const searchParams = useSearchParams();
-  const tab = searchParams.get('tab');
+  const tab = searchParams.get("tab");
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -22,7 +22,7 @@ export default function UserProfilePage() {
   }
 
   // Muestra el playground
-  if (tab === 'playground') {
+  if (tab === "playground") {
     return (
       <div className="flex min-h-screen">
         <Sidebar />
@@ -43,14 +43,13 @@ export default function UserProfilePage() {
           </div>
 
           <CodeEditor />
-
         </main>
       </div>
     );
   }
 
   // Muestra la info sobre nosotros
-  if (tab === 'about') {
+  if (tab === "about") {
     return (
       <div className="flex min-h-screen">
         <Sidebar />
@@ -61,7 +60,8 @@ export default function UserProfilePage() {
                 🚀 Acerca de CodePadawan
               </h1>
               <p className="text-xl text-indigo-200 max-w-3xl mx-auto">
-                Una plataforma para aprender a programar de manera interactiva y divertida
+                Una plataforma para aprender a programar de manera interactiva y
+                divertida
               </p>
             </div>
 
@@ -70,8 +70,12 @@ export default function UserProfilePage() {
               {/* Itxine */}
               <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 transition-all duration-300">
                 <div className="flex items-center mb-4">
-                  <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4">
-                    👨‍💻
+                  <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4 overflow-hidden">
+                    <img
+                      src="/itxine.jpg"
+                      alt="Alejandra"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">Itxine</h3>
@@ -79,21 +83,30 @@ export default function UserProfilePage() {
                   </div>
                 </div>
                 <p className="text-gray-300 mb-4">
-                  CodePadawan es el lugar ideal para aprender a programar de manera interactiva y emocionante.
+                  CodePadawan es el lugar ideal para aprender a programar de
+                  manera interactiva y emocionante.
                 </p>
                 <div className="flex space-x-4">
-                  <a href="https://github.com/itxintxu13" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                  <a
+                    href="https://github.com/itxintxu13"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
                     <FaGithub size={20} />
                   </a>
                 </div>
               </div>
 
-
               {/* Jonan */}
               <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 transition-all duration-300">
                 <div className="flex items-center mb-4">
-                  <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4">
-                    👨‍💻
+                  <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4 overflow-hidden">
+                    <img
+                      src="/jonan.jpg"
+                      alt="Alejandra"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">Jon Ander</h3>
@@ -101,32 +114,49 @@ export default function UserProfilePage() {
                   </div>
                 </div>
                 <p className="text-gray-300 mb-4">
-                  Que la Fuerza del código te guíe—explora, aprende y conquista los desafíos en CodePadawan.
+                  Que la Fuerza del código te guíe—explora, aprende y conquista
+                  los desafíos en CodePadawan.
                 </p>
                 <div className="flex space-x-4">
-                  <a href="https://github.com/jrincon00" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                  <a
+                    href="https://github.com/jrincon00"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
                     <FaGithub size={20} />
                   </a>
                 </div>
               </div>
 
-
               {/* Ale */}
               <div className="md:col-span-2 bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 transition-all duration-300 text-center max-w-md mx-auto">
                 <div className="flex items-center mb-4">
-                  <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4">
-                    👨‍💻
+                  <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4 overflow-hidden">
+                    <img
+                      src="/ale.jpg"
+                      alt="Alejandra"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
+
                   <div>
                     <h3 className="text-xl font-bold">Alejandra</h3>
                     <p className="text-indigo-300">Fundador & Desarrollador</p>
                   </div>
                 </div>
                 <p className="text-gray-300 mb-4">
-                  No necesitas un destornillador sónico para aprender a programar, solo curiosidad y CodePadawan para viajar por el universo del desarrollo.
+                  No necesitas un destornillador sónico para aprender a
+                  programar, solo curiosidad y CodePadawan para viajar por el
+                  universo del desarrollo.
                 </p>
                 <div className="flex space-x-4">
-                  <a href="https://github.com/ARP-10" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                  <a
+                    href="https://github.com/ARP-10"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
                     <FaGithub size={20} />
                   </a>
                 </div>
@@ -149,7 +179,6 @@ export default function UserProfilePage() {
       </div>
     );
   }
-
 
   return (
     <div className="flex min-h-screen">
@@ -193,7 +222,6 @@ export default function UserProfilePage() {
             tipoDato="logros"
           />
         </div>
-
       </main>
     </div>
   );

@@ -29,11 +29,6 @@ export default function Navbar() {
 
       {/* Perfil + Notificaciones */}
       <div className="flex items-center gap-8">
-        <button className="relative group">
-          <span className="text-2xl">🔔</span>
-          {/* Indicador de nuevas notificaciones */}
-          <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-950 animate-pulse"></span>
-        </button>
         <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: 'ring-2 ring-blue-400 ring-offset-2' } }} />
         <Link href="/user-profile" className="hover:text-gray-300 font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60">
           Perfil
