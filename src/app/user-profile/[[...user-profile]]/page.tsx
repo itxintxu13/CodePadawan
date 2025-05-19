@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { getDatabase, ref, get } from "firebase/database";
 import { app } from "@/lib/firebase/config";
+import Logros from "@/app/components/Logros";
 
 export default function UserProfilePage() {
   const { isLoaded, user } = useUser();
@@ -95,7 +96,7 @@ export default function UserProfilePage() {
         <Sidebar />
         <main className="flex-1 p-4 md:p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10">
+            <div className="text-center mb-10 mt-6">
               <h1 className="text-4xl md:text-5xl font-bold mb-4 text-yellow-400">
                 🚀 Acerca de CodePadawan
               </h1>
@@ -105,7 +106,7 @@ export default function UserProfilePage() {
             </div>
 
             {/* Equipo */}
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mb-12 mt-20">
               {/* Itxine */}
               <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 transition-all duration-300">
                 <div className="flex items-center mb-4">
@@ -361,25 +362,30 @@ export default function UserProfilePage() {
     ];
 
     return (
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <main className="flex-1 p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-yellow-400 text-center drop-shadow-lg animate-slide-down font-starwars">
-            ⭐ Registro de Logros del Padawan
-          </h1>
-          <p className="text-lg text-indigo-200 mt-4 text-center mb-2 italic animate-fade-in-delay">
-            “El camino del código, joven aprendiz, arduo es… pero recompensas
-            trae.” – Maestro Yoda
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mt-10">
+      <div className="container flex min-h-screen">
+      <Sidebar />
+      {/* Contenido principal */}
+      <main className="flex-1 p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white animate-fade-in">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-yellow-400 text-center drop-shadow-lg animate-slide-down font-starwars">
+          ⭐ Registro de Logros del Padawan
+        </h1>
+        <p className="text-lg text-indigo-200 mt-4 text-center mb-2 italic animate-fade-in-delay">
+          “El camino del código, joven aprendiz, arduo es… pero recompensas
+          trae.” – Maestro Yoda
+        </p>
+        <div className="mt-10 max-w-4xl mx-auto px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {logros.map((logro, index) => (
               <div
                 key={index}
                 className={`flex items-center space-x-4 p-6 rounded-xl border transition-all duration-300
-    ${logro.desbloqueado
-                    ? `${logro.colorClase || "bg-gray-800 border-green-500"} shadow-lg`
-                    : "bg-gray-700 border-gray-600 opacity-70"
-                  }`}
+            ${
+              logro.desbloqueado
+                ? `${
+                    logro.colorClase || "bg-gray-800 border-green-500"
+                  } shadow-lg`
+                : "bg-gray-700 border-gray-600 opacity-70"
+            }`}
               >
                 {logro.icono}
                 <div>
@@ -387,58 +393,18 @@ export default function UserProfilePage() {
                   <p className="text-sm text-gray-300">{logro.descripcion}</p>
                 </div>
               </div>
-
             ))}
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
+    </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="flex-1 p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white animate-fade-in">
-        <div className="flex flex-col items-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-center drop-shadow-lg animate-slide-down">
-            Mi Perfil
-          </h1>
-          <p className="text-lg text-indigo-200 mt-4 text-center mb-2 animate-fade-in-delay">
-            Visualiza tu progreso y estadísticas
-          </p>
-        </div>
-
-        {/* Tarjetas de resumen con animaciones y gráficos */}
-        <div className="flex flex-wrap gap-4 justify-center w-full">
-          <Estadisticas
-            titulo="Puntos Totales"
-            maximo={1000}
-            label="Progreso"
-            color="#facc15"
-            link="/ranking"
-            tipoDato="puntos"
-          />
-
-          <Estadisticas
-            titulo="Retos Resueltos"
-            maximo={10}
-            label="Retos"
-            color="#60a5fa"
-            link="/retos"
-            tipoDato="retos"
-          />
-
-          <Estadisticas
-            titulo="Logros Desbloqueados"
-            maximo={10}
-            label="Logros"
-            color="#ff6347"
-            link="/user-profile"
-            tipoDato="logros"
-          />
-        </div>
-
-      </main>
-    </div>
-  );
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <Logros logrosUsuario={logrosUsuario} />
+      </div>
+    );
 }
