@@ -432,7 +432,7 @@ export default function UserProfilePage() {
             titulo="Logros Desbloqueados"
             maximo={10}
             label="Logros"
-            color="#22c55e"
+            color="#ff6347"
             link="/user-profile"
             tipoDato="logros"
           />

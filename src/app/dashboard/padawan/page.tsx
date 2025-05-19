@@ -32,7 +32,7 @@ export default function PadawanDashboard() {
   }, [user]);
 
   return (
-    <div className="min-h-screen p-10 bg-gradient-to-b from-green-900 via-green-700 to-black text-white relative overflow-hidden">
+    <div className="min-h-screen p-10 bg-gradient-to-b from-green-950 via-green-950 to-black text-white relative overflow-hidden">
       <StarField />
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-green-900/30 to-black/50 pointer-events-none" />
       
@@ -42,10 +42,13 @@ export default function PadawanDashboard() {
         transition={{ duration: 0.8 }}
         className="relative z-10"
       >
-        <h1 className="text-5xl font-bold mb-10 text-center text-green-300 drop-shadow-lg flex items-center justify-center gap-3">
-          <span className="animate-pulse">🌱</span> 
-          Panel de Padawan 
-          <span className="animate-pulse">🌱</span>
+        <h1 className="mb-10 text-center flex flex-col items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-3">
+            <img src="/padawan-symbol.svg" alt="Símbolo Padawan" className="w-12 h-12 animate-float" />
+            <span className="text-5xl font-bold bg-gradient-to-r from-green-300 via-green-400 to-emerald-500 text-transparent bg-clip-text drop-shadow-lg tracking-wider">PANEL DE PADAWAN</span>
+            <img src="/padawan-symbol.svg" alt="Símbolo Padawan" className="w-12 h-12 animate-float" />
+          </div>
+          <div className="h-1 w-64 bg-gradient-to-r from-transparent via-green-400 to-transparent rounded-full mt-2"></div>
         </h1>
 
         <div className="flex flex-col items-center mb-8">
@@ -60,7 +63,7 @@ export default function PadawanDashboard() {
             className="bg-green-800/40 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-green-500/30 hover:border-green-400 transition-all"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-green-300">
-              <span className="text-3xl">🎯</span> Retos Activos
+              <img src="/icons/padawan-challenge.svg" alt="Retos" className="w-8 h-8 text-green-300" /> Retos Activos
             </h2>
             <p className="text-green-100">Explora y completa los desafíos pensados para tu nivel Padawan. ¡Demuestra tu progreso!</p>
             <div className="mt-6">
@@ -80,7 +83,7 @@ export default function PadawanDashboard() {
             className="bg-green-800/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-green-500/30 hover:border-green-400 transition-all"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-green-300">
-              <span className="text-3xl">⭐</span> Logros
+              <img src="/icons/padawan-achievement.svg" alt="Logros" className="w-8 h-8 text-green-300" /> Logros
             </h2>
             <p className="text-green-100">Desbloquea logros especiales y demuestra tu dominio de la Fuerza.</p>
             <div className="mt-6">
@@ -88,7 +91,7 @@ export default function PadawanDashboard() {
                 titulo="Logros Desbloqueados"
                 maximo={10}
                 label="Logros"
-                color="#22c55e"
+                color="#9370DB"
                 tipoDato="logros"
                 tamano="w-full"
               />
@@ -100,7 +103,7 @@ export default function PadawanDashboard() {
             className="bg-green-800/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-green-500/30 hover:border-green-400 transition-all"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-green-300">
-              <span className="text-3xl">📈</span> Puntuación
+              <img src="/icons/padawan-score.svg" alt="Puntuación" className="w-8 h-8 text-green-300" /> Puntuación
             </h2>
             <p className="text-green-100">Tu progreso en la Fuerza se refleja en tus puntos. ¡Sigue mejorando!</p>
             <div className="mt-6">

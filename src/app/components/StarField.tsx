@@ -4,15 +4,15 @@ import React from 'react';
 
 const StarField: React.FC = () => {
   const stars = Array.from({ length: 200 }).map((_, index) => ({
-    size: 1.5, 
-    top: `${index * 0.5}%`, // Fixed positions for consistency
-    left: `${index * 0.5}%`,
-    delay: 2, // Fixed delay for consistency
-    opacity: 0.5, // Fixed opacity for consistency
+    size: 1.5, // Tamaño fijo
+    top: `${(index % 20) * 5}%`, // Posición calculada
+    left: `${Math.floor(index / 20) * 5}%`,
+    delay: 0, // Sin retraso
+    opacity: 0.75, // Opacidad fija
   }));
 
   return (
-    <div className="absolute inset-0 bg-[#020414] -z-10">
+    <div className="absolute inset-0 bg-[#020414] -z-10 pointer-events-none overflow-hidden">
       {stars.map((star, index) => (
         <div
           key={index}
@@ -25,7 +25,7 @@ const StarField: React.FC = () => {
             backgroundColor: '#ffffff',
             opacity: star.opacity,
             boxShadow: `0 0 ${star.size * 2}px #ffffff, 0 0 ${star.size * 4}px #ffffff`,
-            animation: `pulse ${2 + star.delay}s ease-in-out infinite`
+            animation: `pulse 2s ease-in-out infinite`
           }}
         />
       ))}

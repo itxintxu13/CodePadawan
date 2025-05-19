@@ -35,9 +35,9 @@ export default function JediDashboard() {
       <StarField />
       <div className="relative z-10 p-8">
         <h1 className="text-5xl font-bold mb-10 text-center text-blue-300 drop-shadow-lg flex items-center justify-center gap-3">
-          <span className="animate-pulse">⚔️</span> 
-          Panel de Maestro Jedi 
-          <span className="animate-pulse">⚔️</span>
+          <img src="/jedi-symbol.svg" alt="Símbolo Jedi" className="w-12 h-12 animate-pulse" />
+          Panel de Maestro Jedi
+          <img src="/jedi-symbol.svg" alt="Símbolo Jedi" className="w-12 h-12 animate-pulse" />
         </h1>
 
         <div className="flex flex-col items-center mb-8">
@@ -49,10 +49,10 @@ export default function JediDashboard() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <motion.div 
             whileHover={{ scale: 1.03 }}
-            className="bg-blue-800/40 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-blue-500/30 hover:border-blue-400 transition-all"
+            className="bg-blue-900/40 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-blue-500/30 hover:border-blue-400 transition-all hover:shadow-blue-500/20 hover:bg-blue-800/50"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-blue-300">
-              <span className="text-3xl">🎯</span> Retos Maestros
+              <img src="/icons/jedi-challenge.svg" alt="Retos" className="w-8 h-8 text-blue-300" /> Retos Maestros
             </h2>
             <p className="text-blue-100">Guía a los Padawan compartiendo tu sabiduría y experiencia en los desafíos.</p>
             <div className="mt-6">
@@ -69,10 +69,10 @@ export default function JediDashboard() {
 
           <motion.div 
             whileHover={{ scale: 1.05 }}
-            className="bg-blue-800/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-blue-500/30 hover:border-blue-400 transition-all"
+            className="bg-blue-900/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-blue-500/30 hover:border-blue-400 transition-all hover:shadow-blue-500/20 hover:bg-blue-800/50"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-blue-300">
-              <span className="text-3xl">⚔️</span> Sabiduría
+              <img src="/icons/jedi-wisdom.svg" alt="Sabiduría" className="w-8 h-8 text-blue-300" /> Sabiduría
             </h2>
             <p className="text-blue-100">Tu experiencia y conocimiento son fundamentales para guiar a la siguiente generación.</p>
             <div className="mt-6">
@@ -89,10 +89,10 @@ export default function JediDashboard() {
 
           <motion.div 
             whileHover={{ scale: 1.05 }}
-            className="bg-blue-800/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-blue-500/30 hover:border-blue-400 transition-all"
+            className="bg-blue-900/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-blue-500/30 hover:border-blue-400 transition-all hover:shadow-blue-500/20 hover:bg-blue-800/50"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-blue-300">
-              <span className="text-3xl">🏆</span> Reconocimiento
+              <img src="/icons/jedi-mastery.svg" alt="Reconocimiento" className="w-8 h-8 text-blue-300" /> Reconocimiento
             </h2>
             <p className="text-blue-100">Tu influencia en la comunidad se refleja en tu prestigio como Maestro Jedi.</p>
             <div className="mt-6">

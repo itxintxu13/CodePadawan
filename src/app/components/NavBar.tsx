@@ -27,9 +27,11 @@ export default function Navbar() {
           <span className="text-3xl font-black tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 drop-shadow-2xl select-none ml-4">CodePadawan</span>
         </Link>
         <div className="flex gap-6 ml-6">
-          <Link href="/retos" className="hover:text-blue-400 transition-colors font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60">
-            Retos
-          </Link>
+          {rol !== "jedi" && (
+            <Link href="/retos" className="hover:text-blue-400 transition-colors font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60">
+              Retos
+            </Link>
+          )}
           <Link href="/ranking" className="hover:text-blue-400 transition-colors font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60">
             Ranking
           </Link>
