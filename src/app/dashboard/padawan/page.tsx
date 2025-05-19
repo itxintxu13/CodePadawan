@@ -32,7 +32,7 @@ export default function PadawanDashboard() {
 
   return (
     <div className="w-full min-h-screen p-10 bg-gradient-to-b from-green-950 via-green-950 to-black text-white relative overflow-hidden">
-      <StarField />
+    
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-green-900/30 to-black/50 pointer-events-none" />
       
       <motion.div 
