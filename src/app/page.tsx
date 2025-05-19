@@ -24,31 +24,36 @@ export default function Home() {
   }, [isSignedIn, user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white relative">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white relative mt-10">
       <StarField /> 
       {/* Logo */}
       <div className="flex justify-center mt-8">
-        <div
-          className="bg-gradient-to-tr from-blue-700 via-purple-700 to-pink-500 rounded-full p-2 shadow-2xl flex items-center justify-center border border-white/40 ring-2 ring-blue-400/40 ring-offset-2 ring-offset-gray-950"
-          style={{ width: 150, height: 150, boxShadow: "0 6px 30px 0 #7c3aed55" }}
-        >
-          <img
-            src="/logo.svg"
-            alt="Logo CodePadawan"
-            style={{
-              width: 130,
-              height: 130,
-              display: "block",
-              filter: "drop-shadow(0 6px 20px #7c3aedcc) brightness(1.18) contrast(1.12)",
-            }}
-            className="rounded-full transition-transform duration-300 hover:scale-105"
-          />
-        </div>
-      </div>
+  <div
+    className="bg-gradient-to-tr from-blue-700 via-purple-700 to-pink-500 rounded-full p-2 shadow-2xl flex items-center justify-center border border-white/40 ring-2 ring-blue-400/40 ring-offset-2 ring-offset-gray-950"
+    style={{
+      width: 180, // aumentado
+      height: 180, // aumentado
+      boxShadow: "0 8px 40px 0 #7c3aed55",
+    }}
+  >
+    <img
+      src="/logo.svg"
+      alt="Logo CodePadawan"
+      style={{
+        width: 160, // aumentado
+        height: 160, // aumentado
+        display: "block",
+        filter:
+          "drop-shadow(0 8px 24px #7c3aedcc) brightness(1.18) contrast(1.12)",
+      }}
+      className="rounded-full transition-transform duration-300 hover:scale-105"
+    />
+  </div>
+</div>
+
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-8 flex flex-col items-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-center mb-6">CodePadawan</h1>
         <p className="text-xl md:text-2xl text-center text-blue-300 mb-8">
           Domina el arte de la programación
         </p>
