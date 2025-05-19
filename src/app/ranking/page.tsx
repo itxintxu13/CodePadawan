@@ -121,7 +121,7 @@ export default function RankingPage() {
                 <th className="py-3 px-4 text-left">Usuario</th>
                 <th className="py-3 px-4 text-left">Puntos</th>
                 <th className="py-3 px-4 text-left">Retos Resueltos</th>
-                <th className="py-3 px-4 text-left">Logros</th>
+                <th className="py-3 px-4 text-left">Rango</th>
               </tr>
             </thead>
             <tbody>
