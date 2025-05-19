@@ -14,7 +14,14 @@ export default function Sidebar() {
 
   return (
     <div className="min-h-screen w-1/5 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col p-4 shadow-lg overflow-y-auto">
-      <nav className="flex flex-col gap-4 flex-grow">
+      <nav className="flex flex-col gap-4 flex-grow mt-5 ml-5">
+        {/* Dashboard según rol */}
+        {rol === "padawan" && (
+          <a href="/dashboard/padawan" className="hover:bg-green-800/70 p-3 rounded-lg flex items-center">
+            <span className="mr-3 text-green-300">🌱</span>
+            <span>Dashboard Padawan</span>
+          </a>
+        )}
         <a href="/retos" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
           <span className="mr-3 text-yellow-400">🏆</span>
           <span>Retos</span>
@@ -36,13 +43,7 @@ export default function Sidebar() {
           </a>
         )}
 
-        {/* Dashboard según rol */}
-        {rol === "padawan" && (
-          <a href="/dashboard/padawan" className="hover:bg-green-800/70 p-3 rounded-lg flex items-center">
-            <span className="mr-3 text-green-300">🌱</span>
-            <span>Dashboard Padawan</span>
-          </a>
-        )}
+        
         {rol === "jedi" && (
           <a href="/dashboard/jedi" className="hover:bg-blue-800/70 p-3 rounded-lg flex items-center">
             <span className="mr-3 text-blue-300">🧙</span>
