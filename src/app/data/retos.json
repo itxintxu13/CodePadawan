@@ -118,7 +118,7 @@
     "titulo": "Entrena con el Maestro Yoda (JavaScript)",
     "descripcion": "Crea una función en JavaScript que devuelva: 'La Fuerza es poderosa en ti, <nombre>'. El nombre se recibe como parámetro.",
     "dificultad": "Fácil",
-    "puntos": 10,
+    "puntos": 15,
     "lenguajes": ["javascript"],
     "plantilla": {
       "javascript": "// Completa la función laFuerzaEnTi\nfunction laFuerzaEnTi(nombre) {\n  // Tu código aquí\n}\n\nconsole.log(laFuerzaEnTi('Luke')) // Debería mostrar 'La Fuerza es poderosa en ti, Luke'\nconsole.log(laFuerzaEnTi('Anakin')) // Debería mostrar 'La Fuerza es poderosa en ti, Anakin'"
@@ -132,7 +132,7 @@
     "titulo": "Entrena con el Maestro Yoda (Python)",
     "descripcion": "Crea una función en Python que devuelva: 'La Fuerza es poderosa en ti, <nombre>'. El nombre se recibe como parámetro.",
     "dificultad": "Fácil",
-    "puntos": 10,
+    "puntos": 15,
     "lenguajes": ["python"],
     "plantilla": {
       "python": "# Completa la función la_fuerza_en_ti\ndef la_fuerza_en_ti(nombre):\n    # Tu código aquí\n  \nprint(la_fuerza_en_ti('Luke'))  # Debería mostrar 'La Fuerza es poderosa en ti, Luke'\nprint(la_fuerza_en_ti('Anakin'))  # Debería mostrar 'La Fuerza es poderosa en ti, Anakin'"
@@ -146,7 +146,7 @@
     "titulo": "Entrena con el Maestro Yoda (Java)",
     "descripcion": "Crea una función en Java que devuelva: 'La Fuerza es poderosa en ti, <nombre>'. El nombre se recibe como parámetro.",
     "dificultad": "Fácil",
-    "puntos": 10,
+    "puntos": 15,
     "lenguajes": ["java"],
     "plantilla": {
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Completa la función laFuerzaEnTi\n    System.out.println(laFuerzaEnTi(\"Luke\")); // Debería mostrar 'La Fuerza es poderosa en ti, Luke'\n    System.out.println(laFuerzaEnTi(\"Anakin\")); // Debería mostrar 'La Fuerza es poderosa en ti, Anakin'\n  }\n\n  public static String laFuerzaEnTi(String nombre) {\n    // Tu código aquí\n    return \"\";\n  }\n}"

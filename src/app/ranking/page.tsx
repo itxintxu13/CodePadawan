@@ -72,35 +72,32 @@ export default function RankingPage() {
 
   // Función para determinar los logros del usuario
   const getLogros = (numRetosResueltos: number) => {
-    const logros = [];
+    let logro = "";  // Variable para almacenar el logro
 
     console.log("Número de retos resueltos en getLogros:", numRetosResueltos);
 
-    if (numRetosResueltos >= 1) {
-      logros.push("🌱 Padawan");
+    if (numRetosResueltos >= 20) {
+      logro = "🌌 Jedi Legendario";  // Logro más alto
+      console.log("Asignado logro: Jedi Legendario");
+    } else if (numRetosResueltos >= 10) {
+      logro = "🏆 Maestro Jedi";
+      console.log("Asignado logro: Maestro Jedi");
+    } else if (numRetosResueltos >= 5) {
+      logro = "⭐ Caballero Jedi";
+      console.log("Asignado logro: Caballero Jedi");
+    } else if (numRetosResueltos >= 3) {
+      logro = "🚀 Rebelde";
+      console.log("Asignado logro: Rebelde");
+    } else if (numRetosResueltos >= 1) {
+      logro = "🌱 Padawan";
       console.log("Asignado logro: Padawan");
     }
-    if (numRetosResueltos >= 3) {
-      logros.push("🚀 Rebelde");
-      console.log("Asignado logro: Rebelde");
-    }
-    if (numRetosResueltos >= 5) {
-      logros.push("⭐ Caballero Jedi");
-      console.log("Asignado logro: Caballero Jedi");
-    }
-    if (numRetosResueltos >= 10) {
-      logros.push("🏆 Maestro Jedi");
-      console.log("Asignado logro: Maestro Jedi");
-    }
-    if (numRetosResueltos >= 20) {
-      logros.push("🌌 Jedi Legendario");
-      console.log("Asignado logro: Jedi Legendario");
-    }
 
-    console.log("Logros generados:", logros);
+    console.log("Logro generado:", logro);
 
-    return logros;
+    return logro;  // Retorna solo el logro correspondiente
   };
+
 
   return (
     <main className="container mx-auto p-8 bg-gray-900 text-white">
@@ -117,27 +114,26 @@ export default function RankingPage() {
           <table className="min-w-full">
             <thead>
               <tr className="bg-gray-700">
-                <th className="py-3 px-4 text-left">Posición</th>
-                <th className="py-3 px-4 text-left">Usuario</th>
-                <th className="py-3 px-4 text-left">Puntos</th>
-                <th className="py-3 px-4 text-left">Retos Resueltos</th>
-                <th className="py-3 px-4 text-left">Rango</th>
+                <th className="py-3 px-4 text-center">Posición</th>
+                <th className="py-3 px-4 text-center">Usuario</th>
+                <th className="py-3 px-4 text-center">Puntos</th>
+                <th className="py-3 px-4 text-center">Retos Resueltos</th>
+                <th className="py-3 px-4 text-center">Rango</th>
               </tr>
             </thead>
             <tbody>
               {usuarios.map((usuario, index) => (
                 <tr
                   key={usuario.id}
-                  className={`border-t border-gray-700 ${
-                    user && usuario.id === user.id
+                  className={`border-t border-gray-700 ${user && usuario.id === user.id
                       ? "bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-950 bg-opacity-70"
                       : ""
-                  }`}
+                    }`}
                 >
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 text-center">
                     <span className="text-xl">{getPositionEmoji(index)}</span>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 text-center">
                     {usuario.nombre}
                     {user && usuario.id === user.id && (
                       <span className="ml-2 text-xs bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 px-2 py-1 rounded text-gray-900 font-semibold shadow-sm">
@@ -145,22 +141,18 @@ export default function RankingPage() {
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-4 text-center">
                     <span className="font-bold text-yellow-400">
                       {usuario.puntos}
                     </span>
                   </td>
-                  <td className="py-3 px-4">{usuario.retosResueltos ?? 0}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex flex-wrap gap-2">
-                      {getLogros(usuario.retosResueltos).map((logro, i) => (
-                        <span
-                          key={i}
-                          className="bg-indigo-900 px-2 py-1 rounded text-xs text-yellow-300 font-semibold shadow-sm"
-                        >
-                          {logro}
-                        </span>
-                      ))}
+                  <td className="py-3 px-4 text-center">{usuario.retosResueltos ?? 0}</td>
+                  <td className="py-3 px-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      {/* Mostramos solo un logro */}
+                      <span className="bg-indigo-900 px-2 py-1 rounded text-xs text-yellow-300 font-semibold shadow-sm">
+                        {getLogros(usuario.retosResueltos)}
+                      </span>
                     </div>
                   </td>
                 </tr>

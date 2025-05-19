@@ -135,8 +135,7 @@ export default function RetosPage() {
             Retos de Programación
           </h1>
           <p className="text-center text-gray-400 text-lg">
-            Pon a prueba tus habilidades con nuestros desafíos y sube en el
-            ranking
+            El poder de tu sabiduría desbloqueará nuevos retos
           </p>
         </div>
 
