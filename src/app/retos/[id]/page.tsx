@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { EditorView, basicSetup } from "codemirror";
@@ -7,6 +7,7 @@ import { EditorState } from "@codemirror/state";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
+import { html } from "@codemirror/lang-html"; // Added HTML support
 import { oneDark } from "@codemirror/theme-one-dark";
 import { keymap } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
@@ -34,19 +35,14 @@ interface Reto {
   dificultad: string;
   puntos: number;
   lenguajes: string[];
-  plantilla: {
-    [key: string]: string;
-  };
-  solucion: {
-    [key: string]: string;
-  };
-  tests: {
-    [key: string]: string;
-  };
-  logro_completado?: string; 
+  plantilla: { [key: string]: string };
+  solucion: { [key: string]: string };
+  requisitos?: { [key: string]: string[] };
+  tests: { [key: string]: string };
+  logro_completado?: string;
+  validacion?: string;
 }
 
-// Función para registrar logros en Firebase Realtime Database
 const registrarLogro = async (userId: string, logroId: string) => {
   try {
     const logroRef = ref(database, `users/${userId}/logros/${logroId}`);
@@ -54,6 +50,7 @@ const registrarLogro = async (userId: string, logroId: string) => {
     console.log(`Logro registrado: ${logroId}`);
   } catch (error) {
     console.error("Error registrando logro en Firebase:", error);
+    throw error;
   }
 };
 
@@ -73,95 +70,83 @@ export default function RetoPage() {
   } | null>(null);
   const [puntosUsuario, setPuntosUsuario] = useState(0);
   const [accesoPermitido, setAccesoPermitido] = useState(true);
-  const [editorInstance, setEditorInstance] = useState<EditorView | null>(null);
   const [mostrarSolucion, setMostrarSolucion] = useState(false);
+  const editorRef = useRef<EditorView | null>(null);
+  const editorContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const cargarPuntosDesdeFirebase = async () => {
-      if (user?.id) {
-        try {
-          const userRef = ref(database, `users/${user.id}`);
-          const snapshot = await get(userRef);
-          if (snapshot.exists()) {
-            const datos = snapshot.val();
-            const puntosFirebase = datos.puntos || 0;
-            setPuntosUsuario(puntosFirebase);
-            console.log("Puntos cargados desde Firebase:", puntosFirebase);
-          } else {
-            setPuntosUsuario(0);
-            console.log("No hay datos en Firebase para este usuario.");
-          }
-        } catch (error) {
-          console.error("Error cargando puntos desde Firebase:", error);
+      if (!user?.id) return;
+      try {
+        const userRef = ref(database, `users/${user.id}`);
+        const snapshot = await get(userRef);
+        const datos = snapshot.exists() ? snapshot.val() : {};
+        const puntosFirebase = datos.puntos || 0;
+        setPuntosUsuario(puntosFirebase);
+        // Check access based on points
+        if (reto && puntosFirebase < reto.puntos) {
+          setAccesoPermitido(false);
         }
+      } catch (error) {
+        console.error("Error cargando puntos desde Firebase:", error);
       }
     };
-
     cargarPuntosDesdeFirebase();
-  }, [user?.id]);
+  }, [user?.id, reto]);
 
   useEffect(() => {
     if (!params?.id) {
-      console.error("ID de reto no encontrado, redirigiendo...");
+      console.error("ID de reto no encontrado");
+      router.push("/retos");
       return;
     }
 
     const cargarReto = async () => {
-  setCargando(true);
-  try {
-    const response = await fetch(`/api/retos`);
-    if (!response.ok) throw new Error("Error al cargar los retos");
-
-    const retos = await response.json();
-    const retoActual = retos.find(
-      (r: Reto) => r.id.toString() === String(params.id)
-    );
-
-    if (retoActual) {
-      setReto(retoActual);
-      const primerLenguaje = retoActual.lenguajes[0];
-      setLenguaje(primerLenguaje);
-      setCodigo(retoActual.plantilla[primerLenguaje]);
-    } else {
-      console.warn("Reto no encontrado, redirigiendo...");
-      setTimeout(() => router.replace("/retos"), 1000);
-    }
-  } catch (error) {
-    console.error("Error al cargar retos:", error);
-  } finally {
-    setCargando(false);
-  }
-};
-
-
+      setCargando(true);
+      try {
+        const response = await fetch(`/api/retos`);
+        if (!response.ok) throw new Error("Error al cargar los retos");
+        const retos = await response.json();
+        const retoActual = retos.find(
+          (r: Reto) => r.id.toString() === String(params.id)
+        );
+        if (retoActual) {
+          setReto(retoActual);
+          const primerLenguaje = retoActual.lenguajes[0] || "javascript";
+          setLenguaje(primerLenguaje);
+          setCodigo(retoActual.plantilla[primerLenguaje] || "");
+        } else {
+          console.warn("Reto no encontrado");
+          router.push("/retos");
+        }
+      } catch (error) {
+        console.error("Error al cargar retos:", error);
+        router.push("/retos");
+      } finally {
+        setCargando(false);
+      }
+    };
     cargarReto();
-  }, [params?.id]);
+  }, [params?.id, router]);
 
   useEffect(() => {
-    if (!reto || !lenguaje) return;
-    setCodigo(reto.plantilla[lenguaje] || "");
-  }, [reto, lenguaje]);
+    if (!reto || !lenguaje || !editorContainerRef.current) return;
 
-  useEffect(() => {
-    if (!codigo || !lenguaje) return;
-
-    const editorContainer = document.getElementById("editor-container");
-    if (!editorContainer) return;
-
-    editorContainer.innerHTML = "";
-    if (editorInstance) {
-      editorInstance.destroy();
+    // Clean up previous editor
+    if (editorRef.current) {
+      editorRef.current.destroy();
+      editorRef.current = null;
     }
 
-    const languageExtension =
-      lenguaje === "javascript"
-        ? javascript()
-        : lenguaje === "python"
-        ? python()
-        : java();
+    const languageExtension = {
+      javascript: javascript(),
+      python: python(),
+      java: java(),
+      html: html(),
+    }[lenguaje] || javascript(); // Default to JS if language is unsupported
 
     const state = EditorState.create({
-      doc: codigo,
+      doc: reto.plantilla[lenguaje] || "",
       extensions: [
         basicSetup,
         languageExtension,
@@ -176,26 +161,23 @@ export default function RetoPage() {
       ],
     });
 
-    const view = new EditorView({
+    editorRef.current = new EditorView({
       state,
-      parent: editorContainer,
+      parent: editorContainerRef.current,
     });
 
-    setEditorInstance(view);
-
     return () => {
-      view.destroy();
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        editorRef.current = null;
+      }
     };
-  }, [codigo, lenguaje]);
+  }, [lenguaje, reto]); // Removed `codigo` from dependencies
 
-  const actualizarPuntosRealtime = async (
-    userId: string,
-    puntosNuevos: number
-  ) => {
+  const actualizarPuntosRealtime = async (userId: string, puntosNuevos: number) => {
     try {
       const userRef = ref(database, `users/${userId}`);
       const snapshot = await get(userRef);
-
       const datosUsuario = snapshot.exists() ? snapshot.val() : {};
       const puntosActuales = datosUsuario.puntos || 0;
       const retosActuales = datosUsuario.retos_completados || 0;
@@ -204,25 +186,71 @@ export default function RetoPage() {
         puntos: puntosActuales + puntosNuevos,
         retos_completados: retosActuales + 1,
       });
-
-      console.log("Puntos y retos_completados actualizados:", {
-        puntos: puntosActuales + puntosNuevos,
-        retos_completados: retosActuales + 1,
-      });
+      setPuntosUsuario(puntosActuales + puntosNuevos);
     } catch (error) {
       console.error("Error actualizando en Realtime Database:", error);
+      throw error;
     }
   };
 
   const entregarSolucion = async () => {
-    if (!codigo || !reto || !user) {
+  if (!codigo || !reto || !user || !lenguaje) {
+    setResultado({
+      success: false,
+      message: "Falta información necesaria para entregar la solución",
+    });
+    return;
+  }
+
+  // Validate requirements
+  if (reto.requisitos?.[lenguaje]) {
+    const requisitos = reto.requisitos[lenguaje];
+    let cumpleRequisitos = true;
+    let mensajeError = "";
+
+    for (const requisito of requisitos) {
+      try {
+        // Normalize the requirement the same way as the user code
+        const requisitoNormalizado = requisito
+          .toLowerCase()
+          .replace(/'/g, '"')
+          .replace(/\s+/g, "")
+          .normalize("NFC");
+
+        // Escape all special regex characters in the normalized requirement
+        const patron = new RegExp(requisitoNormalizado.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        
+        // Normalize user code
+        const codigoLimpio = codigo
+          .toLowerCase()
+          .replace(/'/g, '"')
+          .replace(/\s+/g, "")
+          .normalize("NFC");
+
+        console.log("Validating requirement:", requisitoNormalizado);
+        console.log("Normalized user code:", codigoLimpio);
+        console.log("Regex pattern:", patron.source);
+
+        if (!patron.test(codigoLimpio)) {
+          cumpleRequisitos = false;
+          mensajeError += `Falta el requisito: ${requisito}\n`;
+        }
+      } catch (error) {
+        console.error(`Error validating requirement: ${requisito}`, error);
+        cumpleRequisitos = false;
+        mensajeError += `Requisito inválido: ${requisito}\n`;
+      }
+    }
+
+    if (!cumpleRequisitos) {
       setResultado({
         success: false,
-        message: "Falta información necesaria para entregar la solución",
+        message: `La solución no cumple con los requisitos:\n${mensajeError}`,
       });
       return;
     }
-
+  } else if (reto.solucion[lenguaje]) {
+    // Fallback validation if no requirements are defined
     const solucionCorrecta = reto.solucion[lenguaje]
       .toLowerCase()
       .replace(/'/g, '"')
@@ -234,106 +262,93 @@ export default function RetoPage() {
       .replace(/\s+/g, "")
       .normalize("NFC");
 
-    if (codigoUsuario !== solucionCorrecta) {
+    if (!codigoUsuario.includes(solucionCorrecta)) {
       setResultado({
         success: false,
         message: "La solución no es correcta. Intenta nuevamente.",
       });
       return;
     }
+  } else {
+    setResultado({
+      success: false,
+      message: "No hay solución ni requisitos definidos para este lenguaje.",
+    });
+    return;
+  }
 
-    setEnviando(true);
-    try {
-      const response = await fetch("/api/retos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          retoId: reto.id,
-          codigo,
-          lenguaje,
-          puntos: reto.puntos,
-        }),
-      });
+  setEnviando(true);
+  try {
+    const response = await fetch("/api/retos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user.id,
+        retoId: reto.id,
+        codigo,
+        lenguaje,
+        puntos: reto.puntos,
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error("Error al entregar la solución");
-      }
+    if (!response.ok) throw new Error("Error al entregarMgmt la solución");
 
-      setResultado({
-        success: true,
-        message: `🎉 ¡Solución correcta! Has ganado ${reto.puntos} puntos! 🎉`,
-      });
+    setResultado({
+      success: true,
+      message: `🎉 ¡Solución correcta! Has ganado ${reto.puntos} puntos! 🎉`,
+    });
+    lanzarConfeti();
+    await actualizarPuntosRealtime(user.id, reto.puntos);
 
-      lanzarConfeti();
-
-      await actualizarPuntosRealtime(user.id, reto.puntos);
-
-      // Registrar logro si corresponde
-      if (reto.logro_completado) {
-        // Para evitar problemas con espacios o mayúsculas, mejor normalizar la clave
-        const logroId = reto.logro_completado
-          .toLowerCase()
-          .replace(/\s+/g, "_");
-        await registrarLogro(user.id, logroId);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setResultado({
-        success: false,
-        message: "Error al entregar la solución",
-      });
-    } finally {
-      setEnviando(false);
+    if (reto.logro_completado) {
+      const logroId = reto.logro_completado.toLowerCase().replace(/\s+/g, "_");
+      await registrarLogro(user.id, logroId);
     }
-  };
+  } catch (error) {
+    console.error("Error al entregar solución:", error);
+    setResultado({
+      success: false,
+      message: "Error al entregar la solución. Intenta de nuevo.",
+    });
+  } finally {
+    setEnviando(false);
+  }
+};
 
   const cambiarLenguaje = (nuevoLenguaje: string) => {
     if (reto?.lenguajes.includes(nuevoLenguaje)) {
       setLenguaje(nuevoLenguaje);
+      setCodigo(reto.plantilla[nuevoLenguaje] || "");
       setOutput("");
       setResultado(null);
+      setMostrarSolucion(false);
     }
   };
 
   const verSolucion = () => {
-  if (reto && lenguaje && reto.solucion[lenguaje]) {
-    setMostrarSolucion(!mostrarSolucion);
-  } else {
-    console.error("Solución no disponible para el lenguaje:", lenguaje);
-    setResultado({
-      success: false,
-      message: "Solución no disponible para este lenguaje.",
-    });
-  }
-};
-
+    if (reto?.solucion[lenguaje]) {
+      setMostrarSolucion(!mostrarSolucion);
+    } else {
+      setResultado({
+        success: false,
+        message: "Solución no disponible para este lenguaje.",
+      });
+    }
+  };
 
   if (cargando) {
-    return (
-      <div className="container mx-auto p-8 text-center">
-        <p>Cargando reto...</p>
-      </div>
-    );
+    return <div className="container mx-auto p-8 text-center">Cargando reto...</div>;
   }
 
   if (!accesoPermitido) {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">
-            Acceso restringido
-          </h1>
-          <p className="mb-4">
-            No tienes suficientes puntos para acceder a este reto.
-          </p>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Acceso restringido</h1>
+          <p className="mb-4">No tienes suficientes puntos para acceder a este reto.</p>
           <p className="mb-6">
-            Necesitas al menos{" "}
-            <span className="font-bold">{reto?.puntos || 0} puntos</span>.
-            Actualmente tienes:{" "}
-            <span className="font-bold">{puntosUsuario} puntos</span>.
+            Necesitas al menos <span className="font-bold">{reto?.puntos || 0} puntos</span>.
+            Actualmente tienes: <span className="font-bold">{puntosUsuario} puntos</span>.
           </p>
           <button
             onClick={() => router.push("/retos")}
@@ -371,7 +386,6 @@ export default function RetoPage() {
             ← Volver a la lista de retos
           </button>
         </div>
-
         <div className="bg-gray-800 rounded-lg p-6 shadow-lg mb-6">
           <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
           <div className="flex items-center gap-4 mb-4">
@@ -386,9 +400,7 @@ export default function RetoPage() {
             >
               {reto.dificultad}
             </span>
-            <span className="text-yellow-400 font-bold">
-              {reto.puntos} puntos
-            </span>
+            <span className="text-yellow-400 font-bold">{reto.puntos} puntos</span>
           </div>
           <div className="flex items-center gap-4 mb-4">
             <div className="flex gap-2">
@@ -428,27 +440,27 @@ export default function RetoPage() {
                   Java
                 </button>
               )}
+              {reto.lenguajes.includes("html") && (
+                <button
+                  onClick={() => cambiarLenguaje("html")}
+                  className={`px-4 py-2 rounded font-medium transition-colors ${
+                    lenguaje === "html"
+                      ? "bg-purple-500 text-white"
+                      : "bg-gray-700 text-white hover:bg-gray-600"
+                  }`}
+                >
+                  HTML
+                </button>
+              )}
             </div>
           </div>
           <p className="text-gray-300 mb-6">{reto.descripcion}</p>
         </div>
-
         <div className="mb-4">
-          {/* Renderizado del editor específico según el lenguaje, pasando props */}
-          {lenguaje === "javascript" && (
-            <CodeEditorJavaScript codigo={codigo} setCodigo={setCodigo} />
-          )}
-          {lenguaje === "python" && (
-            <CodeEditorPython codigo={codigo} setCodigo={setCodigo} />
-          )}
-          {lenguaje === "java" && (
-            <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />
-          )}
-          {lenguaje === "html" && (
-            <CodeEditorHtml codigo={codigo} setCodigo={setCodigo} />
-          )}
-
-          {/* Botones y salida */}
+          {lenguaje === "javascript" && <CodeEditorJavaScript codigo={codigo} setCodigo={setCodigo} />}
+          {lenguaje === "python" && <CodeEditorPython codigo={codigo} setCodigo={setCodigo} />}
+          {lenguaje === "java" && <CodeEditorJava codigo={codigo} setCodigo={setCodigo} />}
+          {lenguaje === "html" && <CodeEditorHtml codigo={codigo} setCodigo={setCodigo} />}
           {output && (
             <div className="bg-gray-900 text-green-400 p-4 rounded mt-4 whitespace-pre-wrap">
               {output}
@@ -457,9 +469,7 @@ export default function RetoPage() {
           {resultado && (
             <div
               className={`mt-4 p-4 rounded ${
-                resultado.success
-                  ? "bg-green-800 text-green-200"
-                  : "bg-red-800 text-red-200"
+                resultado.success ? "bg-green-800 text-green-200" : "bg-red-800 text-red-200"
               }`}
             >
               {resultado.message}
@@ -468,12 +478,11 @@ export default function RetoPage() {
           <div className="mt-4 flex gap-4 justify-center">
             <button
               onClick={entregarSolucion}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
               disabled={enviando}
             >
               Entregar solución
             </button>
-
             <button
               onClick={verSolucion}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -483,13 +492,11 @@ export default function RetoPage() {
           </div>
           {mostrarSolucion && (
             <div className="mt-8 flex flex-col items-center">
-              <label className="text-white font-bold mb-2">
-                Solución Correcta en {lenguaje}:
-              </label>
+              <label className="text-white font-bold mb-2">Solución Correcta en {lenguaje}:</label>
               <textarea
                 readOnly
                 className="w-full max-w-lg p-4 bg-gray-900 text-yellow-400 rounded-lg border border-yellow-500"
-                value={reto.solucion[lenguaje]}
+                value={reto.solucion[lenguaje] || "No disponible"}
               />
             </div>
           )}
