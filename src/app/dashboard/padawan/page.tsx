@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import StarField from "@/app/components/StarField";
 import Estadisticas from "@/app/components/Estadisticas";
 
 export default function PadawanDashboard() {
@@ -29,18 +28,15 @@ export default function PadawanDashboard() {
           console.error("Error guardando el rol en Clerk:", err);
         });
     }
-  }, [user]);
-
-  return (
-    <div className="min-h-screen p-10 bg-gradient-to-b from-green-950 via-green-950 to-black text-white relative overflow-hidden">
-      <StarField />
-      <div className="absolute inset-0 bg-gradient-radial from-transparent via-green-900/30 to-black/50 pointer-events-none" />
+  }, [user]);  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-950 via-green-950 to-black text-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-green-900/20 via-transparent to-transparent" />
       
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="relative z-10"
+        className="relative z-10 h-full w-full"
       >
         <h1 className="mb-10 text-center flex flex-col items-center justify-center gap-2">
           <div className="flex items-center justify-center gap-3">
@@ -60,7 +56,7 @@ export default function PadawanDashboard() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <motion.div 
             whileHover={{ scale: 1.03 }}
-            className="bg-green-800/40 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-green-500/30 hover:border-green-400 transition-all"
+            className="bg-green-900/40 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-green-500/30 hover:border-green-400 transition-all hover:shadow-green-500/20 hover:bg-green-800/50"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-green-300">
               <img src="/icons/padawan-challenge.svg" alt="Retos" className="w-8 h-8 text-green-300" /> Retos Activos
@@ -80,7 +76,7 @@ export default function PadawanDashboard() {
 
           <motion.div 
             whileHover={{ scale: 1.05 }}
-            className="bg-green-800/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-green-500/30 hover:border-green-400 transition-all"
+            className="bg-green-900/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-green-500/30 hover:border-green-400 transition-all hover:shadow-green-500/20 hover:bg-green-800/50"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-green-300">
               <img src="/icons/padawan-achievement.svg" alt="Logros" className="w-8 h-8 text-green-300" /> Logros
@@ -100,7 +96,7 @@ export default function PadawanDashboard() {
 
           <motion.div 
             whileHover={{ scale: 1.05 }}
-            className="bg-green-800/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-green-500/30 hover:border-green-400 transition-all"
+            className="bg-green-900/40 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-green-500/30 hover:border-green-400 transition-all hover:shadow-green-500/20 hover:bg-green-800/50"
           >
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-green-300">
               <img src="/icons/padawan-score.svg" alt="Puntuación" className="w-8 h-8 text-green-300" /> Puntuación
