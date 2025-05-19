@@ -4,11 +4,11 @@ import React from 'react';
 
 const StarField: React.FC = () => {
   const stars = Array.from({ length: 200 }).map((_, index) => ({
-    size: Math.random() * 2 + 1,
-    top: `${Math.random() * 100}%`,
-    left: `${Math.random() * 100}%`,
-    delay: Math.random() * 5,
-    opacity: Math.random() * 0.7 + 0.3,
+    size: 1.5, 
+    top: `${index * 0.5}%`, // Fixed positions for consistency
+    left: `${index * 0.5}%`,
+    delay: 2, // Fixed delay for consistency
+    opacity: 0.5, // Fixed opacity for consistency
   }));
 
   return (
