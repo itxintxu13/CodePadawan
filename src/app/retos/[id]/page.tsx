@@ -107,30 +107,32 @@ export default function RetoPage() {
     }
 
     const cargarReto = async () => {
-      setCargando(true);
-      try {
-        const response = await fetch(`/api/retos`);
-        if (!response.ok) throw new Error("Error al cargar los retos");
+  setCargando(true);
+  try {
+    const response = await fetch(`/api/retos`);
+    if (!response.ok) throw new Error("Error al cargar los retos");
 
-        const retos = await response.json();
-        const retoActual = retos.find(
-          (r: Reto) => r.id.toString() === String(params.id)
-        );
+    const retos = await response.json();
+    const retoActual = retos.find(
+      (r: Reto) => r.id.toString() === String(params.id)
+    );
 
-        if (retoActual) {
-          setReto(retoActual);
-          setLenguaje(retoActual.lenguajes[0]);
-          setCodigo(retoActual.plantilla[retoActual.lenguajes[0]]);
-        } else {
-          console.warn("Reto no encontrado, redirigiendo...");
-          setTimeout(() => router.replace("/retos"), 1000);
-        }
-      } catch (error) {
-        console.error("Error al cargar retos:", error);
-      } finally {
-        setCargando(false);
-      }
-    };
+    if (retoActual) {
+      setReto(retoActual);
+      const primerLenguaje = retoActual.lenguajes[0];
+      setLenguaje(primerLenguaje);
+      setCodigo(retoActual.plantilla[primerLenguaje]);
+    } else {
+      console.warn("Reto no encontrado, redirigiendo...");
+      setTimeout(() => router.replace("/retos"), 1000);
+    }
+  } catch (error) {
+    console.error("Error al cargar retos:", error);
+  } finally {
+    setCargando(false);
+  }
+};
+
 
     cargarReto();
   }, [params?.id]);
@@ -297,8 +299,17 @@ export default function RetoPage() {
   };
 
   const verSolucion = () => {
+  if (reto && lenguaje && reto.solucion[lenguaje]) {
     setMostrarSolucion(!mostrarSolucion);
-  };
+  } else {
+    console.error("Solución no disponible para el lenguaje:", lenguaje);
+    setResultado({
+      success: false,
+      message: "Solución no disponible para este lenguaje.",
+    });
+  }
+};
+
 
   if (cargando) {
     return (

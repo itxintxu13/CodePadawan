@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import SelectorDeRol from "./components/SelectorDeRol";
+import StarField from "./components/StarField";
 
 export default function Home() {
   const { isSignedIn, isLoaded, user } = useUser();
@@ -23,7 +24,8 @@ export default function Home() {
   }, [isSignedIn, user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white relative">
+      <StarField /> 
       {/* Logo */}
       <div className="flex justify-center mt-8">
         <div
@@ -51,6 +53,12 @@ export default function Home() {
           Domina el arte de la programación
         </p>
 
+        {/* Selector de rol */}
+        <div className="w-full max-w-2xl mt-12 mb-20 p-8 bg-gray-800 rounded-lg shadow-xl text-center">
+          <h2 className="text-2xl font-bold mb-6 text-white">Elige tu camino en la Fuerza</h2>
+          <SelectorDeRol />
+        </div>
+
         <div className="w-full max-w-4xl bg-gray-800 p-6 rounded-lg shadow-lg mb-12">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="flex flex-col justify-center">
@@ -60,9 +68,6 @@ export default function Home() {
                 En CodePadawan, creemos que el aprendizaje práctico es la clave para dominar
                 la programación.
               </p>
-              <Link href="/dashboard" className="text-blue-400 hover:text-blue-300">
-                Explorar plataforma →
-              </Link>
             </div>
             <div className="flex flex-col justify-center">
               <h2 className="text-3xl font-bold mb-4">¿Qué Hacemos?</h2>
@@ -80,36 +85,36 @@ export default function Home() {
             </div>
           </div>
         </div>
-          {/* Features Section */}
-          <section className="container mx-auto px-4 py-16">
-            <h2 className="text-3xl font-bold text-center mb-12">Características principales</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <div className="text-4xl mb-4">🏆</div>
-                <h3 className="text-xl font-bold mb-2">Retos de programación</h3>
-                <p className="text-gray-300">
-                  Resuelve retos de diferentes niveles de dificultad y gana puntos para subir en el ranking.
-                </p>
-              </div>
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <div className="text-4xl mb-4">📊</div>
-                <h3 className="text-xl font-bold mb-2">Ranking global</h3>
-                <p className="text-gray-300">
-                  Compite con otros desarrolladores y demuestra tus habilidades en nuestra tabla de clasificación.
-                </p>
-              </div>
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <div className="text-4xl mb-4">💻</div>
-                <h3 className="text-xl font-bold mb-2">Editor de código integrado</h3>
-                <p className="text-gray-300">
-                  Escribe y ejecuta tu código directamente en nuestra plataforma con soporte para múltiples lenguajes.
-                </p>
-              </div>
+        {/* Features Section */}
+        <section className="container mx-auto px-4 py-16">
+          <h2 className="text-3xl font-bold text-center mb-12">Características principales</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <div className="text-4xl mb-4">🏆</div>
+              <h3 className="text-xl font-bold mb-2">Retos de programación</h3>
+              <p className="text-gray-300">
+                Resuelve retos de diferentes niveles de dificultad y gana puntos para subir en el ranking.
+              </p>
             </div>
-          </section>
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <div className="text-4xl mb-4">📊</div>
+              <h3 className="text-xl font-bold mb-2">Ranking global</h3>
+              <p className="text-gray-300">
+                Compite con otros desarrolladores y demuestra tus habilidades en nuestra tabla de clasificación.
+              </p>
+            </div>
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <div className="text-4xl mb-4">💻</div>
+              <h3 className="text-xl font-bold mb-2">Editor de código integrado</h3>
+              <p className="text-gray-300">
+                Escribe y ejecuta tu código directamente en nuestra plataforma con soporte para múltiples lenguajes.
+              </p>
+            </div>
+          </div>
+        </section>
 
-        {/* Selector de rol */}
-        <SelectorDeRol />
+
+
 
       </section>
     </div>

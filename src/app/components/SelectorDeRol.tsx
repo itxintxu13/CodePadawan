@@ -17,14 +17,14 @@ export default function SelectorDeRol() {
         className="cursor-pointer w-80 rounded-xl p-6 bg-gradient-to-br from-purple-700 to-indigo-800 hover:scale-105 transition shadow-xl"
         onClick={() => handleRoleSelect("padawan")}
       >
-        <h2 className="text-2xl font-bold mb-2">👶 Soy Padawan</h2>
+        <h2 className="text-2xl font-bold mb-2 !text-white">👶 Soy Padawan</h2>
         <p>Empieza tu camino en la Fuerza. Aprende desde cero.</p>
       </div>
       <div
         className="cursor-pointer w-80 rounded-xl p-6 bg-gradient-to-br from-blue-700 to-teal-700 hover:scale-105 transition shadow-xl"
         onClick={() => handleRoleSelect("jedi")}
       >
-        <h2 className="text-2xl font-bold mb-2">🧙‍♂️ Soy Jedi</h2>
+        <h2 className="text-2xl font-bold mb-2 !text-white">🧙‍♂️ Soy Jedi</h2>
         <p>Domina la programación como un verdadero maestro Jedi.</p>
       </div>
     </div>

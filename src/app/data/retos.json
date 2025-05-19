@@ -5,7 +5,9 @@
     "descripcion": "Escribe un programa en JavaScript que muestre 'Hola Mundo' en la consola.",
     "dificultad": "Fácil",
     "puntos": 10,
-    "lenguajes": ["javascript"],
+    "lenguajes": [
+      "javascript"
+    ],
     "plantilla": {
       "javascript": "// Escribe tu código aquí\n\n"
     },
@@ -20,7 +22,9 @@
     "descripcion": "Escribe un programa en Python que muestre 'Hola Mundo' en la consola.",
     "dificultad": "Fácil",
     "puntos": 10,
-    "lenguajes": ["python"],
+    "lenguajes": [
+      "python"
+    ],
     "plantilla": {
       "python": "# Escribe tu código aquí\n\n"
     },
@@ -35,14 +39,16 @@
     "descripcion": "Escribe un programa en Java que muestre 'Hola Mundo' en la consola.",
     "dificultad": "Fácil",
     "puntos": 10,
-    "lenguajes": ["java"],
+    "lenguajes": [
+      "java"
+    ],
     "plantilla": {
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Escribe tu código aquí\n  }\n}"
     },
     "solucion": {
-      "java": "public class Main {\n  public static void main(String[] args) {\n    // Escribe tu código aquí\n    System.out.println(\"Hola Mundo\");\n  }\n}"
+      "java": "public class Main {\n  public static void main(String[] args) {\n    System.out.println(\"Hola Mundo\");\n  }\n}"
     },
-    "logro_completado": "Hola Mundo Java"
+    "validacion": "codigo.replace(/\/\/.*$/gm, '').includes('public class Main {') && codigo.replace(/\/\/.*$/gm, '').includes('public static void main(String[] args) {') && codigo.replace(/\/\/.*$/gm, '').includes('System.out.println(\"Hola Mundo\");') && codigo.replace(/\/\/.*$/gm, '').includes('}') && codigo.replace(/\/\/.*$/gm, '').includes('}')"
   },
   {
     "id": 4,
@@ -50,7 +56,9 @@
     "descripcion": "Crea una función en JavaScript que sume dos números y devuelva el resultado.",
     "dificultad": "Fácil",
     "puntos": 20,
-    "lenguajes": ["javascript"],
+    "lenguajes": [
+      "javascript"
+    ],
     "plantilla": {
       "javascript": "// Completa la función suma\nfunction suma(a, b) {\n  // Tu código aquí\n}\n\nconsole.log(suma(5, 3)); // Debería mostrar 8"
     },
@@ -67,12 +75,14 @@
     "descripcion": "Crea una función en Python que sume dos números y devuelva el resultado.",
     "dificultad": "Fácil",
     "puntos": 20,
-    "lenguajes": ["python"],
+    "lenguajes": [
+      "python"
+    ],
     "plantilla": {
-      "python": "# Completa la función suma\ndef suma(a, b):\n    # Tu código aquí\n    pass\n\nprint(suma(5, 3))  # Debería mostrar 8"
+      "python": "# Completa la función suma\ndef suma(a, b):\n    # Tu código aquí\n    \n\nprint(suma(5, 3))  # Debería mostrar 8"
     },
     "solucion": {
-      "python": "def suma(a, b):\n    return a + b\n\nprint(suma(5, 3))  # Debería mostrar 8"
+      "python": "# Completa la función suma\ndef suma(a, b):\n    # Tu código aquí\n    return a + b\n\nprint(suma(5, 3))  # Debería mostrar 8"
     },
     "tests": {
       "python": "output.includes('8')"
@@ -84,7 +94,9 @@
     "descripcion": "Crea una función en Java que sume dos números y devuelva el resultado.",
     "dificultad": "Fácil",
     "puntos": 20,
-    "lenguajes": ["java"],
+    "lenguajes": [
+      "java"
+    ],
     "plantilla": {
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Completa la función suma\n    System.out.println(suma(5, 3)); // Debería mostrar 8\n  }\n\n  public static int suma(int a, int b) {\n    // Tu código aquí\n    return 0;\n  } \n}"
     },
@@ -101,7 +113,9 @@
     "descripcion": "Crea una página HTML que muestre un encabezado <h1> con el texto 'Bienvenido a HTML'.",
     "dificultad": "Fácil",
     "puntos": 10,
-    "lenguajes": ["html"],
+    "lenguajes": [
+      "html"
+    ],
     "plantilla": {
       "html": "<!-- Escribe tu código HTML aquí -->\n"
     },
@@ -119,7 +133,9 @@
     "descripcion": "Crea una función en JavaScript que devuelva: 'La Fuerza es poderosa en ti, <nombre>'. El nombre se recibe como parámetro.",
     "dificultad": "Fácil",
     "puntos": 15,
-    "lenguajes": ["javascript"],
+    "lenguajes": [
+      "javascript"
+    ],
     "plantilla": {
       "javascript": "// Completa la función laFuerzaEnTi\nfunction laFuerzaEnTi(nombre) {\n  // Tu código aquí\n}\n\nconsole.log(laFuerzaEnTi('Luke')) // Debería mostrar 'La Fuerza es poderosa en ti, Luke'\nconsole.log(laFuerzaEnTi('Anakin')) // Debería mostrar 'La Fuerza es poderosa en ti, Anakin'"
     },
@@ -133,7 +149,9 @@
     "descripcion": "Crea una función en Python que devuelva: 'La Fuerza es poderosa en ti, <nombre>'. El nombre se recibe como parámetro.",
     "dificultad": "Fácil",
     "puntos": 15,
-    "lenguajes": ["python"],
+    "lenguajes": [
+      "python"
+    ],
     "plantilla": {
       "python": "# Completa la función la_fuerza_en_ti\ndef la_fuerza_en_ti(nombre):\n    # Tu código aquí\n  \nprint(la_fuerza_en_ti('Luke'))  # Debería mostrar 'La Fuerza es poderosa en ti, Luke'\nprint(la_fuerza_en_ti('Anakin'))  # Debería mostrar 'La Fuerza es poderosa en ti, Anakin'"
     },
@@ -147,7 +165,9 @@
     "descripcion": "Crea una función en Java que devuelva: 'La Fuerza es poderosa en ti, <nombre>'. El nombre se recibe como parámetro.",
     "dificultad": "Fácil",
     "puntos": 15,
-    "lenguajes": ["java"],
+    "lenguajes": [
+      "java"
+    ],
     "plantilla": {
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Completa la función laFuerzaEnTi\n    System.out.println(laFuerzaEnTi(\"Luke\")); // Debería mostrar 'La Fuerza es poderosa en ti, Luke'\n    System.out.println(laFuerzaEnTi(\"Anakin\")); // Debería mostrar 'La Fuerza es poderosa en ti, Anakin'\n  }\n\n  public static String laFuerzaEnTi(String nombre) {\n    // Tu código aquí\n    return \"\";\n  }\n}"
     },
@@ -161,7 +181,9 @@
     "descripcion": "Crea una función en JavaScript que determine si un número es primo. Si lo es, devuelve: 'Número digno de un Jedi'.",
     "dificultad": "Medio",
     "puntos": 15,
-    "lenguajes": ["javascript"],
+    "lenguajes": [
+      "javascript"
+    ],
     "plantilla": {
       "javascript": "// Completa la función esPrimo\nfunction esPrimo(numero) {\n  // Tu código aquí\n}\n\nconsole.log(esPrimo(7)) // Debería mostrar 'Número digno de un Jedi'\nconsole.log(esPrimo(10)) // Debería mostrar undefined"
     },
@@ -175,7 +197,9 @@
     "descripcion": "Crea una función en Python que determine si un número es primo. Si lo es, devuelve: 'Número digno de un Jedi'.",
     "dificultad": "Medio",
     "puntos": 15,
-    "lenguajes": ["python"],
+    "lenguajes": [
+      "python"
+    ],
     "plantilla": {
       "python": "# Completa la función es_primo\ndef es_primo(numero):\n    # Tu código aquí\n  \nprint(es_primo(7))  # Debería mostrar 'Número digno de un Jedi'\nprint(es_primo(10))  # Debería mostrar None"
     },
@@ -189,7 +213,9 @@
     "descripcion": "Crea una función en Java que determine si un número es primo. Si lo es, devuelve: 'Número digno de un Jedi'.",
     "dificultad": "Medio",
     "puntos": 15,
-    "lenguajes": ["java"],
+    "lenguajes": [
+      "java"
+    ],
     "plantilla": {
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Completa la función esPrimo\n    System.out.println(esPrimo(7)); // Debería mostrar 'Número digno de un Jedi'\n    System.out.println(esPrimo(10)); // Debería mostrar null\n  }\n\n  public static String esPrimo(int numero) {\n    // Tu código aquí\n    return null;\n  }\n}"
     },
@@ -203,7 +229,9 @@
     "descripcion": "Crea una página HTML con un botón que, al hacer hover, se ilumine como un sable de luz usando CSS.",
     "dificultad": "Medio",
     "puntos": 20,
-    "lenguajes": ["html"],
+    "lenguajes": [
+      "html"
+    ],
     "plantilla": {
       "html": "<!-- Escribe tu código HTML aquí -->\n"
     },
@@ -220,7 +248,9 @@
     "descripcion": "Escribe una función en JavaScript que decodifique un mensaje cifrado con ROT13.",
     "dificultad": "Difícil",
     "puntos": 50,
-    "lenguajes": ["javascript"],
+    "lenguajes": [
+      "javascript"
+    ],
     "plantilla": {
       "javascript": "// Completa la función decodificarROT13\nfunction decodificarROT13(mensaje) {\n  // Tu código aquí\n}\n\nconsole.log(decodificarROT13('Guvf vf n frperg zrffntr!')) // Debería mostrar 'This is a secret message!'\nconsole.log(decodificarROT13('Uryyb Jbeyq!')) // Debería mostrar 'Hello World!'"
     },
@@ -234,7 +264,9 @@
     "descripcion": "Escribe una función en Python que decodifique un mensaje cifrado con ROT13.",
     "dificultad": "Difícil",
     "puntos": 50,
-    "lenguajes": ["python"],
+    "lenguajes": [
+      "python"
+    ],
     "plantilla": {
       "python": "# Completa la función decodificar_rot13\ndef decodificar_rot13(mensaje):\n    # Tu código aquí\n  \nprint(decodificar_rot13('Guvf vf n frperg zrffntr!'))  # Debería mostrar 'This is a secret message!'\nprint(decodificar_rot13('Uryyb Jbeyq!'))  # Debería mostrar 'Hello World!'"
     },
@@ -248,7 +280,9 @@
     "descripcion": "Escribe una función en Java que decodifique un mensaje cifrado con ROT13.",
     "dificultad": "Difícil",
     "puntos": 50,
-    "lenguajes": ["java"],
+    "lenguajes": [
+      "java"
+    ],
     "plantilla": {
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Completa la función decodificarROT13\n    System.out.println(decodificarROT13(\"Guvf vf n frperg zrffntr!\")); // Debería mostrar 'This is a secret message!'\n    System.out.println(decodificarROT13(\"Uryyb Jbeyq!\")); // Debería mostrar 'Hello World!'\n  }\n\n  public static String decodificarROT13(String mensaje) {\n    // Tu código aquí\n    return \"\";\n  }\n}"
     },
@@ -257,29 +291,33 @@
     }
   },
   {
-  "id": 18,
-  "titulo": "Únete a la Orden Jedi",
-  "descripcion": "Crea un formulario de registro completo, incluyendo nombre, especie, afiliación, habilidades de la Fuerza, color de sable de luz y más.",
-  "dificultad": "Difícil",
-  "puntos": 50,
-  "lenguajes": ["html"],
-  "plantilla": {
-    "html": "<!-- Escribe tu código HTML aquí -->\n"
+    "id": 18,
+    "titulo": "Únete a la Orden Jedi",
+    "descripcion": "Crea un formulario de registro completo, incluyendo nombre, especie, afiliación, habilidades de la Fuerza, color de sable de luz y más.",
+    "dificultad": "Difícil",
+    "puntos": 50,
+    "lenguajes": [
+      "html"
+    ],
+    "plantilla": {
+      "html": "<!-- Escribe tu código HTML aquí -->\n"
+    },
+    "solucion": {
+      "html": "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Registro Jedi Completo</title>\n  <style>\n    body {\n      background-image: url('https://www.example.com/star-wars-background.jpg');\n      background-size: cover;\n      font-family: 'Arial', sans-serif;\n      color: white;\n      text-align: center;\n    }\n    .formulario {\n      background: rgba(0, 0, 0, 0.8);\n      padding: 20px;\n      width: 400px;\n      margin: auto;\n      border-radius: 10px;\n    }\n    label, input, select, textarea {\n      display: block;\n      margin: 10px 0;\n    }\n    .boton-jedi {\n      background-color: gold;\n      color: black;\n      padding: 10px 20px;\n      font-size: 16px;\n      cursor: pointer;\n      border: none;\n      border-radius: 5px;\n    }\n    .boton-jedi:hover {\n      box-shadow: 0 0 15px gold;\n    }\n  </style>\n</head>\n<body>\n  <h1>Registro Completo en la Orden Jedi</h1>\n  <form class=\"formulario\">\n    <label>Nombre Jedi: <input type=\"text\" name=\"nombre\" required></label>\n    <label>Especie:\n      <select name=\"especie\">\n        <option>Humano</option>\n        <option>Twi'lek</option>\n        <option>Wookiee</option>\n        <option>Zabrak</option>\n        <option>Rodiano</option>\n        <option>Chiss</option>\n      </select>\n    </label>\n    <label>Afiliación:\n      <select name=\"afiliacion\">\n        <option>Jedi</option>\n        <option>Sith</option>\n        <option>Cazarrecompensas</option>\n        <option>Neutro</option>\n        <option>Rebelde</option>\n        <option>Imperial</option>\n      </select>\n    </label>\n    <label>Color del sable de luz:\n      <select name=\"sable\">\n        <option>Azul</option>\n        <option>Verde</option>\n        <option>Rojo</option>\n        <option>Púrpura</option>\n        <option>Blanco</option>\n        <option>Negro</option>\n      </select>\n    </label>\n    <label>Habilidades de la Fuerza:\n      <input type=\"checkbox\" name=\"habilidades\" value=\"Telequinesis\"> Telequinesis\n      <input type=\"checkbox\" name=\"habilidades\" value=\"Persuasión\"> Persuasión Jedi\n      <input type=\"checkbox\" name=\"habilidades\" value=\"Visión\"> Visión del futuro\n      <input type=\"checkbox\" name=\"habilidades\" value=\"Rayos\"> Rayos Sith\n    </label>\n    <label>Frase de batalla:<textarea name=\"frase\" placeholder=\"Escribe tu frase icónica de batalla...\"></textarea></label>\n    <label>Contraseña secreta:<input type=\"password\" name=\"password\" required></label>\n    <button type=\"submit\" class=\"boton-jedi\">Unirse a la Orden</button>\n  </form>\n</body>\n</html>"
+    },
+    "tests": {
+      "html": "output.includes('<form') && output.includes('boton-jedi') && output.includes('sable') && output.includes('habilidades')"
+    }
   },
-  "solucion": {
-    "html": "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Registro Jedi Completo</title>\n  <style>\n    body {\n      background-image: url('https://www.example.com/star-wars-background.jpg');\n      background-size: cover;\n      font-family: 'Arial', sans-serif;\n      color: white;\n      text-align: center;\n    }\n    .formulario {\n      background: rgba(0, 0, 0, 0.8);\n      padding: 20px;\n      width: 400px;\n      margin: auto;\n      border-radius: 10px;\n    }\n    label, input, select, textarea {\n      display: block;\n      margin: 10px 0;\n    }\n    .boton-jedi {\n      background-color: gold;\n      color: black;\n      padding: 10px 20px;\n      font-size: 16px;\n      cursor: pointer;\n      border: none;\n      border-radius: 5px;\n    }\n    .boton-jedi:hover {\n      box-shadow: 0 0 15px gold;\n    }\n  </style>\n</head>\n<body>\n  <h1>Registro Completo en la Orden Jedi</h1>\n  <form class=\"formulario\">\n    <label>Nombre Jedi: <input type=\"text\" name=\"nombre\" required></label>\n    <label>Especie:\n      <select name=\"especie\">\n        <option>Humano</option>\n        <option>Twi'lek</option>\n        <option>Wookiee</option>\n        <option>Zabrak</option>\n        <option>Rodiano</option>\n        <option>Chiss</option>\n      </select>\n    </label>\n    <label>Afiliación:\n      <select name=\"afiliacion\">\n        <option>Jedi</option>\n        <option>Sith</option>\n        <option>Cazarrecompensas</option>\n        <option>Neutro</option>\n        <option>Rebelde</option>\n        <option>Imperial</option>\n      </select>\n    </label>\n    <label>Color del sable de luz:\n      <select name=\"sable\">\n        <option>Azul</option>\n        <option>Verde</option>\n        <option>Rojo</option>\n        <option>Púrpura</option>\n        <option>Blanco</option>\n        <option>Negro</option>\n      </select>\n    </label>\n    <label>Habilidades de la Fuerza:\n      <input type=\"checkbox\" name=\"habilidades\" value=\"Telequinesis\"> Telequinesis\n      <input type=\"checkbox\" name=\"habilidades\" value=\"Persuasión\"> Persuasión Jedi\n      <input type=\"checkbox\" name=\"habilidades\" value=\"Visión\"> Visión del futuro\n      <input type=\"checkbox\" name=\"habilidades\" value=\"Rayos\"> Rayos Sith\n    </label>\n    <label>Frase de batalla:<textarea name=\"frase\" placeholder=\"Escribe tu frase icónica de batalla...\"></textarea></label>\n    <label>Contraseña secreta:<input type=\"password\" name=\"password\" required></label>\n    <button type=\"submit\" class=\"boton-jedi\">Unirse a la Orden</button>\n  </form>\n</body>\n</html>"
-  },
-  "tests": {
-    "html": "output.includes('<form') && output.includes('boton-jedi') && output.includes('sable') && output.includes('habilidades')"
-  }
-},
- {
+  {
     "id": 19,
     "titulo": "El poder de la Fuerza (JavaScript)",
     "descripcion": "Implementa una función en JavaScript que calcule el número de midiclorianos de un Jedi usando el factorial.",
     "dificultad": "Medio",
     "puntos": 30,
-    "lenguajes": ["javascript"],
+    "lenguajes": [
+      "javascript"
+    ],
     "plantilla": {
       "javascript": "// Implementa la función calcularMidiclorianos\nfunction calcularMidiclorianos(n) {\n  // Tu código aquí\n}\n\nconsole.log(calcularMidiclorianos(5)) // Debería mostrar 120"
     },
@@ -293,7 +331,9 @@
     "descripcion": "Implementa una función en Python que calcule el número de midiclorianos de un Jedi usando el factorial.",
     "dificultad": "Medio",
     "puntos": 30,
-    "lenguajes": ["python"],
+    "lenguajes": [
+      "python"
+    ],
     "plantilla": {
       "python": "# Implementa la función calcular_midiclorianos\ndef calcular_midiclorianos(n):\n    # Tu código aquí\n    pass\n\nprint(calcular_midiclorianos(5)) # Debería mostrar 120"
     },
@@ -307,7 +347,9 @@
     "descripcion": "Implementa una función en Java que calcule el número de midiclorianos de un Jedi usando el factorial.",
     "dificultad": "Medio",
     "puntos": 30,
-    "lenguajes": ["java"],
+    "lenguajes": [
+      "java"
+    ],
     "plantilla": {
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Implementa la función calcularMidiclorianos\n    System.out.println(calcularMidiclorianos(5)); // Debería mostrar 120\n  }\n\n  public static int calcularMidiclorianos(int n) {\n    // Tu código aquí\n    return 0;\n  }\n}"
     },
@@ -315,5 +357,4 @@
       "java": "public class Main {\n  public static void main(String[] args) {\n    // Implementa la función calcularMidiclorianos\n    System.out.println(calcularMidiclorianos(5)); // Debería mostrar 120\n  }\n\n  public static int calcularMidiclorianos(int n) {\n    if (n <= 1) return 1;\n    return n * calcularMidiclorianos(n - 1);\n  }\n}"
     }
   }
-
 ]
