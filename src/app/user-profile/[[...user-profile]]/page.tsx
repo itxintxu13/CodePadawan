@@ -220,11 +220,27 @@ export default function UserProfilePage() {
 
 
   if (tab === "logros") {
+    // Verificar si el usuario es Padawan
+    const userRole = user?.publicMetadata?.rol;
+    if (userRole !== 'padawan') {
+      return (
+        <div className="flex min-h-screen">
+          <Sidebar />
+          <main className="flex-1 p-8 flex items-center justify-center">
+            <p className="text-xl text-red-400">Esta sección está disponible solo para Padawans.</p>
+          </main>
+        </div>
+      );
+    }
+
     // Mientras carga logros muestra spinner
     if (loadingLogros) {
       return (
-        <div className="flex min-h-screen items-center justify-center text-yellow-400 text-xl">
-          Cargando logros...
+        <div className="flex min-h-screen">
+          <Sidebar />
+          <main className="flex-1 p-8 flex items-center justify-center">
+            <p className="text-xl text-blue-400">Cargando logros...</p>
+          </main>
         </div>
       );
     }
