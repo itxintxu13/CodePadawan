@@ -1,4 +1,3 @@
-
 # Code Padawan 🌟
 
 Code Padawan es una plataforma educativa diseñada para conectar a Padawans (aprendices que buscan aprender a programar) con Jedis (expertos con conocimientos avanzados) en un entorno colaborativo. Nuestra misión es fomentar el aprendizaje y la retroalimentación entre usuarios para ampliar sus habilidades en programación a través de retos, rankings, blogs y herramientas interactivas. 🚀
@@ -51,7 +50,7 @@ Estamos trabajando arduamente para llevar Code Padawan al siguiente nivel:
 - **Próximas actualizaciones**: ¡Sigue nuestras noticias! 🔔
 
 ## Tecnologías Utilizadas 🛠️
-- **Frontend**: React, HTML, CSS, TypeScript
+- **Frontend**: React, HTML, CSS, TypeScript, Tailwind
 - **Backend**: Node.js
 - **Base de datos**: Firebase con Realtime Database
 - **Autenticación y Gestión de Roles**: Clerk 🔐
@@ -72,15 +71,14 @@ Estamos trabajando arduamente para llevar Code Padawan al siguiente nivel:
 4. **Git push origin feature/nueva-funcionalidad**
 5. **Abre un Pull Request en GitHub**. 📬
 
-Por favor, lee nuestro Código de Conducta 📘 y sigue las guías de contribución.
-
-## Licencia 📜
-Este proyecto está licenciado bajo la **MIT License**.
 
 ## Contacto 📩
 Si tienes preguntas, sugerencias o quieres colaborar, contáctanos:
-- **Correo**: codepadawan@gmail.com
-- **GitHub**: CodePadawan
-- **Twitter/X**: @CodePadawan
 
-¡Únete a la fuerza del aprendizaje en Code Padawan y espera grandes novedades! 🌌
+**GitHub**:
+- [itxintxu13](https://github.com/itxintxu13)
+- [ARP-10](https://github.com/ARP-10)
+- [jrincon00](https://github.com/jrincon00)
+  
+
+¡Únete a la fuerza del aprendizaje en Code Padawan y espera grandes novedades! 
