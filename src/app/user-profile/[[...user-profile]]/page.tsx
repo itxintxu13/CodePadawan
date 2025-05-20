@@ -14,6 +14,7 @@ import {
 import { getDatabase, ref, get } from "firebase/database";
 import { app } from "@/lib/firebase/config";
 import Logros from "@/app/components/Logros";
+import Obras from "@/app/components/Obras";
 
 export default function UserProfilePage() {
   const { isLoaded, user } = useUser();
@@ -417,7 +418,8 @@ export default function UserProfilePage() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <Logros logrosUsuario={logrosUsuario} />
+      <Obras/>
+      {/* <Logros logrosUsuario={logrosUsuario} /> */}
     </div>
   );
 }
