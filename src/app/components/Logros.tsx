@@ -161,7 +161,7 @@ export default function Logros({ logrosUsuario }: LogrosProps) {
     <div className="container flex min-h-screen">
       <main className="flex-1 p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white animate-fade-in">
       <h1 className="text-4xl md:text-5xl font-extrabold text-yellow-400 text-center drop-shadow-lg animate-slide-down font-starwars">
-            <img src="/icons/sidebar-ranking.svg" alt="Ranking" className="mr-2 inline-block h-16 w-16 align-middle" />
+            <img src="/icons/sidebar-ranking.svg" alt="Ranking" className="mr-2 inline-block h-14 w-14 align-middle" />
             Registro de Logros del Padawan
           </h1>
         
