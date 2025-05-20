@@ -96,19 +96,32 @@ export default function UserProfilePage() {
         <Sidebar />
         <main className="flex-1 p-4 md:p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10 mt-6">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-yellow-400">
-                🚀 Acerca de CodePadawan
-              </h1>
-              <p className="text-xl text-indigo-200 max-w-3xl mx-auto">
-                Una plataforma para aprender a programar de manera interactiva y divertida
-              </p>
+            <div className="flex items-center mb-10 mt-6">
+              <img
+                src="/icons/sidebar-about.svg"
+                alt="Acerca de nosotros"
+                className="w-12 h-12 mr-8"
+              />
+              <div>
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 text-yellow-400">
+                  Acerca de CodePadawan
+                </h1>
+                <p className="text-xl text-indigo-200 max-w-3xl mx-auto">
+                  Una plataforma para aprender a programar de manera interactiva y divertida
+                </p>
+              </div>
             </div>
+
 
             {/* Equipo */}
             <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mb-12 mt-20">
               {/* Itxine */}
-              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 transition-all duration-300">
+              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 hover:shadow-[0px_0px_15px_3px_rgba(255,255,255,0.5)] transition-all duration-300 relative overflow-hidden"
+                style={{
+                  backgroundImage: `url('/stars.webp')`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}>
                 <div className="flex items-center mb-4">
                   <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4 overflow-hidden">
                     <img
@@ -123,18 +136,25 @@ export default function UserProfilePage() {
                   </div>
                 </div>
                 <p className="text-gray-300 mb-4">
-                  CodePadawan es el lugar ideal para aprender a programar de manera interactiva y emocionante.
+                  CodePadawan, donde los padawans del código entrenan, enfrentándose a retos interactivos para dominar la Fuerza de la programación.
                 </p>
                 <div className="flex space-x-4">
                   <a href="https://github.com/itxintxu13" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                    <FaGithub size={20} />
+                    <FaGithub
+                      size={30}
+                      className="hover:text-purple-500 hover:shadow-[0_0_15px_3px_rgba(126,34,206,0.7)] hover:rounded-full hover:scale-110 transition-all duration-300"
+                    />
                   </a>
                 </div>
               </div>
 
-
               {/* Jonan */}
-              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 transition-all duration-300">
+              <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 hover:shadow-[0px_0px_15px_3px_rgba(255,255,255,0.5)] transition-all duration-300 relative overflow-hidden"
+                style={{
+                  backgroundImage: `url('/stars.webp')`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}>
                 <div className="flex items-center mb-4">
                   <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4 overflow-hidden">
                     <img
@@ -153,14 +173,20 @@ export default function UserProfilePage() {
                 </p>
                 <div className="flex space-x-4">
                   <a href="https://github.com/jrincon00" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                    <FaGithub size={20} />
-                  </a>
+                    <FaGithub
+                      size={30}
+                      className="hover:text-blue-500 hover:shadow-[0_0_15px_3px_rgba(59,130,245,0.7)] hover:rounded-full hover:scale-110 transition-all duration-300"
+                    />                  </a>
                 </div>
               </div>
 
-
               {/* Ale */}
-              <div className="md:col-span-2 bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 transition-all duration-300 text-center max-w-md mx-auto">
+              <div className="md:col-span-2 bg-gray-800 bg-opacity-50 rounded-xl p-6 backdrop-blur-sm border border-gray-700 hover:border-indigo-500 hover:shadow-[0px_0px_15px_3px_rgba(255,255,255,0.5)] transition-all duration-300 text-left max-w-md mx-auto relative overflow-hidden"
+                style={{
+                  backgroundImage: `url('/stars.webp')`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}>
                 <div className="flex items-center mb-4">
                   <div className="w-20 h-20 rounded-full bg-indigo-900 flex items-center justify-center text-3xl mr-4 overflow-hidden">
                     <img
@@ -175,27 +201,17 @@ export default function UserProfilePage() {
                   </div>
                 </div>
                 <p className="text-gray-300 mb-4">
-                  No necesitas un destornillador sónico para aprender a programar, solo curiosidad y CodePadawan para viajar por el universo del desarrollo.
+                  No necesitas un destornillador sónico para aprender a programar, solo curiosidad y CodePadawan... aunque la próxima vez debería pedirle ayuda a un Jedi para que me guíe por este universo de código.
                 </p>
                 <div className="flex space-x-4">
                   <a href="https://github.com/ARP-10" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                    <FaGithub size={20} />
-                  </a>
+                    <FaGithub
+                      size={30}
+                      className="hover:text-red-500 hover:shadow-[0_0_15px_3px_rgba(255,0,0,0.7)] hover:rounded-full hover:scale-110 transition-all duration-300"
+                    />            </a>
                 </div>
               </div>
             </div>
-
-            {/* Tecnologías */}
-            {/* <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-6 text-center">Tecnologías que usamos</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {['Next.js', 'TypeScript', 'Clerk', 'React', 'Tailwind CSS'].map((tech) => (
-                  <div key={tech} className="bg-gray-800 bg-opacity-50 p-4 rounded-lg text-center hover:scale-105 transition-transform">
-                    <span className="text-yellow-400">{tech}</span>
-                  </div>
-                ))}
-              </div>
-            </div> */}
           </div>
         </main>
       </div>
@@ -363,48 +379,45 @@ export default function UserProfilePage() {
 
     return (
       <div className="container flex min-h-screen">
-      <Sidebar />
-      {/* Contenido principal */}
-      <main className="flex-1 p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white animate-fade-in">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-yellow-400 text-center drop-shadow-lg animate-slide-down font-starwars">
-          ⭐ Registro de Logros del Padawan
-        </h1>
-        <p className="text-lg text-indigo-200 mt-4 text-center mb-2 italic animate-fade-in-delay">
-          “El camino del código, joven aprendiz, arduo es… pero recompensas
-          trae.” – Maestro Yoda
-        </p>
-        <div className="mt-10 max-w-4xl mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {logros.map((logro, index) => (
-              <div
-                key={index}
-                className={`flex items-center space-x-4 p-6 rounded-xl border transition-all duration-300
-            ${
-              logro.desbloqueado
-                ? `${
-                    logro.colorClase || "bg-gray-800 border-green-500"
-                  } shadow-lg`
-                : "bg-gray-700 border-gray-600 opacity-70"
-            }`}
-              >
-                {logro.icono}
-                <div>
-                  <h3 className="text-xl font-semibold">{logro.titulo}</h3>
-                  <p className="text-sm text-gray-300">{logro.descripcion}</p>
+        <Sidebar />
+        {/* Contenido principal */}
+<main className="flex-1 p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white animate-fade-in">          <h1 className="text-4xl md:text-5xl font-extrabold text-yellow-400 text-center drop-shadow-lg animate-slide-down font-starwars">
+            ⭐ Registro de Logros del Padawan
+          </h1>
+          <p className="text-lg text-indigo-200 mt-4 text-center mb-2 italic animate-fade-in-delay">
+            “El camino del código, joven aprendiz, arduo es… pero recompensas
+            trae.” – Maestro Yoda
+          </p>
+          <div className="mt-10 max-w-4xl mx-auto px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {logros.map((logro, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center space-x-4 p-6 rounded-xl border transition-all duration-300
+            ${logro.desbloqueado
+                      ? `${logro.colorClase || "bg-gray-800 border-green-500"
+                      } shadow-lg`
+                      : "bg-gray-700 border-gray-600 opacity-70"
+                    }`}
+                >
+                  {logro.icono}
+                  <div>
+                    <h3 className="text-xl font-semibold">{logro.titulo}</h3>
+                    <p className="text-sm text-gray-300">{logro.descripcion}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
     );
   }
 
   return (
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <Logros logrosUsuario={logrosUsuario} />
-      </div>
-    );
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <Logros logrosUsuario={logrosUsuario} />
+    </div>
+  );
 }

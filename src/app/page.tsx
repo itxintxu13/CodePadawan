@@ -60,7 +60,7 @@ export default function Home() {
 
         {/* Selector de rol */}
         <div className="w-full max-w-2xl mt-12 mb-20 p-8 bg-gray-800 rounded-lg shadow-xl text-center">
-          <h2 className="text-3xl font-bold mb-6 text-yellow-400" style={{ textShadow: '0 0 10px rgba(255, 215, 0, 1), 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 215, 0, 0.8)' }}>Elige tu camino en la Fuerza</h2>
+          <h2 className="text-3xl font-bold mb-6 text-yellow-400">Elige tu camino en la Fuerza</h2>
           <SelectorDeRol />
         </div>
 
