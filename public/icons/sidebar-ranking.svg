@@ -1,1 +1,23 @@
-<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="24" height="24" rx="6" fill="#23272F" stroke="#22D3EE" stroke-width="2.5"/><polygon points="14,6 18,22 10,22" fill="#22D3EE" stroke="#FFF" stroke-width="1.2"/><circle cx="14" cy="17.5" r="2.2" fill="#23272F" stroke="#22D3EE" stroke-width="1.2"/></svg>
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo del icono -->
+  <rect x="2" y="2" width="24" height="24" rx="6" fill="#23272F" stroke="#22D3EE" stroke-width="2.5"/>
+  
+  <!-- Insignia de la República -->
+  <path d="M14 6L17 10L21 11L18 14L19 18L14 16L9 18L10 14L7 11L11 10L14 6Z" fill="#22D3EE" stroke="#FFF" stroke-width="1">
+    <animate attributeName="fill-opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Círculo central con efecto de energía -->
+  <circle cx="14" cy="14" r="2.5" fill="#23272F" stroke="#22D3EE" stroke-width="1.2">
+    <animate attributeName="stroke-width" values="1.2;1.8;1.2" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Anillos de energía -->
+  <circle cx="14" cy="14" r="4" stroke="#22D3EE" stroke-width="0.8" stroke-dasharray="2 2">
+    <animate attributeName="r" values="4;4.5;4" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Detalles de la insignia -->
+  <path d="M14 11L15 13L17 13.5L15.5 15L16 17L14 16L12 17L12.5 15L11 13.5L13 13L14 11Z" fill="#FFF" fill-opacity="0.3"/>
+</svg>

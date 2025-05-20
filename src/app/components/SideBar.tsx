@@ -19,15 +19,16 @@ export default function Sidebar() {
         {rol === "padawan" && (
           <a href="/dashboard/padawan" className="hover:bg-green-800/70 p-3 rounded-lg flex items-center">
             <img src="/padawan-symbol.svg" alt="Padawan Logo" className="mr-3 w-7 h-7" />
-            <span>Dashboard Padawan</span>
+            <span>Dashboard</span>
           </a>
         )}
+        {rol === "padawan" && (
         <a href="/retos" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
           <img src="/icons/sidebar-retos.svg" alt="Retos" className="mr-3 w-6 h-6" />
           <span>Retos</span>
-        </a>
+        </a> )}
         <a href="/ranking" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
-          <img src="/icons/sidebar-ranking.svg" alt="Ranking" className="mr-3 w-6 h-6" />
+          <img src="/icons/new-sidebar-ranking.svg" alt="Ranking" className="mr-3 w-6 h-6" />
           <span>Ranking</span>
         </a>
         <a href="/user-profile?tab=playground" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
@@ -38,7 +39,7 @@ export default function Sidebar() {
         {/* Solo para padawan */}
         {rol === "padawan" && (
           <a href="/user-profile?tab=logros" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
-            <img src="/icons/sidebar-achievement.svg" alt="Logros" className="mr-3 w-6 h-6" />
+            <img src="/icons/new-sidebar-achievement.svg" alt="Logros" className="mr-3 w-6 h-6" />
             <span>Mis logros</span>
           </a>
         )}
@@ -46,15 +47,15 @@ export default function Sidebar() {
         
         {rol === "jedi" && (
           <a href="/dashboard/jedi" className="hover:bg-blue-800/70 p-3 rounded-lg flex items-center">
-            <img src="/padawan-symbol.svg" alt="Jedi Logo" className="mr-3 w-7 h-7" />
-            <span>Dashboard Jedi</span>
+            <img src="/jedi-symbol.svg" alt="Jedi Logo" className="mr-3 w-7 h-7" />
+            <span>Dashboard</span>
           </a>
         )}
 
         <div className="pb-4">
           <a href="/user-profile?tab=about" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
-            <img src="/icons/sidebar-about.svg" alt="Acerca de nosotros" className="mr-3 w-6 h-6" />
-            <span>Acerca de nosotros</span>
+            <img src="/icons/new-sidebar-about.svg" alt="Holocrón" className="mr-3 w-6 h-6" />
+            <span>Holocrón</span>
           </a>
         </div>
       </nav>
