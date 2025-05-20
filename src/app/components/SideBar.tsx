@@ -18,27 +18,27 @@ export default function Sidebar() {
         {/* Dashboard según rol */}
         {rol === "padawan" && (
           <a href="/dashboard/padawan" className="hover:bg-green-800/70 p-3 rounded-lg flex items-center">
-            <span className="mr-3 text-green-300">🌱</span>
+            <img src="/padawan-symbol.svg" alt="Padawan Logo" className="mr-3 w-7 h-7" />
             <span>Dashboard Padawan</span>
           </a>
         )}
         <a href="/retos" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
-          <span className="mr-3 text-yellow-400">🏆</span>
+          <img src="/icons/sidebar-retos.svg" alt="Retos" className="mr-3 w-6 h-6" />
           <span>Retos</span>
         </a>
         <a href="/ranking" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
-          <span className="mr-3 text-green-400">📊</span>
+          <img src="/icons/sidebar-ranking.svg" alt="Ranking" className="mr-3 w-6 h-6" />
           <span>Ranking</span>
         </a>
         <a href="/user-profile?tab=playground" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
-          <span className="mr-3 text-white-400">🎮</span>
+          <img src="/icons/sidebar-playground.svg" alt="Playground" className="mr-3 w-6 h-6" />
           <span>Playground</span>
         </a>
 
         {/* Solo para padawan */}
         {rol === "padawan" && (
           <a href="/user-profile?tab=logros" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
-            <span className="mr-3 text-pink-400">🎯</span>
+            <img src="/icons/sidebar-achievement.svg" alt="Logros" className="mr-3 w-6 h-6" />
             <span>Mis logros</span>
           </a>
         )}
@@ -46,14 +46,14 @@ export default function Sidebar() {
         
         {rol === "jedi" && (
           <a href="/dashboard/jedi" className="hover:bg-blue-800/70 p-3 rounded-lg flex items-center">
-            <span className="mr-3 text-blue-300">🧙</span>
+            <img src="/padawan-symbol.svg" alt="Jedi Logo" className="mr-3 w-7 h-7" />
             <span>Dashboard Jedi</span>
           </a>
         )}
 
         <div className="pb-4">
           <a href="/user-profile?tab=about" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
-            <span className="mr-3 text-blue-400">ℹ️</span>
+            <img src="/icons/sidebar-about.svg" alt="Acerca de nosotros" className="mr-3 w-6 h-6" />
             <span>Acerca de nosotros</span>
           </a>
         </div>
