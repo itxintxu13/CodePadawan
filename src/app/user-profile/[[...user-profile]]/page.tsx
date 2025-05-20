@@ -244,9 +244,9 @@ export default function UserProfilePage() {
         desbloqueado: logrosUsuario?.hola_mundo_java?.completado === true,
         colorClase: "border-red-500",
         icono: logrosUsuario?.hola_mundo_java?.completado === true ? (
-          <CheckCircleIcon className="h-10 w-10 text-green-400" />
+          <CheckCircleIcon className="h-8 w-8 text-green-400" />
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -255,9 +255,9 @@ export default function UserProfilePage() {
         desbloqueado: logrosUsuario?.hola_mundo_python?.completado === true,
         colorClase: "border-blue-500",
         icono: logrosUsuario?.hola_mundo_python?.completado === true ? (
-          <CheckCircleIcon className="h-10 w-10 text-green-400" />
+          <CheckCircleIcon className="h-8 w-8 text-green-400" />
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -266,9 +266,9 @@ export default function UserProfilePage() {
         desbloqueado: logrosUsuario?.hola_mundo_javascript?.completado === true,
         colorClase: "border-yellow-400",
         icono: logrosUsuario?.hola_mundo_javascript?.completado === true ? (
-          <CheckCircleIcon className="h-10 w-10 text-green-400" />
+          <CheckCircleIcon className="h-8 w-8 text-green-400" />
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -277,9 +277,9 @@ export default function UserProfilePage() {
         desbloqueado: logrosUsuario?.hola_mundo_html?.completado === true,
         colorClase: "border-orange-500",
         icono: logrosUsuario?.hola_mundo_html?.completado === true ? (
-          <CheckCircleIcon className="h-10 w-10 text-green-400" />
+          <CheckCircleIcon className="h-8 w-8 text-green-400" />
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -288,9 +288,9 @@ export default function UserProfilePage() {
         desbloqueado: (logrosUsuario?.retos_completados ?? 0) >= 5,
         colorClase: "border-blue-500 bg-blue-900",
         icono: (logrosUsuario?.retos_completados ?? 0) >= 5 ? (
-          <span className="text-3xl">🛸</span>
+          <span className="text-2xl">🛸</span>
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -299,9 +299,9 @@ export default function UserProfilePage() {
         desbloqueado: (logrosUsuario?.retos_completados ?? 0) >= 10,
         colorClase: "border-green-500 bg-green-900",
         icono: (logrosUsuario?.retos_completados ?? 0) >= 10 ? (
-          <span className="text-3xl">⚔️</span>
+          <span className="text-2xl">⚔️</span>
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -310,9 +310,9 @@ export default function UserProfilePage() {
         desbloqueado: (logrosUsuario?.retos_completados ?? 0) >= 15,
         colorClase: "border-red-500 bg-red-900",
         icono: (logrosUsuario?.retos_completados ?? 0) >= 15 ? (
-          <span className="text-3xl">💫</span>
+          <span className="text-2xl">💫</span>
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-4 w-4 text-gray-400" />
         ),
       },
       {
@@ -321,9 +321,9 @@ export default function UserProfilePage() {
         desbloqueado: (logrosUsuario?.retos_completados ?? 0) >= 20,
         colorClase: "border-yellow-500 bg-yellow-900",
         icono: (logrosUsuario?.retos_completados ?? 0) >= 20 ? (
-          <span className="text-3xl">🌌</span>
+          <span className="text-2xl">🌌</span>
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -332,9 +332,9 @@ export default function UserProfilePage() {
         desbloqueado: logrosUsuario?.java_dominado?.completado === true,
         colorClase: "border-red-500",
         icono: logrosUsuario?.java_dominado?.completado === true ? (
-          <CheckCircleIcon className="h-10 w-10 text-green-400" />
+          <CheckCircleIcon className="h-8 w-8 text-green-400" />
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -343,9 +343,9 @@ export default function UserProfilePage() {
         desbloqueado: logrosUsuario?.js_dominado?.completado === true,
         colorClase: "border-yellow-400",
         icono: logrosUsuario?.js_dominado?.completado === true ? (
-          <CheckCircleIcon className="h-10 w-10 text-green-400" />
+          <CheckCircleIcon className="h-8 w-8 text-green-400" />
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -354,9 +354,9 @@ export default function UserProfilePage() {
         desbloqueado: logrosUsuario?.python_dominado?.completado === true,
         colorClase: "border-blue-500",
         icono: logrosUsuario?.python_dominado?.completado === true ? (
-          <CheckCircleIcon className="h-10 w-10 text-green-400" />
+          <CheckCircleIcon className="h-8 w-8 text-green-400" />
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
       {
@@ -365,15 +365,15 @@ export default function UserProfilePage() {
         desbloqueado: logrosUsuario?.html_dominado?.completado === true,
         colorClase: "border-orange-500",
         icono: logrosUsuario?.html_dominado?.completado === true ? (
-          <CheckCircleIcon className="h-10 w-10 text-green-400" />
+          <CheckCircleIcon className="h-8 w-8 text-green-400" />
         ) : (
-          <LockClosedIcon className="h-10 w-10 text-gray-400" />
+          <LockClosedIcon className="h-8 w-8 text-gray-400" />
         ),
       },
     ];
 
     return (
-      <div className="container flex min-h-screen">
+      <div className="flex min-h-screen">
         <Sidebar />
         <main className="flex-1 p-8 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-800 text-white animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-extrabold text-yellow-400 text-center drop-shadow-lg animate-slide-down font-starwars">
@@ -383,12 +383,12 @@ export default function UserProfilePage() {
             “El camino del código, joven aprendiz, arduo es… pero recompensas
             trae.” – Maestro Yoda
           </p>
-          <div className="mt-10 max-w-4xl mx-auto px-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="mt-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-6">
               {logros.map((logro, index) => (
                 <div
                   key={index}
-                  className={`flex items-center space-x-4 p-6 rounded-xl border transition-all duration-300
+                  className={`flex items-center space-x-3 p-4 rounded-xl border transition-all duration-300
                     ${logro.desbloqueado
                       ? `${logro.colorClase || "bg-gray-800 border-green-500"} shadow-lg`
                       : "bg-gray-700 border-gray-600 opacity-70"
@@ -396,8 +396,8 @@ export default function UserProfilePage() {
                 >
                   {logro.icono}
                   <div>
-                    <h3 className="text-xl font-semibold">{logro.titulo}</h3>
-                    <p className="text-sm text-gray-300">{logro.descripcion}</p>
+                    <h3 className="text-lg font-semibold">{logro.titulo}</h3>
+                    <p className="text-xs text-gray-300">{logro.descripcion}</p>
                   </div>
                 </div>
               ))}
