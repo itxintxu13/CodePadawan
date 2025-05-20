@@ -36,11 +36,11 @@ export default function JavaBlogPage() {
   const [codigo, setCodigo] = useState("// Escribe tu código Java aquí");
   const [savedCodeId, setSavedCodeId] = useState<string | null>(null);
 
-  // Cargar comentarios desde Firebase
+  // Cargar comentarios desde Firebase (ordenados de más nuevo a más viejo)
   const fetchComments = async () => {
     const res = await fetch("/api/comments/java");
     const data = await res.json();
-    setComments(data.comments || []);
+    setComments((data.comments || []).reverse());
   };
 
   useEffect(() => {

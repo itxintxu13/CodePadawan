@@ -40,7 +40,7 @@ export default function HtmlCssBlogPage() {
   const fetchComments = async () => {
     const res = await fetch("/api/comments/html-css");
     const data = await res.json();
-    setComments(data.comments || []);
+    setComments((data.comments || []).reverse());
   };
 
   useEffect(() => {
