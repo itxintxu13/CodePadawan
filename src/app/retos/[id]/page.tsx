@@ -83,9 +83,11 @@ export default function RetoPage() {
         const datos = snapshot.exists() ? snapshot.val() : {};
         const puntosFirebase = datos.puntos || 0;
         setPuntosUsuario(puntosFirebase);
-        // Check access based on points
-        if (reto && puntosFirebase < reto.puntos) {
-          setAccesoPermitido(false);
+        
+        if (reto) {
+          if (reto.puntos > 10 && puntosFirebase < reto.puntos) {
+            setAccesoPermitido(false);
+          }
         }
       } catch (error) {
         console.error("Error cargando puntos desde Firebase:", error);
@@ -194,126 +196,126 @@ export default function RetoPage() {
   };
 
   const entregarSolucion = async () => {
-  if (!codigo || !reto || !user || !lenguaje) {
-    setResultado({
-      success: false,
-      message: "Falta información necesaria para entregar la solución",
-    });
-    return;
-  }
+    if (!codigo || !reto || !user || !lenguaje) {
+      setResultado({
+        success: false,
+        message: "Falta información necesaria para entregar la solución",
+      });
+      return;
+    }
 
-  // Validate requirements
-  if (reto.requisitos?.[lenguaje]) {
-    const requisitos = reto.requisitos[lenguaje];
-    let cumpleRequisitos = true;
-    let mensajeError = "";
+    // Validate requirements
+    if (reto.requisitos?.[lenguaje]) {
+      const requisitos = reto.requisitos[lenguaje];
+      let cumpleRequisitos = true;
+      let mensajeError = "";
 
-    for (const requisito of requisitos) {
-      try {
-        // Normalize the requirement the same way as the user code
-        const requisitoNormalizado = requisito
-          .toLowerCase()
-          .replace(/'/g, '"')
-          .replace(/\s+/g, "")
-          .normalize("NFC");
+      for (const requisito of requisitos) {
+        try {
+          // Normalize the requirement the same way as the user code
+          const requisitoNormalizado = requisito
+            .toLowerCase()
+            .replace(/'/g, '"')
+            .replace(/\s+/g, "")
+            .normalize("NFC");
 
-        // Escape all special regex characters in the normalized requirement
-        const patron = new RegExp(requisitoNormalizado.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-        
-        // Normalize user code
-        const codigoLimpio = codigo
-          .toLowerCase()
-          .replace(/'/g, '"')
-          .replace(/\s+/g, "")
-          .normalize("NFC");
+          // Escape all special regex characters in the normalized requirement
+          const patron = new RegExp(requisitoNormalizado.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 
-        console.log("Validating requirement:", requisitoNormalizado);
-        console.log("Normalized user code:", codigoLimpio);
-        console.log("Regex pattern:", patron.source);
+          // Normalize user code
+          const codigoLimpio = codigo
+            .toLowerCase()
+            .replace(/'/g, '"')
+            .replace(/\s+/g, "")
+            .normalize("NFC");
 
-        if (!patron.test(codigoLimpio)) {
+          console.log("Validating requirement:", requisitoNormalizado);
+          console.log("Normalized user code:", codigoLimpio);
+          console.log("Regex pattern:", patron.source);
+
+          if (!patron.test(codigoLimpio)) {
+            cumpleRequisitos = false;
+            mensajeError += `Falta el requisito: ${requisito}\n`;
+          }
+        } catch (error) {
+          console.error(`Error validating requirement: ${requisito}`, error);
           cumpleRequisitos = false;
-          mensajeError += `Falta el requisito: ${requisito}\n`;
+          mensajeError += `Requisito inválido: ${requisito}\n`;
         }
-      } catch (error) {
-        console.error(`Error validating requirement: ${requisito}`, error);
-        cumpleRequisitos = false;
-        mensajeError += `Requisito inválido: ${requisito}\n`;
       }
-    }
 
-    if (!cumpleRequisitos) {
+      if (!cumpleRequisitos) {
+        setResultado({
+          success: false,
+          message: `La solución no cumple con los requisitos:\n${mensajeError}`,
+        });
+        return;
+      }
+    } else if (reto.solucion[lenguaje]) {
+      // Fallback validation if no requirements are defined
+      const solucionCorrecta = reto.solucion[lenguaje]
+        .toLowerCase()
+        .replace(/'/g, '"')
+        .replace(/\s+/g, "")
+        .normalize("NFC");
+      const codigoUsuario = codigo
+        .toLowerCase()
+        .replace(/'/g, '"')
+        .replace(/\s+/g, "")
+        .normalize("NFC");
+
+      if (!codigoUsuario.includes(solucionCorrecta)) {
+        setResultado({
+          success: false,
+          message: "La solución no es correcta. Intenta nuevamente.",
+        });
+        return;
+      }
+    } else {
       setResultado({
         success: false,
-        message: `La solución no cumple con los requisitos:\n${mensajeError}`,
+        message: "No hay solución ni requisitos definidos para este lenguaje.",
       });
       return;
     }
-  } else if (reto.solucion[lenguaje]) {
-    // Fallback validation if no requirements are defined
-    const solucionCorrecta = reto.solucion[lenguaje]
-      .toLowerCase()
-      .replace(/'/g, '"')
-      .replace(/\s+/g, "")
-      .normalize("NFC");
-    const codigoUsuario = codigo
-      .toLowerCase()
-      .replace(/'/g, '"')
-      .replace(/\s+/g, "")
-      .normalize("NFC");
 
-    if (!codigoUsuario.includes(solucionCorrecta)) {
+    setEnviando(true);
+    try {
+      const response = await fetch("/api/retos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          retoId: reto.id,
+          codigo,
+          lenguaje,
+          puntos: reto.puntos,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Error al entregarMgmt la solución");
+
+      setResultado({
+        success: true,
+        message: `🎉 ¡Solución correcta! Has ganado ${reto.puntos} puntos! 🎉`,
+      });
+      lanzarConfeti();
+      await actualizarPuntosRealtime(user.id, reto.puntos);
+
+      if (reto.logro_completado) {
+        const logroId = reto.logro_completado.toLowerCase().replace(/\s+/g, "_");
+        await registrarLogro(user.id, logroId);
+      }
+    } catch (error) {
+      console.error("Error al entregar solución:", error);
       setResultado({
         success: false,
-        message: "La solución no es correcta. Intenta nuevamente.",
+        message: "Error al entregar la solución. Intenta de nuevo.",
       });
-      return;
+    } finally {
+      setEnviando(false);
     }
-  } else {
-    setResultado({
-      success: false,
-      message: "No hay solución ni requisitos definidos para este lenguaje.",
-    });
-    return;
-  }
-
-  setEnviando(true);
-  try {
-    const response = await fetch("/api/retos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: user.id,
-        retoId: reto.id,
-        codigo,
-        lenguaje,
-        puntos: reto.puntos,
-      }),
-    });
-
-    if (!response.ok) throw new Error("Error al entregarMgmt la solución");
-
-    setResultado({
-      success: true,
-      message: `🎉 ¡Solución correcta! Has ganado ${reto.puntos} puntos! 🎉`,
-    });
-    lanzarConfeti();
-    await actualizarPuntosRealtime(user.id, reto.puntos);
-
-    if (reto.logro_completado) {
-      const logroId = reto.logro_completado.toLowerCase().replace(/\s+/g, "_");
-      await registrarLogro(user.id, logroId);
-    }
-  } catch (error) {
-    console.error("Error al entregar solución:", error);
-    setResultado({
-      success: false,
-      message: "Error al entregar la solución. Intenta de nuevo.",
-    });
-  } finally {
-    setEnviando(false);
-  }
-};
+  };
 
   const cambiarLenguaje = (nuevoLenguaje: string) => {
     if (reto?.lenguajes.includes(nuevoLenguaje)) {
@@ -390,13 +392,12 @@ export default function RetoPage() {
           <h1 className="text-3xl font-bold mb-2">{reto.titulo}</h1>
           <div className="flex items-center gap-4 mb-4">
             <span
-              className={`px-3 py-1 rounded-full text-sm ${
-                reto.dificultad === "Fácil"
+              className={`px-3 py-1 rounded-full text-sm ${reto.dificultad === "Fácil"
                   ? "bg-green-600"
                   : reto.dificultad === "Medio"
-                  ? "bg-yellow-600"
-                  : "bg-red-600"
-              }`}
+                    ? "bg-yellow-600"
+                    : "bg-red-600"
+                }`}
             >
               {reto.dificultad}
             </span>
@@ -407,11 +408,10 @@ export default function RetoPage() {
               {reto.lenguajes.includes("javascript") && (
                 <button
                   onClick={() => cambiarLenguaje("javascript")}
-                  className={`px-4 py-2 rounded font-medium transition-colors ${
-                    lenguaje === "javascript"
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === "javascript"
                       ? "bg-yellow-500 text-gray-900"
                       : "bg-gray-700 text-white hover:bg-gray-600"
-                  }`}
+                    }`}
                 >
                   JavaScript
                 </button>
@@ -419,11 +419,10 @@ export default function RetoPage() {
               {reto.lenguajes.includes("python") && (
                 <button
                   onClick={() => cambiarLenguaje("python")}
-                  className={`px-4 py-2 rounded font-medium transition-colors ${
-                    lenguaje === "python"
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === "python"
                       ? "bg-blue-500 text-white"
                       : "bg-gray-700 text-white hover:bg-gray-600"
-                  }`}
+                    }`}
                 >
                   Python
                 </button>
@@ -431,11 +430,10 @@ export default function RetoPage() {
               {reto.lenguajes.includes("java") && (
                 <button
                   onClick={() => cambiarLenguaje("java")}
-                  className={`px-4 py-2 rounded font-medium transition-colors ${
-                    lenguaje === "java"
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === "java"
                       ? "bg-red-500 text-white"
                       : "bg-gray-700 text-white hover:bg-gray-600"
-                  }`}
+                    }`}
                 >
                   Java
                 </button>
@@ -443,11 +441,10 @@ export default function RetoPage() {
               {reto.lenguajes.includes("html") && (
                 <button
                   onClick={() => cambiarLenguaje("html")}
-                  className={`px-4 py-2 rounded font-medium transition-colors ${
-                    lenguaje === "html"
+                  className={`px-4 py-2 rounded font-medium transition-colors ${lenguaje === "html"
                       ? "bg-purple-500 text-white"
                       : "bg-gray-700 text-white hover:bg-gray-600"
-                  }`}
+                    }`}
                 >
                   HTML
                 </button>
@@ -468,9 +465,8 @@ export default function RetoPage() {
           )}
           {resultado && (
             <div
-              className={`mt-4 p-4 rounded ${
-                resultado.success ? "bg-green-800 text-green-200" : "bg-red-800 text-red-200"
-              }`}
+              className={`mt-4 p-4 rounded ${resultado.success ? "bg-green-800 text-green-200" : "bg-red-800 text-red-200"
+                }`}
             >
               {resultado.message}
             </div>

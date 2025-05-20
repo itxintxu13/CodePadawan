@@ -51,10 +51,11 @@ export default function Navbar() {
             />
           </div>
           <img
-            src="/letrasCorregidaspng.png"
-            alt="CodePadawan"
-            className="h-15 w-auto ml-4 select-none transition-transform group-hover:scale-105"
-          />{" "}
+  src="/letrasCorregidaspng.png"
+  alt="CodePadawan"
+  className="h-15 w-auto select-none transition-transform group-hover:scale-105"
+/>
+{" "}
         </Link>
         <div className="flex gap-6 ml-6">
           {rol !== "jedi" && (
