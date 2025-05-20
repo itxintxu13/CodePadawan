@@ -17,7 +17,7 @@ import CodeEditorJavaScript from "../../components/CodeEditorJavaScript";
 import CodeEditorPython from "../../components/CodeEditorPython";
 import CodeEditorHtml from "../../components/CodeEditorHtml";
 import confetti from "canvas-confetti";
-import { app, database } from "@/lib/firebase/config";
+import { database } from "@/lib/firebase/config";
 import { ref, get, update } from "firebase/database";
 
 const lanzarConfeti = () => {

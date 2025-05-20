@@ -1,19 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
-import { UserProfile, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import Sidebar from "@/app/components/SideBar";
-import Estadisticas from "@/app/components/Estadisticas";
 import { useSearchParams } from "next/navigation";
 import CodeEditor from "@/app/components/CodeEditor";
 import { FaGithub } from "react-icons/fa";
 import {
   CheckCircleIcon,
   LockClosedIcon,
-  CodeBracketIcon,
 } from "@heroicons/react/24/solid";
 import { getDatabase, ref, get } from "firebase/database";
 import { app } from "@/lib/firebase/config";
-import Logros from "@/app/components/Logros";
 import Obras from "@/app/components/Obras";
 
 export default function UserProfilePage() {

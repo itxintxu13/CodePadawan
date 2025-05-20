@@ -2,7 +2,6 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import ProgressChart from "./ProgressChart";
 import { database } from "@/lib/firebase/config";
 import { ref, get } from "firebase/database";
