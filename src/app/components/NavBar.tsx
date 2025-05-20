@@ -23,17 +23,17 @@ export default function Navbar() {
 
   return (
     <nav
-      className="text-white px-4 md:px-8 py-3 flex flex-wrap md:flex-nowrap items-center justify-between shadow-md border-b border-gray-800"
+      className="text-white px-8 py-3 flex items-center justify-between shadow-md border-b border-gray-800"
       style={{ backgroundColor: "#050E21" }}
     >
       {/* Logo + Navegación */}
-      <div className="flex items-center gap-4 md:gap-8 w-full md:w-auto justify-between md:justify-start">
-        <Link href={dashboardLink} className="flex items-center gap-2 md:gap-4 group">
+      <div className="flex items-center gap-8">
+        <Link href={dashboardLink} className="flex items-center gap-4 group">
           <div
             className="bg-gradient-to-tr from-blue-700 via-purple-700 to-pink-500 rounded-full p-1.5 shadow-2xl flex items-center justify-center transition-transform group-hover:scale-110 border border-white/40 ring-2 ring-blue-400/40 ring-offset-2 ring-offset-gray-950"
             style={{
-              width: 56,
-              height: 56,
+              width: 76,
+              height: 76,
               boxShadow: "0 4px 24px 0 #7c3aed55",
             }}
           >
@@ -41,8 +41,8 @@ export default function Navbar() {
               src="/Logop.jpg"
               alt="Logo CodePadawan"
               style={{
-                width: 44,
-                height: 44,
+                width: 62,
+                height: 62,
                 display: "block",
                 filter:
                   "drop-shadow(0 4px 16px #7c3aedcc) brightness(1.18) contrast(1.12)",
@@ -51,63 +51,38 @@ export default function Navbar() {
             />
           </div>
           <img
-            src="/letrasCorregidaspng.png"
-            alt="CodePadawan"
-            className="h-10 w-auto select-none transition-transform group-hover:scale-105"
-          />
+  src="/letrasCorregidaspng.png"
+  alt="CodePadawan"
+  className="h-15 w-auto select-none transition-transform group-hover:scale-105"
+/>
+{" "}
         </Link>
-        {/* Botón menú hamburguesa para móvil */}
-        <div className="md:hidden ml-auto">
-          {/* Aquí puedes agregar un botón para abrir un menú lateral en móvil si lo deseas */}
-        </div>
-      </div>
-      <div className="hidden md:flex gap-6 ml-0 md:ml-6">
-        {rol !== "jedi" && (
+        <div className="flex gap-6 ml-6">
+          {rol !== "jedi" && (
+            <Link
+              href="/retos"
+              className="hover:text-blue-400 transition-colors font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60"
+            >
+              Retos
+            </Link>
+          )}
           <Link
-            href="/retos"
+            href="/ranking"
             className="hover:text-blue-400 transition-colors font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60"
           >
-            Retos
+            Ranking
           </Link>
-        )}
-        <Link
-          href="/ranking"
-          className="hover:text-blue-400 transition-colors font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60"
-        >
-          Ranking
-        </Link>
-        <Link
-          href="/blog"
-          className="hover:text-blue-400 transition-colors font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60"
-        >
-          Blog
-        </Link>
-      </div>
-      {/* Menú móvil */}
-      <div className="flex md:hidden w-full mt-4 gap-2 justify-center">
-        {rol !== "jedi" && (
           <Link
-            href="/retos"
-            className="hover:text-blue-400 transition-colors font-semibold text-base px-2 py-1 rounded-lg hover:bg-gray-800/60"
+            href="/blog"
+            className="hover:text-blue-400 transition-colors font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60"
           >
-            Retos
+            Blog
           </Link>
-        )}
-        <Link
-          href="/ranking"
-          className="hover:text-blue-400 transition-colors font-semibold text-base px-2 py-1 rounded-lg hover:bg-gray-800/60"
-        >
-          Ranking
-        </Link>
-        <Link
-          href="/blog"
-          className="hover:text-blue-400 transition-colors font-semibold text-base px-2 py-1 rounded-lg hover:bg-gray-800/60"
-        >
-          Blog
-        </Link>
+        </div>
       </div>
+
       {/* Perfil + Notificaciones */}
-      <div className="flex items-center gap-4 md:gap-8 mt-4 md:mt-0 w-full md:w-auto justify-end">
+      <div className="flex items-center gap-8">
         <UserButton
           afterSignOutUrl="/"
           appearance={{
@@ -116,7 +91,7 @@ export default function Navbar() {
         />
         <Link
           href="/user-profile"
-          className="hover:text-gray-300 font-semibold text-base md:text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60"
+          className="hover:text-gray-300 font-semibold text-lg px-2 py-1 rounded-lg hover:bg-gray-800/60"
         >
           Área personal
         </Link>
