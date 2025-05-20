@@ -119,10 +119,14 @@ export default function JavaScriptBlogPage() {
               comments.map((comment) => (
                 <div
                   key={comment.id}
-                  className="p-4 border rounded-lg shadow-sm bg-[#1a1a2e]"
+                  className="px-2 py-2 border rounded-lg shadow-sm bg-[#1a1a2e]"
                 >
-                  <p className="font-bold text-yellow-400">{comment.user}</p>
-                  <p className="text-white">{comment.content}</p>
+                  <p className="font-bold text-yellow-400 pl-0">{comment.user}</p>
+                  <div>
+                    <p className="text-white whitespace-pre-wrap break-words break-all w-full px-[1cm]">
+                      {comment.content}
+                    </p>
+                  </div>
                   {comment.codeId && <ShowCode codeId={comment.codeId} />}
                   <button
                     onClick={() => handleReply(comment)}
@@ -136,10 +140,12 @@ export default function JavaScriptBlogPage() {
                         {comment.replies.map((reply) => (
                           <div
                             key={reply.id}
-                            className="p-2 border rounded-lg bg-[#2a2a40]"
+                            className="px-1 py-1 border rounded-lg bg-[#2a2a40]"
                           >
-                            <p className="font-bold text-yellow-400">{reply.user}</p>
-                            <p className="text-white">{reply.content}</p>
+                            <p className="font-bold text-yellow-400 pl-0">{reply.user}</p>
+                            <p className="text-white whitespace-pre-wrap break-words break-all w-full pl-0 pr-[3cm]">
+                              {reply.content}
+                            </p>
                             {reply.codeId && <ShowCode codeId={reply.codeId} />}
                             <button
                               onClick={() => handleReply(reply)}
