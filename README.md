@@ -56,8 +56,11 @@ Estamos trabajando arduamente para llevar Code Padawan al siguiente nivel:
 - **Frontend**: React, HTML, CSS, TypeScript, Tailwind
 - **Backend**: Node.js
 - **Base de datos**: Firebase con Realtime Database
-- **Autenticación y Gestión de Roles**: Clerk 🔐
+- **Registro, Autenticación y Gestión de Roles**: Clerk 
 - **Otras herramientas**: Git
+
+### Uso de Clerk 🔐
+Clerk ha sido utilizado para el registro, login y autenticación, gestión del perfil y el uso del *public metadata* para la selección del rol del usuario.
 
 ## Uso 🚀
 1. Accede a la plataforma en: [https://code-padawan.vercel.app](https://code-padawan.vercel.app) 🌐
