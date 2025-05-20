@@ -101,8 +101,9 @@ export default function RankingPage() {
 
   return (
     <main className="container mx-auto p-8 bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        Ranking de Usuarios 🏆
+      <h1 className="text-4xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+        Ranking de Usuarios
+        <img src="/icons/custom-ranking.svg" alt="Ranking Icon" className="inline-block w-10 h-10 align-middle" />
       </h1>
 
       {cargando ? (

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { obtenerUsuarios } from '@/app/services/dataservices';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
-import { FaCrown } from 'react-icons/fa';
+
 
 export default function RankingList() {
   const [usuarios, setUsuarios] = useState<UsuarioRanking[]>([]);
@@ -36,7 +36,7 @@ export default function RankingList() {
     >
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold text-yellow-400">
-          <FaCrown className="mr-2 inline-block" />
+          <img src="/icons/sidebar-ranking.svg" alt="Ranking" className="mr-2 inline-block h-7 w-7 align-middle" />
           Ranking Jedi
         </h2>
         <span className="rounded-full bg-indigo-600/30 px-4 py-2 text-sm">

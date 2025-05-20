@@ -13,13 +13,20 @@ export default function Sidebar() {
       : undefined;
 
   return (
-    <div className="min-h-screen w-1/5 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col p-4 shadow-lg overflow-y-auto">
-      <nav className="flex flex-col gap-4 flex-grow mt-5 ml-5">
-        {/* Dashboard según rol */}
+    <div className="hidden md:flex min-h-screen md:w-64 lg:w-72 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex-col p-4 shadow-lg overflow-y-auto">
+      {/* Botón hamburguesa para móvil */}
+      <button className="md:hidden p-2 mb-4 text-gray-400 hover:text-white">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      
+      <nav className="flex flex-col gap-2 md:gap-4 flex-grow mt-2 md:mt-5 ml-2 md:ml-5">
+        {/* Elementos del menú con iconos responsive */}
         {rol === "padawan" && (
-          <a href="/dashboard/padawan" className="hover:bg-green-800/70 p-3 rounded-lg flex items-center">
-            <img src="/padawan-symbol.svg" alt="Padawan Logo" className="mr-3 w-7 h-7" />
-            <span>Dashboard</span>
+          <a href="/dashboard/padawan" className="hover:bg-green-800/70 p-2 md:p-3 rounded-lg flex items-center">
+            <img src="/padawan-symbol.svg" alt="Padawan Logo" className="mr-2 md:mr-3 w-5 h-5 md:w-7 md:h-7 flex-shrink-0" />
+            <span className="text-sm md:text-base truncate">Dashboard</span>
           </a>
         )}
         
@@ -66,7 +73,7 @@ export default function Sidebar() {
         <div className="hover:bg-gray-700 p-3 rounded-lg flex items-center group cursor-pointer">
           <SignOutButton>
             <button className="flex items-center w-full text-left">
-              <span className="mr-3 text-red-400">🔒</span>
+              <img src="/icons/logout-modern.svg" alt="Cerrar sesión" className="mr-3 w-6 h-6" />
               <span>Cerrar sesión</span>
             </button>
           </SignOutButton>

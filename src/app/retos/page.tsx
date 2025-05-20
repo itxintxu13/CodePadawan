@@ -126,7 +126,7 @@ export default function RetosPage() {
               background: "linear-gradient(135deg, #ffe29f 0%, #ffa99f 100%)",
             }}
           >
-            <span className="text-5xl">🏆</span>
+            <img src="/icons/trophy-retos.svg" alt="Copa Retos" className="w-20 h-20" />
           </div>
           <h1
             className="text-4xl font-bold text-center mb-2"
