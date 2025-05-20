@@ -22,6 +22,14 @@ export default function Sidebar() {
             <span>Dashboard</span>
           </a>
         )}
+        
+        {rol === "jedi" && (
+          <a href="/dashboard/jedi" className="hover:bg-blue-800/70 p-3 rounded-lg flex items-center">
+            <img src="/jedi-symbol.svg" alt="Jedi Logo" className="mr-3 w-7 h-7" />
+            <span>Dashboard</span>
+          </a>
+        )}
+
         {rol === "padawan" && (
         <a href="/retos" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
           <img src="/icons/sidebar-retos.svg" alt="Retos" className="mr-3 w-6 h-6" />
@@ -45,12 +53,7 @@ export default function Sidebar() {
         )}
 
         
-        {rol === "jedi" && (
-          <a href="/dashboard/jedi" className="hover:bg-blue-800/70 p-3 rounded-lg flex items-center">
-            <img src="/jedi-symbol.svg" alt="Jedi Logo" className="mr-3 w-7 h-7" />
-            <span>Dashboard</span>
-          </a>
-        )}
+        
 
         <div className="pb-4">
           <a href="/user-profile?tab=about" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
