@@ -4,7 +4,8 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ProgressChart from "./ProgressChart";
-import { obtenerUsuarios } from "../services/dataservices";
+import { database } from "@/lib/firebase/config";
+import { ref, get } from "firebase/database";
 
 interface EstadisticasProps {
   titulo: string;
@@ -18,12 +19,16 @@ interface EstadisticasProps {
 
 const DEFAULT_LINK = "/dashboard";
 
-function calcularLogros(retosResueltos: number): string[] {
-  const logros = [];
-  if (retosResueltos >= 1) logros.push("🌱 Principiante");
-  if (retosResueltos >= 3) logros.push("🚀 Explorador");
-  if (retosResueltos >= 5) logros.push("⭐ Experto");
-  if (retosResueltos >= 10) logros.push("🏆 Maestro");
+// Función para calcular logros según los retos completados
+function calcularLogros(retosCompletados: number): number {
+  let logros = 0;
+
+  // Asignamos logros por cada múltiplo de 5 (5, 10, 15, 20, etc.)
+  if (retosCompletados >= 5) logros++;
+  if (retosCompletados >= 10) logros++;
+  if (retosCompletados >= 15) logros++;
+  if (retosCompletados >= 20) logros++;
+
   return logros;
 }
 
@@ -48,35 +53,41 @@ export default function Estadisticas({
       }
 
       try {
-        const usuarios = await obtenerUsuarios();
-        console.log("📌 Usuarios obtenidos:", usuarios);
+        // Obtener datos directamente de Firebase usando el ID de Clerk
+        const userRef = ref(database, `users/${user.id}`);
+        const snapshot = await get(userRef);
+        
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          console.log("📌 Datos del usuario de Firebase:", userData);
 
-        if (!usuarios || usuarios.length === 0) {
-          console.warn("🚨 No se encontraron usuarios.");
-          setCargando(false);
-          return;
-        }
-
-        const datosUsuario = usuarios.find((u) => u.id === user.id);
-        console.log("📌 Datos del usuario:", datosUsuario);
-
-        if (datosUsuario) {
           switch (tipoDato) {
             case "puntos":
-              setValor(datosUsuario.puntos || 0);
+              setValor(userData.puntos || 0); // Mostrar puntos
               break;
             case "retos":
-              setValor(datosUsuario.retosResueltos || 0);
+              setValor(userData.retos_completados || 0); // Mostrar retos completados
               break;
             case "logros":
-              setValor(calcularLogros(datosUsuario.retosResueltos || 0).length);
+              // Obtener el número de logros completados de la rama 'logros' de Firebase
+              const logrosCompletadosFirebase = userData.logros ? Object.values(userData.logros).filter((logro: any) => logro.completado === true).length : 0;
+              
+              // Calcular los logros por los retos completados
+              const logrosPorRetos = calcularLogros(userData.retos_completados || 0);
+
+              // Total de logros es la suma de los logros por retos y los logros completados en Firebase
+              setValor(logrosPorRetos + logrosCompletadosFirebase);
               break;
             default:
               console.warn("🚨 Tipo de dato desconocido:", tipoDato);
           }
+        } else {
+          console.warn("🚨 No se encontraron datos del usuario en Firebase");
+          setValor(0);
         }
       } catch (error) {
         console.error("🚨 Error al cargar datos:", error);
+        setValor(0);
       } finally {
         setCargando(false);
       }
@@ -84,6 +95,22 @@ export default function Estadisticas({
 
     cargarDatos();
   }, [isLoaded, user, tipoDato]);
+
+  // Calcular el porcentaje basado en el número de puntos, retos o logros
+  const calcularPorcentaje = (valor: number, maximo: number) => {
+    if (maximo === 0) return 0; // Asegurarnos de que no dividimos por 0
+    return (valor / maximo) * 100;
+  };
+
+  // Define los máximos según el tipo de dato
+  let maximoReal = 0;
+  if (tipoDato === "puntos") {
+    maximoReal = 485; // Total de puntos posibles
+  } else if (tipoDato === "retos") {
+    maximoReal = 20; // Total de retos posibles
+  } else if (tipoDato === "logros") {
+    maximoReal = 12; // Total de logros posibles (solo como referencia, no se usa para logros)
+  }
 
   return (
     <div className={`bg-gray-800 rounded-2xl p-8 shadow-2xl text-center transform hover:scale-105 transition-transform duration-300 animate-card-fade-in ${tamano}`}>
@@ -93,21 +120,11 @@ export default function Estadisticas({
       ) : (
         <>
           <div className="flex justify-center mb-2">
-            <ProgressChart value={valor} max={maximo} label={label} color={color} />
+            <ProgressChart value={valor} max={maximoReal} label={label} color={color} />
           </div>
           <p className="text-3xl font-extrabold drop-shadow" style={{ color }}>
             {valor}
           </p>
-          {tipoDato === "logros" && (
-            <p className="text-sm text-gray-400 mt-1">
-              Último logro: {calcularLogros(valor).slice(-1)[0] || "Ninguno aún"}
-            </p>
-          )}
-          {link && (
-        <Link href={link || DEFAULT_LINK} className="text-blue-400 text-sm hover:underline block mt-2">
-          Ver detalles
-        </Link>
-      )}
         </>
       )}
     </div>

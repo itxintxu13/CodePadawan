@@ -1,19 +1,26 @@
-export async function obtenerUsuarios() {
+import { getCombinedUsers, type FirebaseUser } from '@/lib/firebase/users.service';
+
+export interface UsuarioRanking {
+  id: string;
+  nombre: string;
+  puntos: number;
+  imagen?: string;
+  retosResueltos: number;
+}
+
+export async function obtenerUsuarios(): Promise<UsuarioRanking[]> {
   try {
-    const response = await fetch("/api/updatePoints");
-    if (!response.ok) throw new Error(`Error en la API: ${response.status}`);
-
-    const data = await response.json();
-    console.log("📌 Datos crudos recibidos desde la API:", data); // ✅ Muestra los datos sin procesar
-
-    return data.map((user: any) => ({
+    const combinedUsers = await getCombinedUsers();
+    
+    return combinedUsers.map((user: FirebaseUser) => ({
       id: user.id,
-      nombre: user.username || "Usuario",
-      puntos: Number(user.points ?? 0), // ✅ Puntos bien procesados
-      retosResueltos: Number(user.retosResueltos ?? 0), // ✅ Retos ahora siempre será un número
+      nombre: user.clerkData?.username || user.displayName || 'Usuario',
+      puntos: user.puntos ?? 0,
+      retosResueltos: user.retos_completados?? 0,
+      imagen: user.clerkData?.imageUrl,
     }));
   } catch (error) {
-    console.error("🚨 Error obteniendo usuarios:", error);
-    return [];
+    console.error('🚨 Error obteniendo usuarios combinados:', error);
+    throw new Error('Error al cargar datos de usuarios', { cause: error });
   }
 }

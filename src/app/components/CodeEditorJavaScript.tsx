@@ -35,7 +35,10 @@ interface CodeEditorJavaScriptProps {
   codigo: string;
   setCodigo: React.Dispatch<React.SetStateAction<string>>;
 }
-const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({ codigo, setCodigo }) => {
+const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({
+  codigo,
+  setCodigo,
+}) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
   const [code, setCode] = useState<string>("");
@@ -142,7 +145,16 @@ const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({ codigo, setCodigo }) 
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto", boxSizing: "border-box", width: "100%", minWidth: 0 }}>
+    <div
+      style={{
+        padding: "20px",
+        maxWidth: "800px",
+        margin: "0 auto",
+        boxSizing: "border-box",
+        width: "100%",
+        minWidth: 0,
+      }}
+    >
       <h1
         style={{
           marginBottom: "10px",
@@ -189,21 +201,7 @@ const CodeEditor: React.FC<CodeEditorJavaScriptProps> = ({ codigo, setCodigo }) 
       />
       <button
         onClick={ejecutarCodigo}
-        style={{
-          marginTop: "10px",
-          padding: "8px 16px",
-          borderRadius: "5px",
-          background: "#FFEB3B",
-          border: "none",
-          cursor: "pointer",
-          color: "#000",
-          width: "100%",
-          maxWidth: "300px",
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-          fontSize: "clamp(1rem, 4vw, 1.1rem)",
-        }}
+        className="mt-2 px-4 py-2 rounded bg-yellow-300 text-black w-50 max-w-[300px] block mx-auto text-[clamp(1rem,4vw,1.1rem)] hover:bg-yellow-400 cursor-pointer"
       >
         Ejecutar Código
       </button>

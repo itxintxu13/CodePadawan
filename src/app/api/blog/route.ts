@@ -1,6 +1,18 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/clerk-sdk-node';
 import { NextResponse } from 'next/server';
+import fs from 'fs/promises';
+import path from 'path';
+
+const POSTS_FILE = path.join(process.cwd(), 'data', 'posts.json');
+
+// Crear el archivo y la carpeta si no existen
+await fs.mkdir(path.dirname(POSTS_FILE), { recursive: true });
+try {
+  await fs.access(POSTS_FILE);
+} catch {
+  await fs.writeFile(POSTS_FILE, JSON.stringify({ posts: [] }, null, 2));
+}
 
 export async function GET() {
   try {
@@ -9,9 +21,12 @@ export async function GET() {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    return NextResponse.json({ success: true, user });
+    const data = await fs.readFile(POSTS_FILE, 'utf-8');
+    const { posts } = JSON.parse(data);
+
+    return NextResponse.json({ success: true, posts });
   } catch (error) {
-    console.error('Error al obtener datos del usuario:', error);
+    console.error('Error al obtener posts:', error);
     return NextResponse.json({ error: 'Error del servidor' }, { status: 500 });
   }
 }
@@ -33,19 +48,21 @@ export async function POST(request: Request) {
       );
     }
 
-    // Aquí implementarías la lógica para guardar el post
-    // Por ejemplo, guardando en un archivo JSON o base de datos
+    const existingData = await fs.readFile(POSTS_FILE, 'utf-8');
+    const { posts } = JSON.parse(existingData);
 
-    return NextResponse.json({
-      success: true,
-      post: {
-        id: Date.now(),
-        title,
-        content,
-        author: user.id,
-        createdAt: new Date().toISOString()
-      }
-    });
+    const newPost = {
+      id: Date.now(),
+      title,
+      content,
+      author: user.id,
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedPosts = [...posts, newPost];
+    await fs.writeFile(POSTS_FILE, JSON.stringify({ posts: updatedPosts }, null, 2));
+
+    return NextResponse.json({ success: true, post: newPost });
 
   } catch (error) {
     console.error('Error al crear post:', error);

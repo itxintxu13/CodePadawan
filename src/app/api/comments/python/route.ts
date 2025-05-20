@@ -1,120 +1,111 @@
-import { clerkClient } from "@clerk/clerk-sdk-node";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { v4 as uuidv4 } from "uuid";
+import { getDatabase, ref, push, get } from "firebase/database";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { update } from "firebase/database";
 
-// Utilidad para leer FormData (si quieres soportar archivos en el futuro)
-async function parseFormData(req: NextRequest) {
-  const formData = await req.formData();
-  return {
-    content: formData.get("content") as string,
-    parentId: formData.get("parentId") as string,
-    // file: formData.get("file") as File | null, // Si quieres manejar archivos
-    // fileUrl: ... // Aquí puedes poner la URL si subes el archivo
-  };
-}
+// Configuración de Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyCks4yUeDnd8gZKVh12Z0x6mSgNJEnqWWs",
+  authDomain: "codepadawan-e909a.firebaseapp.com",
+  databaseURL: "https://codepadawan-e909a-default-rtdb.europe-west1.firebasedatabase.app/",
+  projectId: "codepadawan-e909a",
+  storageBucket: "codepadawan-e909a-default-rtdb.europe-west1.firebasedatabase.app",
+  messagingSenderId: "739998345731",
+  appId: "1:739998345731:web:a6e9e036438359eac33c36",
+  measurementId: "G-EFRX0BPMG0"
+};
 
-function addUserToReplies(replies: any[], username: string): any[] {
-  return (replies || []).map(reply => ({
-    ...reply,
-    user: reply.user ?? username,
-    replies: addUserToReplies(reply.replies, username)
-  }));
-}
+// Inicialización de Firebase
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const database = getDatabase(app);
 
+// Endpoint GET para obtener todos los comentarios
 export async function GET() {
   try {
-    const users = await clerkClient.users.getUserList();
-    const baseUser = users[0];
-    const comments = baseUser?.publicMetadata?.commentsPython || [];
+    // Referencia a la colección de comentarios en Firebase
+    const commentsRef = ref(database, "blogs/python/comments");
+    const snapshot = await get(commentsRef);
+    const data = snapshot.val();
+
+    // Convierte los datos de Firebase en un array de objetos
+    const comments = data
+      ? Object.entries(data).map(([key, value]: [string, any]) => ({
+          id: key,
+          ...value,
+        }))
+      : [];
+
+    // Retorna la lista de comentarios
     return NextResponse.json({ comments });
   } catch (error) {
-    console.error("Error fetching comments:", error);
-    return NextResponse.json({ error: "Failed to fetch comments" }, { status: 500 });
+    console.error("Error obteniendo comentarios:", error);
+    return NextResponse.json({ error: "Error al obtener comentarios" }, { status: 500 });
   }
 }
 
+// Endpoint POST para crear un nuevo comentario
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Lee los datos del FormData
-    const { content, parentId } = await parseFormData(req);
+    // Obtiene los datos del formulario
+    const formData = await req.formData();
+    const content = formData.get("content") as string;
+    const user = formData.get("user") as string || "Usuario Anónimo";
+    const parentId = formData.get("parentId") as string | null;
+    const codeId = formData.get("codeId") as string | null; 
 
     if (!content) {
-      return NextResponse.json({ error: "Content is required" }, { status: 400 });
+      return NextResponse.json({ error: "Contenido es requerido" }, { status: 400 });
     }
 
-    // Obtén todos los usuarios
-    const allUsers = await clerkClient.users.getUserList();
-
-    // Crea un nuevo comentario
     const newComment = {
-      id: Date.now().toString(),
       content,
-      fileUrl: null,
+      user,
       replies: [],
       createdAt: new Date().toISOString(),
-      user: userId, // Puedes usar el nombre de usuario si está disponible
+      ...(codeId ? { codeId } : {}), 
     };
 
-    // Actualiza los comentarios en todos los usuarios
-    for (const u of allUsers) {
-      const existingComments = (u.publicMetadata?.commentsPython || []) as any[];
+    const commentsRef = ref(database, "blogs/python/comments");
 
-      let updatedComments: any[];
+    if (parentId) {
+      // Si es una respuesta, actualiza el comentario padre
+      const snapshot = await get(commentsRef);
+      const data = snapshot.val() || {};
 
-      if (parentId) {
-        // Es una respuesta a un comentario existente
-        updatedComments = existingComments.map((comment: any) => {
-          if (comment.id === parentId) {
-            return {
-              ...comment,
-              replies: [...(comment.replies || []), newComment],
-            };
-          }
-          return comment;
-        });
-      } else {
-        // Es un comentario nuevo
-        updatedComments = [...existingComments, newComment];
+      // Buscar el comentario padre
+      const parentCommentKey = Object.keys(data).find(
+        (key) => data[key].id === parentId
+      );
+
+      if (!parentCommentKey) {
+        return NextResponse.json({ error: "Parent comment not found" }, { status: 404 });
       }
 
-      // Actualiza el `publicMetadata` del usuario
-      await clerkClient.users.updateUser(u.id, {
-        publicMetadata: {
-          ...u.publicMetadata,
-          commentsPython: updatedComments,
-        },
+      const parentComment = data[parentCommentKey];
+      const existingReplies = parentComment.replies || [];
+
+      // Agregar la nueva respuesta
+      const replyId = push(ref(database)).key; // Generar un ID único para la respuesta
+      const updatedReplies = [...existingReplies, { id: replyId, ...newComment }];
+
+      // Actualizar el comentario padre con las nuevas respuestas
+      await update(ref(database, `blogs/python/comments/${parentCommentKey}`), {
+        ...parentComment,
+        replies: updatedReplies,
+      });
+    } else {
+      // Si es un comentario nuevo, utiliza el ID generado por Firebase
+      const newCommentRef = push(commentsRef); // Generar una nueva referencia
+      const newCommentId = newCommentRef.key; // Obtener el ID generado
+      await update(ref(database, `blogs/python/comments/${newCommentId}`), {
+        id: newCommentId,
+        ...newComment,
       });
     }
 
-    return NextResponse.json({ comment: newComment });
+    return NextResponse.json({ message: "Comment added successfully" });
   } catch (error) {
     console.error("Error saving comment:", error);
     return NextResponse.json({ error: "Failed to save comment" }, { status: 500 });
-  }
-}
-export async function DELETE() {
-  try {
-    const allUsers = await clerkClient.users.getUserList();
-
-    for (const u of allUsers) {
-      await clerkClient.users.updateUser(u.id, {
-        publicMetadata: {
-          points: u.publicMetadata?.points ?? 0,
-          retosResueltos: u.publicMetadata?.retosResueltos ?? 0,
-          commentsPython: [] // Borra todos los comentarios
-        }
-      });
-    }
-
-    return NextResponse.json({ success: true, message: "Comentarios borrados en todos los usuarios" });
-  } catch (error) {
-    console.error("Error borrando comentarios:", error);
-    return NextResponse.json({ error: "Error borrando comentarios" }, { status: 500 });
   }
 }

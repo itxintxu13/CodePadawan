@@ -14,52 +14,82 @@ interface CodeEditorProps {
 const CodeEditorHtml: React.FC<CodeEditorProps> = ({ codigo, setCodigo }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [output, setOutput] = useState<string>("");
+  const [iframeHeight, setIframeHeight] = useState<number>(100);
 
-useEffect(() => {
-  if (!editorRef.current || editorInstance.current) return;
+  // Inicializar CodeMirror
+  useEffect(() => {
+    if (!editorRef.current || editorInstance.current) return;
 
-  const state = EditorState.create({
-    doc: codigo,
-    extensions: [
-      basicSetup,
-      html(),
-      oneDark,
-      keymap.of(defaultKeymap),
-      EditorView.updateListener.of((update) => {
-        if (update.docChanged) {
-          setCodigo(update.state.doc.toString());
-        }
-      }),
-    ],
-  });
+    const state = EditorState.create({
+      doc: codigo,
+      extensions: [
+        basicSetup,
+        html(),
+        oneDark,
+        keymap.of(defaultKeymap),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            setCodigo(update.state.doc.toString());
+          }
+        }),
+      ],
+    });
 
-  editorInstance.current = new EditorView({
-    state,
-    parent: editorRef.current,
-  });
+    editorInstance.current = new EditorView({
+      state,
+      parent: editorRef.current,
+    });
 
-  return () => {
-    if (editorInstance.current) {
-      editorInstance.current.destroy();
+    return () => {
+      editorInstance.current?.destroy();
       editorInstance.current = null;
-    }
-  };
-}, []);
+    };
+  }, []);
 
+  // Sincronizar cambios externos
+  useEffect(() => {
+    if (
+      editorInstance.current &&
+      editorInstance.current.state.doc.toString() !== codigo
+    ) {
+      editorInstance.current.dispatch({
+        changes: {
+          from: 0,
+          to: editorInstance.current.state.doc.length,
+          insert: codigo,
+        },
+      });
+    }
+  }, [codigo]);
+
+  // Escuchar mensajes del iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.iframeHeight) {
+        setIframeHeight(event.data.iframeHeight);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
 
   const ejecutarCodigo = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const codigo = editorInstance.current?.state.doc.toString();
-    if (!codigo) {
+    const codigoActual = editorInstance.current?.state.doc.toString();
+    if (!codigoActual) {
       setOutput("❌ No hay código para ejecutar.");
       return;
     }
 
-    try {
-      const wrappedHtml = `
+    // Inyectar script para comunicar altura al padre
+    const wrappedHtml = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -69,29 +99,27 @@ useEffect(() => {
   </style>
 </head>
 <body>
-${codigo}
-</body>
-</html>`;
+  ${codigoActual}
 
-      setOutput(wrappedHtml);
-    } catch (error) {
-      setOutput(`❌ Error: ${error}`);
+  <script>
+    function sendHeight() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({ iframeHeight: height }, '*');
     }
+    window.addEventListener('load', sendHeight);
+    window.addEventListener('resize', sendHeight);
+    const observer = new MutationObserver(sendHeight);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  </script>
+</body>
+</html>
+`;
+
+    setOutput(wrappedHtml);
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1
-        style={{
-          marginBottom: "10px",
-          display: "flex",
-          justifyContent: "center",
-          fontSize: "40px",
-        }}
-      >
-        Editor de Código HTML
-      </h1>
-
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto", width: "100%" }}>
       <div
         style={{
           display: "flex",
@@ -103,7 +131,7 @@ ${codigo}
           borderRadius: "10px",
           overflow: "hidden",
           padding: "12px",
-          width: "120px",
+          width: "150px",
           color: "#FF9800",
           fontWeight: "bold",
           textAlign: "center",
@@ -158,23 +186,22 @@ ${codigo}
           background: "#1e1e1e",
           color: "#fff",
           borderRadius: "5px",
-          textAlign: "left",
           border: "1px solid #ddd",
           wordBreak: "break-word",
-          fontSize: "clamp(0.9rem, 3vw, 1.05rem)",
           width: "100%",
-          maxWidth: "100%",
         }}
       >
         <iframe
+          ref={iframeRef}
           srcDoc={output}
           style={{
             display: "block",
             width: "100%",
-            minHeight: "200px",
+            height: iframeHeight,
             border: "none",
             overflow: "hidden",
           }}
+          sandbox="allow-scripts"
         />
       </div>
     </div>

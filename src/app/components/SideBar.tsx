@@ -1,76 +1,80 @@
 "use client";
 import React from "react";
-import { SignOutButton } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 
 export default function Sidebar() {
+  const { user, isLoaded } = useUser();
+
+  if (!isLoaded) return null;
+
+  const rol =
+    typeof user?.publicMetadata?.rol === "string"
+      ? user.publicMetadata.rol
+      : undefined;
+
   return (
-<div className="h-screen w-1/5 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col p-4 shadow-lg overflow-y-auto">      <div className="mb-6">
-{/* <p className="text-lg font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 text-transparent bg-clip-text tracking-wider text-center mt-2 pb-2 px-4 py-2 border border-gray-600 rounded-md shadow-lg">
-  Que el código te acompañe.
-</p> */}
-      </div>
-
-      <nav className="flex flex-col gap-4 flex-grow">
-        <a
-          href="/retos"
-          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group "
-        >
-          <span className="mr-3 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-200">
-            🏆
-          </span>
-          <span className="group-hover:text-blue-100 transition-colors duration-200">
-            Retos
-          </span>
-        </a>
-        <a
-          href="/ranking"
-          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
-        >
-          <span className="mr-3 text-green-400 group-hover:text-green-300 transition-colors duration-200">
-            📊
-          </span>
-          <span className="group-hover:text-blue-100 transition-colors duration-200">
-            Ranking
-          </span>
-        </a>
-        <a
-          href="/user-profile?tab=playground"
-          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
-        >
-          <span className="mr-3 text-white-400 group-hover:text-purple-300 transition-colors duration-200">
-            🎮
-          </span>
-          <span className="group-hover:text-blue-100 transition-colors duration-200">
-            Playground
-          </span>
-        </a>
-      <div className="pb-4">
-       <a
-          href="/user-profile?tab=about"
-          className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group"
-        >
-          <span className="mr-3 text-blue-400 group-hover:text-blue-300 transition-colors duration-200">
-            ℹ️
-          </span>
-          <span className="group-hover:text-blue-100 transition-colors duration-200">
-            Acerca de nosotros
-          </span>
-        </a>
-
-      </div>
-      </nav>
+    <div className="hidden md:flex min-h-screen md:w-64 lg:w-72 bg-gradient-to-b from-gray-900 to-gray-800 text-white flex-col p-4 shadow-lg overflow-y-auto">
+      {/* Botón hamburguesa para móvil */}
+      <button className="md:hidden p-2 mb-4 text-gray-400 hover:text-white">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
       
+      <nav className="flex flex-col gap-2 md:gap-4 flex-grow mt-2 md:mt-5 ml-2 md:ml-5">
+        {/* Elementos del menú con iconos responsive */}
+        {rol === "padawan" && (
+          <a href="/dashboard/padawan" className="hover:bg-green-800/70 p-2 md:p-3 rounded-lg flex items-center">
+            <img src="/padawan-symbol.svg" alt="Padawan Logo" className="mr-2 md:mr-3 w-5 h-5 md:w-7 md:h-7 flex-shrink-0" />
+            <span className="text-sm md:text-base truncate">Dashboard</span>
+          </a>
+        )}
+        
+        {rol === "jedi" && (
+          <a href="/dashboard/jedi" className="hover:bg-blue-800/70 p-3 rounded-lg flex items-center">
+            <img src="/jedi-symbol.svg" alt="Jedi Logo" className="mr-3 w-7 h-7" />
+            <span>Dashboard</span>
+          </a>
+        )}
 
+        {rol === "padawan" && (
+        <a href="/retos" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
+          <img src="/icons/sidebar-retos.svg" alt="Retos" className="mr-3 w-6 h-6" />
+          <span>Retos</span>
+        </a> )}
+        <a href="/ranking" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
+          <img src="/icons/new-sidebar-ranking.svg" alt="Ranking" className="mr-3 w-6 h-6" />
+          <span>Ranking</span>
+        </a>
+        <a href="/user-profile?tab=playground" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
+          <img src="/icons/sidebar-playground.svg" alt="Playground" className="mr-3 w-6 h-6" />
+          <span>Playground</span>
+        </a>
+
+        {/* Solo para padawan */}
+        {rol === "padawan" && (
+          <a href="/user-profile?tab=logros" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
+            <img src="/icons/new-sidebar-achievement.svg" alt="Logros" className="mr-3 w-6 h-6" />
+            <span>Mis logros</span>
+          </a>
+        )}
+
+        
+        
+
+        <div className="pb-4">
+          <a href="/user-profile?tab=about" className="hover:bg-gray-700 p-3 rounded-lg flex items-center">
+            <img src="/icons/new-sidebar-about.svg" alt="Holocrón" className="mr-3 w-6 h-6" />
+            <span>Holocrón</span>
+          </a>
+        </div>
+      </nav>
       <div className="mt-auto pt-4 border-t border-gray-700">
-        <div className="hover:bg-gray-700 p-3 rounded-lg flex items-center transition-all duration-200 hover:translate-x-1 hover:shadow-md group cursor-pointer">
+        <div className="hover:bg-gray-700 p-3 rounded-lg flex items-center group cursor-pointer">
           <SignOutButton>
             <button className="flex items-center w-full text-left">
-              <span className="mr-3 text-red-400 group-hover:text-red-300 transition-colors duration-200">
-                🔒
-              </span>
-              <span className="group-hover:text-blue-100 transition-colors duration-200">
-                Cerrar sesión
-              </span>
+              <img src="/icons/logout-modern.svg" alt="Cerrar sesión" className="mr-3 w-6 h-6" />
+              <span>Cerrar sesión</span>
             </button>
           </SignOutButton>
         </div>
@@ -78,3 +82,5 @@ export default function Sidebar() {
     </div>
   );
 }
+
+

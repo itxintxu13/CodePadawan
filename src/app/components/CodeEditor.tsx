@@ -9,7 +9,12 @@ import { java } from "@codemirror/lang-java";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { keymap } from "@codemirror/view";
 import { defaultKeymap } from "@codemirror/commands";
-import { autocompletion, completionKeymap, CompletionContext, Completion } from "@codemirror/autocomplete";
+import {
+  autocompletion,
+  completionKeymap,
+  CompletionContext,
+  Completion,
+} from "@codemirror/autocomplete";
 import { PyodideInterface } from "../types/pyodide";
 
 function javaCompletions(context: CompletionContext) {
@@ -21,8 +26,8 @@ function javaCompletions(context: CompletionContext) {
     options: [
       { label: "System.out.println", type: "function", detail: "Java" },
       { label: "public static void main", type: "function", detail: "Java" },
-      { label: "ArrayList", type: "class", detail: "Java" }
-    ]
+      { label: "ArrayList", type: "class", detail: "Java" },
+    ],
   };
 }
 
@@ -52,7 +57,7 @@ const loadPyodide = async (): Promise<PyodideInterface> => {
 // Fuente de autocompletado personalizada para JavaScript
 const jsCompletions = (context: CompletionContext) => {
   const word = context.matchBefore(/\w*/);
-  if (!word || word.from === word.to && !context.explicit) return null;
+  if (!word || (word.from === word.to && !context.explicit)) return null;
 
   const completions: Completion[] = [
     { label: "console.log", type: "function", detail: "Log to console" },
@@ -71,11 +76,14 @@ const jsCompletions = (context: CompletionContext) => {
 const CodeEditor: React.FC = () => {
   const editorRef = useRef<HTMLDivElement>(null);
   const editorInstance = useRef<EditorView | null>(null);
+  const outputIframeRef = useRef<HTMLIFrameElement>(null);
   const [code, setCode] = useState<string>("");
   const [output, setOutput] = useState<string>("");
+  const [htmlOutput, setHtmlOutput] = useState<string>("");
   const [language, setLanguage] = useState<
     "javascript" | "python" | "html" | "java"
   >("javascript");
+  const [outputIframeHeight, setOutputIframeHeight] = useState(100);
   const [pyodideInstance, setPyodideInstance] =
     useState<PyodideInterface | null>(null);
   const [isPyodideReady, setIsPyodideReady] = useState<boolean>(false);
@@ -140,7 +148,14 @@ const CodeEditor: React.FC = () => {
         languageExtension,
         oneDark,
         customTheme,
-        autocompletion({ override: language === "java" ? [javaCompletions] : undefined, }),
+        autocompletion({
+          override:
+            language === "java"
+              ? [javaCompletions]
+              : language === "javascript"
+              ? [jsCompletions]
+              : undefined,
+        }),
         keymap.of(defaultKeymap),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
@@ -170,6 +185,32 @@ const CodeEditor: React.FC = () => {
     };
   }, [language]);
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.iframeHeight) {
+        setOutputIframeHeight(event.data.iframeHeight + 20); // Añade un pequeño margen si quieres
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (language === "html" && htmlOutput) {
+      const iframe = outputIframeRef.current;
+      if (iframe) {
+        const doc = iframe.contentDocument;
+        if (doc) {
+          const height = doc.body.scrollHeight;
+          setOutputIframeHeight(height);
+        }
+      }
+    }
+  }, [language, htmlOutput]);
+
   const ejecutarCodigo = async () => {
     const codigo = editorInstance.current?.state.doc.toString();
     if (!codigo) {
@@ -179,23 +220,27 @@ const CodeEditor: React.FC = () => {
 
     try {
       if (language === "javascript") {
-        const worker = new Worker(new URL("../../app/workers/worker.js", import.meta.url));
-    
-    let timeout = setTimeout(() => {
-      worker.terminate();
-      setOutput("❌ Error: Se ha detenido la ejecución por posible bucle infinito.");
-    }, 3000); // Limita ejecución a 3 segundos
+        const worker = new Worker(
+          new URL("../../app/workers/worker.js", import.meta.url)
+        );
 
-    worker.onmessage = (e) => {
-      clearTimeout(timeout);
-      setOutput(e.data);
-      worker.terminate();
-    };
+        const timeout = setTimeout(() => {
+          worker.terminate();
+          setOutput(
+            "⚠️ Error: Se ha detenido la ejecución por posible bucle infinito."
+          );
+        }, 3000);
 
-    worker.postMessage({ codigo });
+        worker.onmessage = (e) => {
+          clearTimeout(timeout);
+          setOutput(e.data);
+          worker.terminate();
+        };
+
+        worker.postMessage({ codigo });
       } else if (language === "python") {
         if (!pyodideInstance) {
-          setOutput("❌ Pyodide aún no está listo, intenta nuevamente...");
+          setOutput(" Pyodide aún no está listo, intenta nuevamente...");
           return;
         }
         const wrappedCode = `
@@ -205,7 +250,7 @@ sys.stdout = io.StringIO()
 ${codigo.trim()}
 sys.stdout.getvalue()`;
         const output = await pyodideInstance.runPythonAsync(wrappedCode);
-        setOutput(output || "❌ No se recibió salida.");
+        setOutput(output || " No se recibió salida.");
       } else if (language === "html") {
         const wrappedHtml = `
 <!DOCTYPE html>
@@ -213,16 +258,35 @@ sys.stdout.getvalue()`;
 <head>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    h1 { font-size: 2em; font-weight: bold; margin-bottom: 0.5em; }
-    p { font-size: 1em; margin-bottom: 1em; }
-    div { font-size: 1em; }
+    html, body {
+      color: white;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    p, div, h1 {
+      font-size: 1em;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
-${codigo}
+  ${codigo}
+  <script>
+    function sendHeight() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({ iframeHeight: height }, '*');
+    }
+    window.addEventListener('load', sendHeight);
+    window.addEventListener('resize', sendHeight);
+    const observer = new MutationObserver(sendHeight);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  </script>
 </body>
 </html>`;
-        setOutput(wrappedHtml);
+
+        setHtmlOutput(wrappedHtml);
+        setOutput(""); // Clear normal output
       } else if (language === "java") {
         const wrappedCode = `
 public class Main {
@@ -231,31 +295,32 @@ public class Main {
   }
 }`;
         try {
-          const response = await fetch("http://localhost:5000/run", {
+          const response = await fetch("/api/java-run", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code: wrappedCode }),
           });
+
           if (!response.ok) {
             throw new Error(`Server responded with status ${response.status}`);
           }
+
           const data = await response.json();
           setOutput(data.output || "❌ No se recibió salida.");
         } catch (error) {
           console.error("Fetch error:", error);
           setOutput(
-            "❌ Error: No se pudo conectar con el servidor. Asegúrate de que el servidor esté corriendo en http://localhost:5000."
+            "❌ Error: No se pudo conectar con el servidor. Asegúrate de que Next.js esté corriendo."
           );
         }
       }
     } catch (error) {
-      setOutput(`❌ Error: ${error}`);
+      setOutput(`❌ Error inesperado: ${error}`);
     }
   };
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-     
       <div
         style={{
           display: "flex",
@@ -343,25 +408,24 @@ public class Main {
         >
           HTML
         </button>
-        
       </div>
 
       <div
-  ref={editorRef}
-  style={{
-    border: "1px solid #ccc",
-    minHeight: "240px",
-    borderRadius: "8px",
-    overflow: "hidden",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-    fontFamily: "monospace",
-    fontSize: "14px",
-    padding: "10px",
-    backgroundColor: "#1e1e1e",
-    color: "#fff",
-    whiteSpace: "pre-wrap",
-  }}
-/>
+        ref={editorRef}
+        style={{
+          border: "1px solid #ccc",
+          minHeight: "240px",
+          borderRadius: "8px",
+          overflow: "hidden",
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+          fontFamily: "monospace",
+          fontSize: "14px",
+          padding: "10px",
+          backgroundColor: "#1e1e1e",
+          color: "#fff",
+          whiteSpace: "pre-wrap",
+        }}
+      />
       <button
         onClick={ejecutarCodigo}
         disabled={!isPyodideReady && language === "python"}
@@ -400,36 +464,39 @@ public class Main {
         }}
       >
         {language === "html" ? (
-  <div 
-    style={{
-      backgroundColor: "#000", // Fondo negro
-      color: "#fff", // Texto blanco
-      padding: "10px",
-      borderRadius: "5px",
-      border: "1px solid #444",
-      minHeight: "120px",
-      whiteSpace: "pre-wrap"
-    }} 
-    dangerouslySetInnerHTML={{ __html: output }} 
-  />
-) : (
-  <>
-    <strong>Salida:</strong>
-    <pre 
-      style={{
-        backgroundColor: "#000", // Fondo negro
-        color: "#fff", // Texto blanco
-        padding: "10px",
-        borderRadius: "5px",
-        border: "1px solid #444",
-        minHeight: "120px",
-        whiteSpace: "pre-wrap"
-      }}
-    >
-      {output || "Aquí se mostrará la salida..."}
-    </pre>
-  </>
-)}
+          <iframe
+            ref={outputIframeRef}
+            srcDoc={htmlOutput}
+            scrolling="no"
+            style={{
+              display: "block",
+              width: "100%",
+              height: outputIframeHeight,
+              border: "1px solid #444",
+              backgroundColor: "#000",
+              color: "#fff",
+              padding: "10px",
+              borderRadius: "5px",
+              overflow: "hidden",
+            }}
+          />
+        ) : (
+          <>
+            <strong>Salida:</strong>
+            <pre
+              style={{
+                backgroundColor: "#000",
+                color: "#fff",
+                padding: "10px",
+                borderRadius: "5px",
+                border: "1px solid #444",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {output || "Aquí se mostrará la salida..."}
+            </pre>
+          </>
+        )}
       </div>
     </div>
   );

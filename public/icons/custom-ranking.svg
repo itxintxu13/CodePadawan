@@ -1,0 +1,6 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="32" cy="32" r="30" fill="#1a202c" stroke="#ffd700" stroke-width="4"/>
+  <path d="M32 12 L38 28 H54 L41 38 L46 54 L32 44 L18 54 L23 38 L10 28 H26 Z" fill="#ffd700" stroke="#fffbe6" stroke-width="2"/>
+  <circle cx="32" cy="32" r="8" fill="#23272f" stroke="#ffd700" stroke-width="2"/>
+  <text x="32" y="37" text-anchor="middle" font-size="12" font-family="Verdana" fill="#ffd700" font-weight="bold">TOP</text>
+</svg>
