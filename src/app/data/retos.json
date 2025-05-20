@@ -60,9 +60,9 @@
     },
     "requisitos": {
       "java": [
-        "publicclassMain",
-        "publicstaticvoidmain",
-        "System.out.println(\"HolaMundo\")"
+        "public class Main",
+        "public static void main",
+        "System.out.println(\"HolaMundo\");"
       ]
     }
   },
@@ -137,9 +137,9 @@
       "java": [
         "public class Main",
         "public static void main(String[] args)",
-        "System.out.println(suma(5, 3))",
+        "System.out.println(suma(5, 3));",
         "public static int suma(int a, int b)",
-        "return a + b"
+        "return a + b;"
       ]
     },
     "tests": {
@@ -238,10 +238,10 @@
       "java": [
         "public class Main",
         "public static void main(String[] args)",
-        "System.out.println(laFuerzaEnTi(\"Luke\"))",
-        "System.out.println(laFuerzaEnTi(\"Anakin\"))",
+        "System.out.println(laFuerzaEnTi(\"Luke\"));",
+        "System.out.println(laFuerzaEnTi(\"Anakin\"));",
         "public static String laFuerzaEnTi(String nombre)",
-        "return \"La Fuerza es poderosa en ti, \" + nombre"
+        "return \"La Fuerza es poderosa en ti, \" + nombre; "
       ]
     }
   },
@@ -318,13 +318,13 @@
       "java": [
         "public class Main",
         "public static void main(String[] args)",
-        "System.out.println(esPrimo(7))",
-        "System.out.println(esPrimo(10))",
+        "System.out.println(esPrimo(7));",
+        "System.out.println(esPrimo(10));",
         "public static String esPrimo(int numero)",
-        "if (numero < 2) return null",
+        "if (numero < 2) return null;",
         "for (int i = 2; i < numero; i++)",
-        "if (numero % i == 0) return null",
-        "return \"Número digno de un Jedi\""
+        "if (numero % i == 0) return null;",
+        "return \"Número digno de un Jedi\";"
       ]
     }
   },
@@ -420,8 +420,8 @@
       "java": [
         "public class Main",
         "public static void main(String[] args)",
-        "System.out.println(decodificarROT13(\"Guvf vf n frperg zrffntr!\"))",
-        "System.out.println(decodificarROT13(\"Uryyb Jbeyq!\"))",
+        "System.out.println(decodificarROT13(\"Guvf vf n frperg zrffntr!\"));",
+        "System.out.println(decodificarROT13(\"Uryyb Jbeyq!\"));",
         "public static String decodificarROT13(String mensaje)",
         "return mensaje.chars()"
       ]
@@ -523,10 +523,10 @@
       "java": [
         "public class Main",
         "public static void main(String[] args)",
-        "System.out.println(calcularMidiclorianos(5))",
+        "System.out.println(calcularMidiclorianos(5));",
         "public static int calcularMidiclorianos(int n)",
-        "if (n <= 1) return 1",
-        "n * calcularMidiclorianos(n - 1)"
+        "if (n <= 1) return 1;",
+        "n * calcularMidiclorianos(n - 1);"
       ]
     }
   }
