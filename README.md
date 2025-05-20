@@ -2,6 +2,8 @@
 
 Code Padawan es una plataforma educativa diseñada para conectar a Padawans (aprendices que buscan aprender a programar) con Jedis (expertos con conocimientos avanzados) en un entorno colaborativo. Nuestra misión es fomentar el aprendizaje y la retroalimentación entre usuarios para ampliar sus habilidades en programación a través de retos, rankings, blogs y herramientas interactivas. 🚀
 
+**URL al proyecto:** [https://code-padawan.vercel.app](https://code-padawan.vercel.app)
+
 ## Características Principales ✨
 
 ### 1. Retos de Programación 🧩
@@ -46,7 +48,8 @@ Aquí tienes un vistazo a las principales funcionalidades de Code Padawan:
 
 ## En Progreso 🚧
 Estamos trabajando arduamente para llevar Code Padawan al siguiente nivel:
-- **Dashboard para Jedis** Herramientas para gestionar mentorías , Estadisticas de alumnos, etc 📊
+- **Ranking para Jedis** Un ranking para ver sus habilidades de enseñanza 📊
+- **Retos** Podrán crear retos personalizados para sus padawans 🎯
 - **Próximas actualizaciones**: ¡Sigue nuestras noticias! 🔔
 
 ## Tecnologías Utilizadas 🛠️
@@ -57,11 +60,12 @@ Estamos trabajando arduamente para llevar Code Padawan al siguiente nivel:
 - **Otras herramientas**: Git
 
 ## Uso 🚀
-1. **Regístrate** como Padawan o Jedi con Clerk según tu nivel de experiencia. 🧑‍🎓
-2. **Explora los retos** para practicar, como resolver un problema de algoritmos en JavaScript o Python, y gana puntos. 🧠
-3. **Participa en el blog** publicando un artículo o respondiendo preguntas de otros usuarios. 💬
-4. **Consulta tu dashboard** para ver tus estadísticas, como puntos acumulados y logros desbloqueados. 📊
-5. **Usa el playground** para probar código en tiempo real, como un script en TypeScript o una consulta a una API. 🖥️
+1. Accede a la plataforma en: [https://code-padawan.vercel.app](https://code-padawan.vercel.app) 🌐
+2. **Regístrate** como Padawan o Jedi con Clerk según tu nivel de experiencia. 🧑‍🎓
+3. **Explora los retos** para practicar, como resolver un problema de algoritmos en JavaScript o Python, y gana puntos. 🧠
+4. **Participa en el blog** publicando un artículo o respondiendo preguntas de otros usuarios. 💬
+5. **Consulta tu dashboard** para ver tus estadísticas, como puntos acumulados y logros desbloqueados. 📊
+6. **Usa el playground** para probar código en tiempo real, como un script en TypeScript o una consulta a una API. 🖥️
 
 ## Contribuir 🤝
 ¡Nos encantaría que formes parte del desarrollo de Code Padawan! Sigue estos pasos:
@@ -71,7 +75,6 @@ Estamos trabajando arduamente para llevar Code Padawan al siguiente nivel:
 4. **Git push origin feature/nueva-funcionalidad**
 5. **Abre un Pull Request en GitHub**. 📬
 
-
 ## Contacto 📩
 Si tienes preguntas, sugerencias o quieres colaborar, contáctanos:
 
@@ -80,5 +83,4 @@ Si tienes preguntas, sugerencias o quieres colaborar, contáctanos:
 - [ARP-10](https://github.com/ARP-10)
 - [jrincon00](https://github.com/jrincon00)
   
-
-¡Únete a la fuerza del aprendizaje en Code Padawan y espera grandes novedades! 
+¡Únete a la fuerza del aprendizaje en Code Padawan y espera grandes novedades!
